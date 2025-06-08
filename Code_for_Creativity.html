@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dictation 1</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .sentence-box { margin-bottom: 20px; }
+    .controls { margin-bottom: 20px; }
+    textarea { width: 100%; height: 60px; font-size: 16px; }
+    .hidden { display: none; }
+    button { margin-right: 10px; }
+    .status { font-weight: bold; margin-top: 10px; }
+    .answer { color: green; margin-top: 5px; }
+    .translation { background: #f1f1f1; padding: 10px; margin-top: 10px; border-left: 5px solid #4CAF50; display: none; }
+  </style>
+</head>
+<body>
+  <h1>Dictation 1</h1>
+  <div id="status">Sentence <span id="current-sentence">1</span> / <span id="total-sentences">4</span></div>
+  <div class="controls">
+    <button onclick="playSentence()">🔈</button>
+    <button onclick="pauseAudio()">⏸️</button>
+  </div>
+
+  <div class="sentence-box">
+    <textarea id="userInput" placeholder="Type what you hear..."></textarea>
+    <div class="status" id="feedback"></div>
+    <div class="answer hidden" id="answer"></div>
+    <div class="translation" id="translation"></div>
+  </div>
+
+  <button onclick="checkAnswer()">✅ Check</button>
+  <button onclick="nextSentence()">➡️ Next</button>
+
+  <script>
+    const sentences = [
+      "Once upon a time, there was a small white rabbit.",
+      "The rabbit lived in a big green forest.",
+      "Every day, it ate fresh carrots and drank clean water from a river.",
+      "One day, the rabbit found a lost baby bird.",
+      "The rabbit helped the bird find its mother.",
+      "They became good friends.",
+      "From that day, the rabbit and the bird played together happily in the forest every day."
+    ];
+
+    const translations = [
+      "Ngày xửa ngày xưa, có một con thỏ trắng nhỏ.",
+      "Con thỏ sống trong một khu rừng xanh rộng lớn.",
+      "Mỗi ngày, nó ăn cà rốt tươi và uống nước sạch từ con sông.",
+      "Một ngày, con thỏ tìm thấy một chú chim non bị lạc.",
+      "Con thỏ giúp chú chim tìm mẹ của nó.",
+      "Họ trở thành bạn tốt của nhau.",
+      "Từ ngày đó, con thỏ và chú chim chơi với nhau vui vẻ trong rừng mỗi ngày."
+    ];
+
+    let currentIndex = 0;
+    let utterance = null;
+    let voices = [];
+
+    speechSynthesis.onvoiceschanged = () => {
+      voices = speechSynthesis.getVoices();
+    };
+
+    document.getElementById("total-sentences").textContent = sentences.length;
+
+    function playSentence() {
+      utterance = new SpeechSynthesisUtterance(sentences[currentIndex]);
+      utterance.lang = 'en-US';
+
+      const maleVoice = voices.find(voice =>
+        voice.lang.startsWith('en') && voice.name.toLowerCase().includes('male')
+      ) || voices.find(voice =>
+        voice.lang.startsWith('en') && voice.name.toLowerCase().includes('english')
+      );
+
+      if (maleVoice) {
+        utterance.voice = maleVoice;
+      }
+
+      speechSynthesis.speak(utterance);
+    }
+
+    function replaySentence() {
+      pauseAudio();
+      playSentence();
+    }
+
+    function pauseAudio() {
+      speechSynthesis.cancel();
+    }
+
+    function checkAnswer() {
+      const input = document.getElementById("userInput").value.trim();
+      const original = sentences[currentIndex];
+      const feedback = document.getElementById("feedback");
+      const answerBox = document.getElementById("answer");
+      const translationBox = document.getElementById("translation");
+
+      const inputWords = input.split(/\s+/);
+      const originalWords = original.split(/\s+/);
+
+      let correctUpTo = 0;
+      for (let i = 0; i < inputWords.length && i < originalWords.length; i++) {
+        if (inputWords[i].toLowerCase() === originalWords[i].toLowerCase()) {
+          correctUpTo++;
+        } else {
+          break;
+        }
+      }
+
+      if (correctUpTo === originalWords.length) {
+        feedback.textContent = "✅ Correct!";
+        feedback.style.color = "green";
+        answerBox.classList.add("hidden");
+        translationBox.style.display = "block";
+        translationBox.textContent = translations[currentIndex];
+      } else {
+        feedback.textContent = "❌ Incorrect.";
+        feedback.style.color = "red";
+        const hintWord = originalWords[correctUpTo] || "(no more words)";
+        answerBox.textContent = "So far correct: " + originalWords.slice(0, correctUpTo).join(" ") + "... Next word hint: '" + hintWord + "'";
+        answerBox.classList.remove("hidden");
+        translationBox.style.display = "none";
+      }
+    }
+
+    function nextSentence() {
+      if (currentIndex < sentences.length - 1) {
+        currentIndex++;
+        updateUI();
+      } else {
+        alert("🎉 You've finished all the sentences!");
+      }
+    }
+
+    function updateUI() {
+      document.getElementById("current-sentence").textContent = currentIndex + 1;
+      document.getElementById("userInput").value = "";
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("answer").textContent = "";
+      document.getElementById("answer").classList.add("hidden");
+      document.getElementById("translation").style.display = "none";
+      document.getElementById("translation").textContent = "";
+    }
+  </script>
+</body>
+</html>

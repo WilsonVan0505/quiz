@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B1 Vocabulary Quiz - Environmental Terms</title>
+    <style>
+        /* Basic styling for the body */
+        body {
+            font-family: 'Inter', Arial, sans-serif; /* Using Inter font */
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5; /* Light gray background */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for better content flow */
+            min-height: 100vh;
+        }
+
+        /* Container for the entire quiz */
+        .quiz-container {
+            max-width: 650px; /* Slightly wider for better readability */
+            width: 100%;
+            background-color: #ffffff; /* White background */
+            padding: 30px;
+            border-radius: 12px; /* More rounded corners */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Softer, deeper shadow */
+            margin-top: 30px; /* Add some margin from the top */
+        }
+
+        /* Styling for each question page */
+        .question-page {
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease-in-out; /* Fade-in animation */
+        }
+        .question-page.active {
+            display: block; /* Show active page */
+        }
+
+        /* Animation for fading in questions */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Information section (e.g., question number, score) */
+        .question-info {
+            font-size: 0.95em;
+            color: #6a737d; /* Slightly darker gray */
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee; /* Subtle separator */
+        }
+
+        /* Question text styling */
+        .question-text {
+            font-size: 1.25em; /* Larger font for question */
+            margin-bottom: 25px;
+            font-weight: 600; /* Semi-bold */
+            line-height: 1.5;
+            color: #2c3e50; /* Darker text */
+        }
+
+        /* Options container */
+        .options {
+            margin-bottom: 20px;
+        }
+
+        /* Styling for each option label */
+        .options label {
+            display: block;
+            margin-bottom: 12px; /* More space between options */
+            cursor: pointer;
+            padding: 14px 20px; /* More padding */
+            border: 1px solid #dcdcdc; /* Lighter border */
+            border-radius: 8px; /* Rounded corners for options */
+            transition: all 0.3s ease; /* Smooth transition for all properties */
+            background-color: #fcfcfc;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03); /* Very subtle shadow */
+            display: flex;
+            align-items: center;
+        }
+
+        /* Hover effect for options */
+        .options label:hover {
+            background-color: #e8f0fe; /* Light blue on hover */
+            border-color: #a8d4ff; /* Blue border on hover */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Slightly more prominent shadow */
+        }
+
+        /* Styling for radio buttons */
+        .options input[type="radio"] {
+            margin-right: 15px; /* More space for radio button */
+            transform: scale(1.2); /* Slightly larger radio button */
+            accent-color: #007bff; /* Accent color for checked radio */
+        }
+
+        /* Feedback message styling (correct/incorrect) */
+        .feedback {
+            margin-top: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            opacity: 0; /* Hidden by default */
+            transform: translateY(-10px);
+            animation: slideInFadeIn 0.4s forwards; /* Animation for feedback */
+        }
+        .feedback.correct {
+            background-color: #e6ffe6; /* Light green */
+            color: #28a745; /* Dark green */
+            border: 1px solid #28a745;
+        }
+        .feedback.incorrect {
+            background-color: #ffe6e6; /* Light red */
+            color: #dc3545; /* Dark red */
+            border: 1px solid #dc3545;
+        }
+
+        /* Animation for feedback message */
+        @keyframes slideInFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Translation section styling */
+        .translation-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px dashed #e0e0e0; /* Dashed line separator */
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .translation-section label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .translation-section textarea {
+            width: calc(100% - 22px); /* Adjust for padding and border */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            min-height: 60px;
+            resize: vertical; /* Allow vertical resizing */
+            margin-bottom: 15px;
+        }
+
+        /* Check Translation button */
+        .translation-section .check-translation-btn {
+            background-color: #17a2b8; /* Teal color */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .translation-section .check-translation-btn:hover:not(:disabled) {
+            background-color: #138496; /* Darker teal on hover */
+        }
+
+        .translation-section .check-translation-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+
+        .translation-section .correct-translation {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #e8f0fe; /* Light blue background */
+            border: 1px solid #a8d4ff;
+            border-radius: 8px;
+            font-weight: 500;
+            color: #0056b3; /* Darker blue text */
+            font-size: 1em;
+            line-height: 1.4;
+            display: none; /* Hidden by default, will be shown after checking translation */
+        }
+
+        /* Button container */
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px; /* Space between buttons */
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        }
+
+        /* Common button styling */
+        .buttons button {
+            padding: 12px 22px; /* Generous padding */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.05em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex-grow: 1; /* Allow buttons to grow and fill space */
+            min-width: 120px; /* Minimum width for buttons */
+        }
+
+        /* Check Answer button styling */
+        .buttons .check-btn {
+            background-color: #007bff; /* Blue */
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+        }
+        .buttons .check-btn:hover:not(:disabled) {
+            background-color: #0056b3; /* Darker blue on hover */
+            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+        }
+        .buttons .check-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Navigation button styling */
+        .buttons .nav-btn {
+            background-color: #6c757d; /* Gray */
+            color: white;
+            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
+        }
+        .buttons .nav-btn:hover:not(:disabled) {
+            background-color: #5a6268; /* Darker gray on hover */
+            box-shadow: 0 6px 15px rgba(108, 117, 125, 0.3);
+        }
+        .buttons .nav-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Results page styling */
+        #results-page {
+            text-align: center;
+            display: none; /* Hidden by default */
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        #results-page h2 {
+            color: #007bff;
+            margin-bottom: 15px;
+            font-size: 2em;
+            font-weight: 700;
+        }
+        #results-page p {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            color: #4a4a4a;
+        }
+
+        /* Restart button styling */
+        #restart-btn {
+            background-color: #28a745; /* Green */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.15em;
+            font-weight: 600;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);
+        }
+        #restart-btn:hover {
+            background-color: #218838; /* Darker green on hover */
+            box-shadow: 0 6px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 500px) {
+            .quiz-container {
+                padding: 20px;
+                margin-top: 15px;
+            }
+            .question-text {
+                font-size: 1.1em;
+            }
+            .options label {
+                padding: 12px 15px;
+            }
+            .buttons button {
+                width: 100%; /* Full width buttons on small screens */
+                min-width: unset;
+                flex-grow: unset;
+            }
+            .translation-section textarea {
+                width: calc(100% - 20px); /* Adjust for padding only */
+            }
+        }
+    </style>
+    <!-- Tailwind CSS (optional if you want to integrate with a separate build) -->
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div id="quiz-pages">
+            <!-- Questions will be dynamically injected here by JavaScript -->
+        </div>
+
+        <div id="results-page">
+            <h2>Quiz Completed!</h2>
+            <p>You scored <span id="final-score">0</span> out of <span id="total-questions">0</span>.</p>
+            <button id="restart-btn">Restart Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        // Array containing all quiz questions, options, and correct answers
+        const questions = [
+            {
+                question: "Reducing your __________ can help fight climate change.",
+                options: ["A. eco-friendly", "B. landfill", "C. carbon footprint", "D. compost"],
+                answer: "C",
+                translation: "Giảm dấu chân carbon của bạn có thể giúp chống lại biến đổi khí hậu."
+            },
+            {
+                question: "We should recycle __________ boxes instead of throwing them away.",
+                options: ["A. reusable", "B. cardboard", "C. leftover", "D. contaminated"],
+                answer: "B",
+                translation: "Chúng ta nên tái chế những hộp bìa cứng thay vì vứt chúng đi."
+            },
+            {
+                question: "Volunteers came to the beach to help __________ all the plastic waste.",
+                options: ["A. decompose", "B. rinse out", "C. clean up", "D. reuse"],
+                answer: "C",
+                translation: "Các tình nguyện viên đã đến bãi biển để giúp dọn dẹp rác thải nhựa."
+            },
+            {
+                question: "You can turn food waste into __________ to enrich your garden soil.",
+                options: ["A. landfill", "B. compost", "C. packaging", "D. layer"],
+                answer: "B",
+                translation: "Bạn có thể biến rác thải thực phẩm thành phân compost để bón đất."
+            },
+            {
+                question: "Pour the soup into a __________ and keep it in the fridge.",
+                options: ["A. layer", "B. peel", "C. container", "D. pile"],
+                answer: "C",
+                translation: "Đổ súp vào một hộp đựng và giữ trong tủ lạnh."
+            },
+            {
+                question: "Drinking __________ water can be dangerous for your health.",
+                options: ["A. eco-friendly", "B. reusable", "C. contaminated", "D. decompose"],
+                answer: "C",
+                translation: "Uống nước bị ô nhiễm có thể nguy hiểm cho sức khỏe."
+            },
+            {
+                question: "Some materials take hundreds of years to __________ in the environment.",
+                options: ["A. pile", "B. decompose", "C. rinse", "D. contaminate"],
+                answer: "B",
+                translation: "Một số vật liệu mất hàng trăm năm để phân hủy trong môi trường."
+            },
+            {
+                question: "We should buy __________ products that don’t harm the environment.",
+                options: ["A. leftover", "B. compost", "C. eco-friendly", "D. contaminated"],
+                answer: "C",
+                translation: "Chúng ta nên mua các sản phẩm thân thiện với môi trường."
+            },
+            {
+                question: "Instead of throwing away __________, you can add them to your compost bin.",
+                options: ["A. fruit peel", "B. containers", "C. layers", "D. packaging"],
+                answer: "A",
+                translation: "Thay vì vứt vỏ trái cây, bạn có thể bỏ chúng vào thùng compost."
+            },
+            {
+                question: "Most __________ can be sorted into organic, plastic, and paper materials.",
+                options: ["A. landfill", "B. waste", "C. household waste", "D. layers"],
+                answer: "C",
+                translation: "Hầu hết rác thải sinh hoạt có thể được phân loại thành hữu cơ, nhựa và giấy."
+            },
+            {
+                question: "Using public transport may be expensive now, but it’s better __________.",
+                options: ["A. in the short term", "B. in the medium", "C. in the long run", "D. for the leftover"],
+                answer: "C",
+                translation: "Dùng phương tiện công cộng có thể tốn kém bây giờ, nhưng tốt hơn về lâu dài."
+            },
+            {
+                question: "The plan may not work __________, but it helps raise awareness quickly.",
+                options: ["A. in the short term", "B. reusable", "C. landfill", "D. cardboard"],
+                answer: "A",
+                translation: "Kế hoạch có thể không hiệu quả trong ngắn hạn, nhưng giúp nâng cao nhận thức."
+            },
+            {
+                question: "All this trash ends up in a huge __________ outside the city.",
+                options: ["A. compost", "B. landfill", "C. peel", "D. eco-friendly"],
+                answer: "B",
+                translation: "Tất cả rác này kết thúc tại một bãi rác lớn bên ngoài thành phố."
+            },
+            {
+                question: "Add another __________ of leaves on top of the compost to cover the smell.",
+                options: ["A. container", "B. leftover", "C. layer", "D. packaging"],
+                answer: "C",
+                translation: "Thêm một lớp lá lên trên compost để giảm mùi."
+            },
+            {
+                question: "We stored the __________ food in a separate container for tomorrow.",
+                options: ["A. reusable", "B. leftover", "C. compost", "D. contaminated"],
+                answer: "B",
+                translation: "Chúng tôi cất phần thức ăn thừa vào hộp riêng cho ngày mai."
+            },
+            {
+                question: "The factory changed its __________ to reduce plastic use.",
+                options: ["A. packaging", "B. landfill", "C. peel", "D. decompose"],
+                answer: "A",
+                translation: "Nhà máy đã thay đổi bao bì để giảm nhựa."
+            },
+            {
+                question: "There was a large __________ of rubbish at the back of the house.",
+                options: ["A. pile", "B. layer", "C. compost", "D. container"],
+                answer: "A",
+                translation: "Có một đống rác lớn ở phía sau ngôi nhà."
+            },
+            {
+                question: "Use a __________ bag instead of a plastic one.",
+                options: ["A. clean-up", "B. single use", "C. reusable", "D. leftover"],
+                answer: "C",
+                translation: "Dùng túi tái sử dụng được thay vì túi nhựa."
+            },
+            {
+                question: "We should __________ old jars instead of throwing them away.",
+                options: ["A. rinse", "B. reuse", "C. clean", "D. decompose"],
+                answer: "B",
+                translation: "Chúng ta nên tái sử dụng lọ cũ thay vì vứt đi."
+            },
+            {
+                question: "You need to __________ the bottle before putting it in the recycling bin.",
+                options: ["A. decompose", "B. rinse out", "C. pile", "D. peel"],
+                answer: "B",
+                translation: "Bạn cần rửa sạch chai trước khi bỏ vào thùng tái chế."
+            },
+            {
+                question: "This __________ plastic spoon cannot be used again.",
+                options: ["A. reusable", "B. single use", "C. compost", "D. leftover"],
+                answer: "B",
+                translation: "Chiếc muỗng nhựa dùng một lần này không thể dùng lại."
+            },
+            {
+                question: "Too much __________ in the ocean harms marine life.",
+                options: ["A. compost", "B. waste", "C. cardboard", "D. layer"],
+                answer: "B",
+                translation: "Quá nhiều rác thải trong đại dương gây hại cho sinh vật biển."
+            }
+        ];
+
+        // Global variables to manage quiz state
+        let currentQuestionIndex = 0; // Tracks the current question being displayed
+        let score = 0; // Stores the user's score
+        // quizAnswers stores the user's selected answer for each question (e.g., 'C' for question 0)
+        let quizAnswers = new Array(questions.length).fill(null);
+        // quizFeedback stores whether the user's answer was 'correct' or 'incorrect' for each question
+        let quizFeedback = new Array(questions.length).fill(null);
+        // userTranslations stores the user's input for translation for each question
+        let userTranslations = new Array(questions.length).fill(''); // Initialize with empty strings
+        // translationChecked stores whether the user has clicked "Sample translation" for a question
+        let translationChecked = new Array(questions.length).fill(false);
+
+
+        // Get references to DOM elements
+        const quizPagesContainer = document.getElementById('quiz-pages');
+        const resultsPage = document.getElementById('results-page');
+        const finalScoreSpan = document.getElementById('final-score');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const restartBtn = document.getElementById('restart-btn');
+
+        /**
+         * Initializes or restarts the quiz.
+         * Resets score, current question index, and clears previous answers/feedback.
+         * Renders all questions and displays the first one.
+         */
+        function initializeQuiz() {
+            quizPagesContainer.innerHTML = ''; // Clear any existing question elements
+            score = 0; // Reset score
+            currentQuestionIndex = 0; // Go back to the first question
+            quizAnswers = new Array(questions.length).fill(null); // Clear all user answers
+            quizFeedback = new Array(questions.length).fill(null); // Clear all feedback
+            userTranslations = new Array(questions.length).fill(''); // Clear all user translations
+            translationChecked = new Array(questions.length).fill(false); // Reset translation check status
+            totalQuestionsSpan.textContent = questions.length; // Display total questions
+            renderQuestions(); // Create the HTML for all questions
+            showQuestion(currentQuestionIndex); // Show the first question
+            resultsPage.style.display = 'none'; // Hide the results page
+            quizPagesContainer.style.display = 'block'; // Ensure quiz pages are visible
+        }
+
+        /**
+         * Renders (creates the HTML for) all questions.
+         * Each question gets its own 'question-page' div.
+         */
+        function renderQuestions() {
+            questions.forEach((q, index) => {
+                const questionPage = document.createElement('div');
+                questionPage.classList.add('question-page');
+                questionPage.id = `question-page-${index}`; // Unique ID for each question page
+
+                // Construct the HTML for the question, options, feedback, and navigation buttons
+                questionPage.innerHTML = `
+                    <div class="question-info">
+                        <span>Câu ${index + 1}/${questions.length}</span>
+                        <span>Điểm: <span id="score-${index}">${quizFeedback[index] === 'correct' ? 1 : 0}</span></span>
+                    </div>
+                    <div class="question-text">${q.question}</div>
+                    <div class="options" id="options-${index}">
+                        ${q.options.map((option, optIndex) => `
+                            <label>
+                                <input type="radio" name="question-${index}" value="${option.charAt(0)}"
+                                    ${quizAnswers[index] === option.charAt(0) ? 'checked' : ''}
+                                    onchange="enableCheckButton(${index})">
+                                ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="feedback" id="feedback-${index}"></div>
+
+                    <!-- New Translation Section -->
+                    <div class="translation-section" id="translation-section-${index}">
+                        <label for="translation-input-${index}">Your Vietnamese Translation:</label>
+                        <textarea id="translation-input-${index}" oninput="storeTranslation(${index}); updateTranslationCheckButtonState(${index});">${userTranslations[index]}</textarea>
+                        <button class="check-translation-btn" id="check-translation-btn-${index}" onclick="showCorrectTranslation(${index})" disabled>Sample Translation</button>
+                        <div class="correct-translation" id="correct-translation-${index}" style="display: none;">
+                            ${q.translation}
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="nav-btn prev-btn" onclick="prevQuestion()" ${index === 0 ? 'disabled' : ''}>Previous</button>
+                        <button class="check-btn" id="check-btn-${index}" onclick="checkAnswer(${index})">Check Answer</button>
+                        <button class="nav-btn next-btn" onclick="nextQuestion()" ${index === questions.length - 1 ? 'disabled' : ''}>Next</button>
+                    </div>
+                `;
+                quizPagesContainer.appendChild(questionPage); // Add the question page to the container
+
+                // Update score display if the question was already answered correctly during a restart
+                if (quizFeedback[index] === 'correct') {
+                    document.getElementById(`score-${index}`).textContent = '1';
+                }
+            });
+        }
+
+        /**
+         * Displays a specific question page and hides all others.
+         * @param {number} index - The index of the question to display.
+         */
+        function showQuestion(index) {
+            // Hide all question pages
+            document.querySelectorAll('.question-page').forEach((page) => {
+                page.classList.remove('active');
+            });
+
+            // Show the requested question page
+            const targetPage = document.getElementById(`question-page-${index}`);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            currentQuestionIndex = index; // Update the current question index
+            updateNavigationButtons(); // Enable/disable Prev/Next buttons based on current index
+            updateCheckButtonState(index); // Update check button state (enabled/disabled)
+            updateFeedbackDisplay(index); // Show/hide feedback based on if question was answered
+            updateOptionsEnabledState(index); // Enable/disable options based on if question was answered
+            updateTranslationDisplay(index); // Show/hide translation section and load user's previous translation
+        }
+
+        /**
+         * Updates the disabled state of the "Previous" and "Next" navigation buttons.
+         */
+        function updateNavigationButtons() {
+            // Get buttons for the currently active question page
+            const currentPage = document.getElementById(`question-page-${currentQuestionIndex}`);
+            if (!currentPage) return;
+
+            const prevBtn = currentPage.querySelector('.prev-btn');
+            const nextBtn = currentPage.querySelector('.next-btn');
+
+            // Disable 'Previous' button on the first question
+            if (prevBtn) {
+                prevBtn.disabled = currentQuestionIndex === 0;
+            }
+
+            // Disable 'Next' button on the last question, or change text to 'Finish Quiz'
+            if (nextBtn) {
+                if (currentQuestionIndex === questions.length - 1) {
+                    nextBtn.textContent = 'Finish Quiz';
+                } else {
+                    nextBtn.textContent = 'Next';
+                }
+            }
+        }
+
+        /**
+         * Updates the disabled state of the "Check Answer" button for a given question.
+         * It is disabled if no option is selected or if the question has already been answered.
+         * @param {number} index - The index of the question.
+         */
+        function updateCheckButtonState(index) {
+            const checkBtn = document.getElementById(`check-btn-${index}`);
+            const selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
+
+            if (checkBtn) {
+                // Check button is disabled if no option is selected OR if the question has already been answered
+                checkBtn.disabled = !selectedOption && quizAnswers[index] === null;
+                // If the question was already answered, keep the check button disabled
+                if (quizAnswers[index] !== null) {
+                    checkBtn.disabled = true;
+                }
+            }
+        }
+
+        /**
+         * Enables the "Check Answer" button for a question when an option is selected.
+         * This is called by the `onchange` event of the radio buttons.
+         * @param {number} index - The index of the question.
+         */
+        function enableCheckButton(index) {
+            const checkBtn = document.getElementById(`check-btn-${index}`);
+            // Only enable if the question hasn't been answered yet
+            if (checkBtn && quizAnswers[index] === null) {
+                checkBtn.disabled = false;
+            }
+        }
+
+        /**
+         * Checks the user's selected answer for a given question against the correct answer.
+         * Updates score, displays feedback, and disables options/check button.
+         * Also displays the translation section.
+         * @param {number} index - The index of the question to check.
+         */
+        function checkAnswer(index) {
+            const selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
+            const feedbackDiv = document.getElementById(`feedback-${index}`);
+            const scoreSpan = document.getElementById(`score-${index}`);
+            const checkBtn = document.getElementById(`check-btn-${index}`);
+            const optionsDiv = document.getElementById(`options-${index}`);
+            const translationSection = document.getElementById(`translation-section-${index}`);
+
+            // If no option is selected, show a message and do nothing else
+            if (!selectedOption) {
+                feedbackDiv.textContent = "Please select an answer to check.";
+                feedbackDiv.classList.remove('correct', 'incorrect');
+                feedbackDiv.style.opacity = 1; // Ensure feedback is visible
+                feedbackDiv.style.transform = 'translateY(0)';
+                return;
+            }
+
+            const userAnswer = selectedOption.value;
+            quizAnswers[index] = userAnswer; // Store the user's answer
+
+            // Check if the answer is correct
+            if (userAnswer === questions[index].answer) {
+                feedbackDiv.textContent = "Correct!"; // Correct message in Vietnamese
+                feedbackDiv.classList.remove('incorrect');
+                feedbackDiv.classList.add('correct');
+                if (quizFeedback[index] !== 'correct') { // Prevent double counting score if re-checking
+                    score++;
+                    quizFeedback[index] = 'correct'; // Mark as correct
+                }
+                scoreSpan.textContent = '1'; // Display score for this question as 1
+            } else {
+                feedbackDiv.textContent = `Sai rồi. Đáp án đúng là: ${questions[index].answer}`; // Incorrect message with correct answer
+                feedbackDiv.classList.remove('correct');
+                feedbackDiv.classList.add('incorrect');
+                if (quizFeedback[index] === 'correct') { // If previously correct and now wrong (unlikely with disabled options but for robustness)
+                    score--;
+                }
+                quizFeedback[index] = 'incorrect'; // Mark as incorrect
+                scoreSpan.textContent = '0'; // Display score for this question as 0
+            }
+
+            checkBtn.disabled = true; // Disable check button after checking
+
+            // Disable all radio buttons for this question after checking to prevent changes
+            optionsDiv.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.disabled = true;
+            });
+
+            // Trigger animation for feedback display
+            feedbackDiv.style.opacity = 1;
+            feedbackDiv.style.transform = 'translateY(0)';
+
+            // Show the translation section after checking the answer
+            if (translationSection) {
+                translationSection.style.display = 'block';
+                updateTranslationCheckButtonState(index); // Update state for translation check button
+            }
+        }
+
+        /**
+         * Stores the user's translation input for a given question.
+         * @param {number} index - The index of the question.
+         */
+        function storeTranslation(index) {
+            const translationInput = document.getElementById(`translation-input-${index}`);
+            if (translationInput) {
+                userTranslations[index] = translationInput.value;
+                // Enable "Sample translation" button if there's text
+                updateTranslationCheckButtonState(index);
+            }
+        }
+
+        /**
+         * Shows the correct translation and disables the "Sample translation" button.
+         * @param {number} index - The index of the question.
+         */
+        function showCorrectTranslation(index) {
+            const correctTranslationDiv = document.getElementById(`correct-translation-${index}`);
+            const checkTranslationBtn = document.getElementById(`check-translation-btn-${index}`);
+
+            if (correctTranslationDiv) {
+                correctTranslationDiv.style.display = 'block'; // Show the correct translation
+                translationChecked[index] = true; // Mark translation as checked
+            }
+            if (checkTranslationBtn) {
+                checkTranslationBtn.disabled = true; // Disable the button after showing
+            }
+        }
+
+        /**
+         * Updates the disabled state of the "Sample translation" button.
+         * It's enabled if there's input in the textarea and hasn't been checked yet.
+         * @param {number} index - The index of the question.
+         */
+        function updateTranslationCheckButtonState(index) {
+            const translationInput = document.getElementById(`translation-input-${index}`);
+            const checkTranslationBtn = document.getElementById(`check-translation-btn-${index}`);
+
+            if (translationInput && checkTranslationBtn) {
+                // Button is enabled if text area is not empty AND translation hasn't been checked yet
+                checkTranslationBtn.disabled = translationInput.value.trim() === '' || translationChecked[index];
+            }
+        }
+
+
+        /**
+         * Updates the feedback message display and options enabled state when a question is loaded.
+         * This ensures feedback is shown if the question was already answered.
+         * Also handles the display of the translation section.
+         * @param {number} index - The index of the question.
+         */
+        function updateFeedbackDisplay(index) {
+            const feedbackDiv = document.getElementById(`feedback-${index}`);
+            const optionsDiv = document.getElementById(`options-${index}`);
+            const checkBtn = document.getElementById(`check-btn-${index}`);
+
+            if (quizAnswers[index] !== null) { // If the question has been answered
+                if (quizFeedback[index] === 'correct') {
+                    feedbackDiv.textContent = "Correct!";
+                    feedbackDiv.classList.remove('incorrect');
+                    feedbackDiv.classList.add('correct');
+                } else if (quizFeedback[index] === 'incorrect') {
+                    feedbackDiv.textContent = `Sai rồi. Đáp án đúng là: ${questions[index].answer}`;
+                    feedbackDiv.classList.remove('correct');
+                    feedbackDiv.classList.add('incorrect');
+                }
+                checkBtn.disabled = true; // Disable check button
+                // Disable all radio buttons
+                optionsDiv.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.disabled = true;
+                });
+                feedbackDiv.style.opacity = 1; // Show feedback
+                feedbackDiv.style.transform = 'translateY(0)';
+            } else { // If the question has not been answered yet
+                feedbackDiv.textContent = "";
+                feedbackDiv.classList.remove('correct', 'incorrect');
+                feedbackDiv.style.opacity = 0; // Hide feedback
+                feedbackDiv.style.transform = 'translateY(-10px)';
+                // Ensure options are enabled if not answered
+                optionsDiv.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.disabled = false;
+                });
+            }
+        }
+
+        /**
+         * Ensures radio buttons are enabled/disabled correctly when navigating.
+         * @param {number} index - The index of the current question.
+         */
+        function updateOptionsEnabledState(index) {
+            const optionsDiv = document.getElementById(`options-${index}`);
+            if (optionsDiv) {
+                const radioButtons = optionsDiv.querySelectorAll('input[type="radio"]');
+                radioButtons.forEach(radio => {
+                    // If the question has been answered, disable the radio buttons
+                    radio.disabled = quizAnswers[index] !== null;
+                });
+            }
+        }
+
+        /**
+         * Updates the visibility and content of the translation section.
+         * Shows the section if the question has been answered, pre-fills user's previous translation.
+         * @param {number} index - The index of the current question.
+         */
+        function updateTranslationDisplay(index) {
+            const translationSection = document.getElementById(`translation-section-${index}`);
+            const translationInput = document.getElementById(`translation-input-${index}`);
+            const correctTranslationDiv = document.getElementById(`correct-translation-${index}`);
+            const checkTranslationBtn = document.getElementById(`check-translation-btn-${index}`);
+
+            if (translationSection && translationInput && correctTranslationDiv && checkTranslationBtn) {
+                if (quizAnswers[index] !== null) { // If the question has been answered
+                    translationSection.style.display = 'block'; // Show translation section
+                    translationInput.value = userTranslations[index]; // Load user's previous translation
+
+                    if (translationChecked[index]) { // If translation was already checked
+                        correctTranslationDiv.style.display = 'block'; // Show correct translation
+                        checkTranslationBtn.disabled = true; // Disable check translation button
+                    } else {
+                        correctTranslationDiv.style.display = 'none'; // Hide correct translation
+                        updateTranslationCheckButtonState(index); // Update button state based on input
+                    }
+                } else {
+                    translationSection.style.display = 'none'; // Hide translation section
+                    correctTranslationDiv.style.display = 'none'; // Ensure correct translation is hidden
+                    checkTranslationBtn.disabled = true; // Disable check translation button
+                }
+            }
+        }
+
+
+        /**
+         * Navigates to the next question or shows results if it's the last question.
+         */
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                showQuestion(currentQuestionIndex + 1); // Go to the next question
+            } else {
+                showResults(); // If it's the last question, show the results page
+            }
+        }
+
+        /**
+         * Navigates to the previous question.
+         */
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                showQuestion(currentQuestionIndex - 1); // Go to the previous question
+            }
+        }
+
+        /**
+         * Displays the final results page with the total score.
+         */
+        function showResults() {
+            quizPagesContainer.style.display = 'none'; // Hide the quiz questions
+            resultsPage.style.display = 'block'; // Show the results page
+            finalScoreSpan.textContent = score; // Display the calculated score
+            totalQuestionsSpan.textContent = questions.length; // Display total questions count
+        }
+
+        // Add event listener to the restart button
+        restartBtn.addEventListener('click', initializeQuiz);
+
+        // Initialize the quiz when the page loads
+        initializeQuiz();
+    </script>
+</body>
+</html>
