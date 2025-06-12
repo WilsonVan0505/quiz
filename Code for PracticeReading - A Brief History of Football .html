@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Test: History of Football</title>
+    <!-- Tải Tailwind CSS từ CDN để tạo kiểu dáng đẹp mắt và dễ responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tùy chỉnh font chữ Inter */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Màu nền nhẹ nhàng */
+            color: #334155; /* Màu chữ chính */
+        }
+        /* Đảm bảo các thành phần có góc bo tròn */
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+        /* Tạo kiểu cho nút bấm */
+        .btn-primary {
+            background-color: #3b82f6; /* Màu xanh dương */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb; /* Màu xanh đậm hơn khi di chuột qua */
+        }
+        /* Kiểu cho câu hỏi và đáp án */
+        .question-container {
+            background-color: white;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Bóng đổ nhẹ */
+        }
+        .option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #cbd5e1; /* Viền xám nhạt */
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .option-label:hover {
+            background-color: #e2e8f0; /* Màu nền nhẹ khi di chuột qua */
+            border-color: #94a3b8; /* Viền đậm hơn */
+        }
+        .option-label input[type="radio"] {
+            margin-right: 0.75rem;
+            accent-color: #3b82f6; /* Màu của radio button */
+        }
+        /* Kiểu cho đáp án đúng và sai trên trang kết quả */
+        .correct-answer {
+            background-color: #d1fae5; /* Màu xanh lá cây nhạt */
+            border-color: #10b981; /* Viền xanh lá cây */
+        }
+        .wrong-answer {
+            background-color: #fee2e2; /* Màu đỏ nhạt */
+            border-color: #ef4444; /* Viền đỏ */
+        }
+        /* Ẩn phần kết quả ban đầu */
+        #results-page {
+            display: none;
+        }
+        .article-content {
+            white-space: pre-wrap; /* Giữ định dạng xuống dòng và khoảng trắng */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-4 max-w-4xl">
+        <!-- Trang Bài kiểm tra -->
+        <div id="quiz-page" class="bg-white p-6 rounded-lg shadow-xl">
+            <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Reading Test: History of Football</h1>
+
+            <!-- Phần bài đọc -->
+            <div class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">A BRIEF HISTORY OF FOOTBALL</h2>
+                <div class="article-content text-gray-600 leading-relaxed text-base">
+A BRIEF HISTORY OF FOOTBALL
+There is no clear evidence stating where and when football was actually invented, but most historians agree that some type of ball game had been played centuries before the modern game developed in England. Football has a long and interesting history, and origins of the game are present in sports played thousands of years ago in China, Egypt, Japan, and Greece. Aspects of the game can be traced as early as the second and third centuries BC in China. Their game, originally named ‘Tsu Chu,’ involved kicking a leather ball into a small hole.
+The first football games played in Britain were in the 700s, and the English equivalent of a football was made using an animal bladder. Games were violent, and injury and death were common. Despite the violence, however, they were still very popular. The game had become so popular that in the 1300s, Edward II banned the sport because people were playing football rather than practicing archery. This was especially important to this king, as he was preparing to go to war with Scotland. This was to be the first of many bans imposed by the kings and queens of England.
+In 1605, football became legal, and once again, the sport grew in popularity.
+In the 1800s, it became particularly common in private schools such as Eton, and it was only then that a set of rules was established. Until then, the game had continued to be violent, as it had limited rules and no referees. Before the 1800s, for example, it was considered normal to hit players on the opposite team and to damage their possessions. In 1848, on Parker's Piece in Cambridge, these rules were developed further, and a new version called the ‘Cambridge Rules’ was used by all schools, colleges, and universities.
+Though football could be considered a male sport, women also play it.
+An increase in women playing the sport began during the First World War when women did jobs traditionally done by men. Those working in places like factories regularly met to play. Unfortunately, a ban was imposed when the war ended, but it was eventually lifted in the UK in 1971. In 1991, China hosted the first Women’s World Cup, and in 1996, the first-ever women’s football event was held at the Olympics.
+                </div>
+            </div>
+
+            <!-- Phần câu hỏi trắc nghiệm -->
+            <form id="quiz-form">
+                <!-- Câu hỏi 1 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">1. Where can the first traces of football be found?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="A"> A) Egypt
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="B"> B) China
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="C"> C) England
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 2 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">2. Why did Edward II ban football in the 1300s?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="A"> A) Because it was too violent and death was common
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="B"> B) Because he was preparing to go to war with China
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="C"> C) Because people weren’t practicing archery
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 3 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">3. Before rules were established in the 1800s, which of these activities was considered normal?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q3" value="A"> A) Stealing from opponents
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q3" value="B"> B) Destroying players’ property
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q3" value="C"> C) Being violent towards the referee
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 4 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">4. Women started playing football because</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q4" value="A"> A) The ban was lifted in 1971.
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q4" value="B"> B) They started to work during the First World War.
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q4" value="C"> C) In 1991, there was the first Women’s World Cup.
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 5 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">5. What was the name of the ancient Chinese game similar to football?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="A"> A) Tsu Chu
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="B"> B) Cambridge Rules
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="C"> C) Eton Ball
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 6 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">6. Which material was used to make footballs in early England?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="A"> A) Leather and feathers
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="B"> B) Animal bladder
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="C"> C) Wooden spheres
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 7 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">7. Why was football considered dangerous in early Britain?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="A"> A) It was played on rough fields
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="B"> B) It had no rules and was violent
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="C"> C) Players used weapons during matches
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 8 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">8. What happened in 1605 regarding football?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="A"> A) It became legal again
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="B"> B) It was banned by Edward II
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="C"> C) Women were allowed to play
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 9 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">9. What was a major development for football in 1848?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q9" value="A"> A) The first professional club was formed
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q9" value="B"> B) The 'Cambridge Rules' were introduced
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q9" value="C"> C) The first international match was played
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 10 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">10. Where were the 'Cambridge Rules' first used?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q10" value="A"> A. Oxford University
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q10" value="B"> B. Public parks in London
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q10" value="C"> C. Parker’s Piece in Cambridge
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 11 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">11. Why did football become popular in private schools in the 1800s?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q11" value="A"> A) It was seen as a good way to teach discipline
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q11" value="B"> B) The government made it part of the school curriculum
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q11" value="C"> C) Schools needed a new sport for winter
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 12 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">12. What impact did the First World War have on women’s football?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q12" value="A"> A) Women started playing regularly
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q12" value="B"> B) The sport was officially recognized
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q12" value="C"> C) A women’s football league was established
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 13 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">13. What happened to women’s football after World War I?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q13" value="A"> A) Women were only allowed to play in schools
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q13" value="B"> B) It continued to grow in popularity
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q13" value="C"> C) It was banned
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 14 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">14. When was the first Women’s World Cup held?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q14" value="A"> A) 1971
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q14" value="B"> B) 1991
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q14" value="C"> C) 1996
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Câu hỏi 15 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">15. Which event first included women’s football as an official sport?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q15" value="A"> A) The 1971 UK Championships
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q15" value="B"> B) The 1991 World Cup
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q15" value="C"> C) The 1996 Olympics
+                        </label>
+                    </div>
+                </div>
+
+                <div class="text-center mt-6">
+                    <button type="submit" class="btn-primary">Hoàn thành bài kiểm tra</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Trang Kết quả (ẩn ban đầu) -->
+        <div id="results-page" class="bg-white p-6 rounded-lg shadow-xl mt-8">
+            <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">Kết Quả Bài Kiểm Tra</h2>
+            <p class="text-xl text-center mb-6">Điểm của bạn: <span id="score" class="font-bold text-blue-600"></span> / 15</p>
+
+            <div id="answers-review" class="space-y-4">
+                <!-- Đáp án sẽ được hiển thị ở đây bằng JavaScript -->
+            </div>
+
+            <div class="text-center mt-8">
+                <button id="retake-quiz" class="btn-primary">Làm lại bài kiểm tra</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Định nghĩa các đáp án đúng cho từng câu hỏi
+        const correctAnswers = {
+            q1: 'C', // China -> Corrected to C based on user's request
+            q2: 'C', // Because people weren’t practicing archery
+            q3: 'B', // Destroying players’ property
+            q4: 'C', // They started to work during the First World War. -> Corrected to C based on user's request
+            q5: 'A', // Tsu Chu
+            q6: 'B', // Animal bladder
+            q7: 'B', // It had no rules and was violent
+            q8: 'A', // It became legal again
+            q9: 'B', // The 'Cambridge Rules' were introduced
+            q10: 'C', // Parker’s Piece in Cambridge
+            q11: 'A', // It was seen as a good way to teach discipline
+            q12: 'A', // Women started playing regularly
+            q13: 'C', // It was banned
+            q14: 'B', // 1991
+            q15: 'C'  // The 1996 Olympics
+        };
+
+        // Lấy các phần tử DOM cần thiết
+        const quizForm = document.getElementById('quiz-form');
+        const quizPage = document.getElementById('quiz-page');
+        const resultsPage = document.getElementById('results-page');
+        const scoreDisplay = document.getElementById('score');
+        const answersReview = document.getElementById('answers-review');
+        const retakeQuizButton = document.getElementById('retake-quiz');
+
+        // Xử lý sự kiện khi submit form bài kiểm tra
+        quizForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Ngăn chặn hành vi submit mặc định của form
+
+            let score = 0;
+            answersReview.innerHTML = ''; // Xóa nội dung đánh giá đáp án cũ
+
+            // Duyệt qua từng câu hỏi để kiểm tra đáp án và tính điểm
+            for (const questionId in correctAnswers) {
+                const selectedOption = document.querySelector(`input[name="${questionId}"]:checked`);
+                const questionElement = selectedOption ? selectedOption.closest('.question-container') : null;
+                const questionText = questionElement ? questionElement.querySelector('p').textContent : 'Câu hỏi không xác định';
+                const correctAnswer = correctAnswers[questionId];
+                let userAnswer = selectedOption ? selectedOption.value : null;
+
+                // Tạo một div để hiển thị đánh giá cho từng câu hỏi
+                const reviewItem = document.createElement('div');
+                reviewItem.classList.add('p-3', 'rounded-lg', 'border', 'mb-2');
+
+                let feedbackHtml = `<p class="font-semibold">${questionText}</p>`;
+                if (userAnswer === correctAnswer) {
+                    score++;
+                    reviewItem.classList.add('correct-answer');
+                    feedbackHtml += `<p class="text-green-700">Đáp án của bạn: ${userAnswer} (Đúng)</p>`;
+                } else {
+                    reviewItem.classList.add('wrong-answer');
+                    feedbackHtml += `<p class="text-red-700">Đáp án của bạn: ${userAnswer ? userAnswer : 'Chưa trả lời'} (Sai)</p>`;
+                    feedbackHtml += `<p class="text-blue-700">Đáp án đúng: ${correctAnswer}</p>`;
+                }
+                reviewItem.innerHTML = feedbackHtml;
+                answersReview.appendChild(reviewItem);
+            }
+
+            // Hiển thị điểm số
+            scoreDisplay.textContent = score;
+
+            // Chuyển từ trang bài kiểm tra sang trang kết quả
+            quizPage.style.display = 'none';
+            resultsPage.style.display = 'block';
+        });
+
+        // Xử lý sự kiện khi nhấn nút "Làm lại bài kiểm tra"
+        retakeQuizButton.addEventListener('click', function() {
+            // Đặt lại form bài kiểm tra
+            quizForm.reset();
+            // Ẩn trang kết quả và hiển thị lại trang bài kiểm tra
+            resultsPage.style.display = 'none';
+            quizPage.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
