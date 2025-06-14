@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Safety Quiz</title>
+    <style>
+        /* Basic styling for the body */
+        body {
+            font-family: 'Inter', Arial, sans-serif; /* Using Inter font */
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5; /* Light gray background */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for better content flow */
+            min-height: 100vh;
+        }
+
+        /* Container for the entire quiz */
+        .quiz-container {
+            max-width: 650px; /* Slightly wider for better readability */
+            width: 100%;
+            background-color: #ffffff; /* White background */
+            padding: 30px;
+            border-radius: 12px; /* More rounded corners */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Softer, deeper shadow */
+            margin-top: 30px; /* Add some margin from the top */
+        }
+
+        /* Styling for each question page */
+        .question-page {
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease-in-out; /* Fade-in animation */
+        }
+        .question-page.active {
+            display: block; /* Show active page */
+        }
+
+        /* Animation for fading in questions */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Information section (e.g., question number, score) */
+        .question-info {
+            font-size: 0.95em;
+            color: #6a737d; /* Slightly darker gray */
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee; /* Subtle separator */
+        }
+
+        /* Question text styling */
+        .question-text {
+            font-size: 1.25em; /* Larger font for question */
+            margin-bottom: 25px;
+            font-weight: 600; /* Semi-bold */
+            line-height: 1.5;
+            color: #2c3e50; /* Darker text */
+        }
+
+        /* Options container */
+        .options {
+            margin-bottom: 20px;
+        }
+
+        /* Styling for each option label */
+        .options label {
+            display: block;
+            margin-bottom: 12px; /* More space between options */
+            cursor: pointer;
+            padding: 14px 20px; /* More padding */
+            border: 1px solid #dcdcdc; /* Lighter border */
+            border-radius: 8px; /* Rounded corners for options */
+            transition: all 0.3s ease; /* Smooth transition for all properties */
+            background-color: #fcfcfc;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03); /* Very subtle shadow */
+            display: flex;
+            align-items: center;
+        }
+
+        /* Hover effect for options */
+        .options label:hover {
+            background-color: #e8f0fe; /* Light blue on hover */
+            border-color: #a8d4ff; /* Blue border on hover */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Slightly more prominent shadow */
+        }
+
+        /* Styling for radio buttons */
+        .options input[type="radio"] {
+            margin-right: 15px; /* More space for radio button */
+            transform: scale(1.2); /* Slightly larger radio button */
+            accent-color: #007bff; /* Accent color for checked radio */
+        }
+
+        /* Feedback message styling (correct/incorrect) */
+        .feedback {
+            margin-top: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            opacity: 0; /* Hidden by default */
+            transform: translateY(-10px);
+            animation: slideInFadeIn 0.4s forwards; /* Animation for feedback */
+        }
+        .feedback.correct {
+            background-color: #e6ffe6; /* Light green */
+            color: #28a745; /* Dark green */
+            border: 1px solid #28a745;
+        }
+        .feedback.incorrect {
+            background-color: #ffe6e6; /* Light red */
+            color: #dc3545; /* Dark red */
+            border: 1px solid #dc3545;
+        }
+
+        /* Animation for feedback message */
+        @keyframes slideInFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Translation section styling */
+        .translation-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px dashed #e0e0e0; /* Dashed line separator */
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .translation-section label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .translation-section textarea {
+            width: calc(100% - 22px); /* Adjust for padding and border */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            min-height: 60px;
+            resize: vertical; /* Allow vertical resizing */
+            margin-bottom: 15px;
+        }
+
+        /* Check Translation button */
+        .translation-section .check-translation-btn {
+            background-color: #17a2b8; /* Teal color */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .translation-section .check-translation-btn:hover:not(:disabled) {
+            background-color: #138496; /* Darker teal on hover */
+        }
+
+        .translation-section .check-translation-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+
+        .translation-section .correct-translation {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #e8f0fe; /* Light blue background */
+            border: 1px solid #a8d4ff;
+            border-radius: 8px;
+            font-weight: 500;
+            color: #0056b3; /* Darker blue text */
+            font-size: 1em;
+            line-height: 1.4;
+            display: none; /* Hidden by default, will be shown after checking translation */
+        }
+
+        /* Button container */
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px; /* Space between buttons */
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        }
+
+        /* Common button styling */
+        .buttons button {
+            padding: 12px 22px; /* Generous padding */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.05em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex-grow: 1; /* Allow buttons to grow and fill space */
+            min-width: 120px; /* Minimum width for buttons */
+        }
+
+        /* Check Answer button styling */
+        .buttons .check-btn {
+            background-color: #007bff; /* Blue */
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+        }
+        .buttons .check-btn:hover:not(:disabled) {
+            background-color: #0056b3; /* Darker blue on hover */
+            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+        }
+        .buttons .check-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Navigation button styling */
+        .buttons .nav-btn {
+            background-color: #6c757d; /* Gray */
+            color: white;
+            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
+        }
+        .buttons .nav-btn:hover:not(:disabled) {
+            background-color: #5a6268; /* Darker gray on hover */
+            box-shadow: 0 6px 15px rgba(108, 117, 125, 0.3);
+        }
+        .buttons .nav-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Results page styling */
+        #results-page {
+            text-align: center;
+            display: none; /* Hidden by default */
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        #results-page h2 {
+            color: #007bff;
+            margin-bottom: 15px;
+            font-size: 2em;
+            font-weight: 700;
+        }
+        #results-page p {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            color: #4a4a4a;
+        }
+
+        /* Restart button styling */
+        #restart-btn {
+            background-color: #28a745; /* Green */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.15em;
+            font-weight: 600;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);
+        }
+        #restart-btn:hover {
+            background-color: #218838; /* Darker green on hover */
+            box-shadow: 0 6px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        /* History section styling */
+        #quiz-history {
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        #quiz-history h3 {
+            font-size: 1.5em;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        #history-list {
+            list-style: none;
+            padding: 0;
+            max-height: 250px; /* Limit height and add scroll */
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+
+        #history-list li {
+            padding: 12px 15px;
+            border-bottom: 1px dashed #f0f0f0;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #history-list li:last-child {
+            border-bottom: none;
+        }
+
+        #history-list li span {
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        #history-list li .score-entry {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 500px) {
+            .quiz-container {
+                padding: 20px;
+                margin-top: 15px;
+            }
+            .question-text {
+                font-size: 1.1em;
+            }
+            .options label {
+                padding: 12px 15px;
+            }
+            .buttons button {
+                width: 100%; /* Full width buttons on small screens */
+                min-width: unset;
+                flex-grow: unset;
+            }
+            .translation-section textarea {
+                width: calc(100% - 20px); /* Adjust for padding only */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div id="quiz-pages">
+            <!-- Questions will be dynamically injected here by JavaScript -->
+        </div>
+
+        <div id="results-page">
+            <h2>Quiz Completed!</h2>
+            <p>You scored <span id="final-score">0</span> out of <span id="total-questions">0</span>.</p>
+            <button id="restart-btn">Restart Quiz</button>
+
+            <div id="quiz-history">
+                <h3>Lịch sử làm bài:</h3>
+                <ul id="history-list">
+                    <!-- History items will be dynamically injected here -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Array containing all quiz questions, options, and correct answers
+        const questions = [
+            {
+                question: "How many bakers work in your bakery?",
+                options: ["A. 2 main bakers and 1 assistant baker", "B. 3 main bakers and 1 assistant baker", "C. 2 main bakers and 2 assistant bakers", "D. 1 main baker and 3 assistants"],
+                answer: "C",
+                translation: "Có bao nhiêu thợ làm bánh làm việc trong tiệm bánh của bạn?"
+            },
+            {
+                question: "What are the main roles of a baker in your bakery?",
+                options: ["A. Mixing, freezing, packaging, cleaning", "B. Mixing, molding, proofing, baking", "C. Kneading, frying, labeling, cooling", "D. Delivering, planning, accounting, freezing"],
+                answer: "B",
+                translation: "Vai trò chính của một thợ làm bánh trong tiệm bánh của bạn là gì?"
+            },
+            {
+                question: "How many shifts are there in your bakery?",
+                options: ["A. One full-day shift", "B. Morning, afternoon, and night", "C. Morning and afternoon", "D. Morning and night"],
+                answer: "D",
+                translation: "Có bao nhiêu ca làm việc trong tiệm bánh của bạn?"
+            },
+            {
+                question: "How much flour is used per shift on a weekend?",
+                options: ["A. 80 – 100kg", "B. 100 – 120kg", "C. 120 – 150kg", "D. 150 – 200kg"],
+                answer: "C",
+                translation: "Lượng bột mì được sử dụng mỗi ca vào cuối tuần là bao nhiêu?"
+            },
+            {
+                question: "When is your bakery the busiest?",
+                options: ["A. On weekdays", "B. On weekends and holidays", "C. During Tet", "D. At night"],
+                answer: "B",
+                translation: "Tiệm bánh của bạn bận rộn nhất khi nào?"
+            },
+            {
+                question: "What time do you start working in the bakery?",
+                options: ["A. 6 a.m.", "B. 7 a.m.", "C. 8 a.m.", "D. 9 a.m."],
+                answer: "C",
+                translation: "Bạn bắt đầu làm việc ở tiệm bánh lúc mấy giờ?"
+            },
+            {
+                question: "What is the first thing to do when starting a shift?",
+                options: ["A. Bake bread", "B. Clean the fridge", "C. Check booking and do personal hygiene", "D. Take a nap"],
+                answer: "C",
+                translation: "Điều đầu tiên cần làm khi bắt đầu một ca là gì?"
+            },
+            {
+                question: "How many times is the temperature checked per shift?",
+                options: ["A. Only at the beginning", "B. Before and after the shift", "C. Every 4 hours", "D. Before, middle, and end"],
+                answer: "D",
+                translation: "Nhiệt độ được kiểm tra bao nhiêu lần mỗi ca?"
+            },
+            {
+                question: "Why must temperature be recorded?",
+                options: ["A. For customers to read", "B. To ensure food is not undercooked", "C. To make sure ingredients are in good condition", "D. For decoration"],
+                answer: "C",
+                translation: "Tại sao nhiệt độ phải được ghi lại?"
+            },
+            {
+                question: "What is the first type of bread you make every day?",
+                options: ["A. Whole grain bread", "B. Baguette", "C. Vietnamese bread", "D. Garlic bread"],
+                answer: "C",
+                translation: "Loại bánh mì đầu tiên bạn làm mỗi ngày là gì?"
+            },
+            {
+                question: "How do you recover retarded dough?",
+                options: ["A. Put in oven immediately", "B. Take out from chiller to oven", "C. Let reach room temperature slowly", "D. Microwave it"],
+                answer: "C",
+                translation: "Bạn làm thế nào để phục hồi bột ủ lạnh?"
+            },
+            {
+                question: "What is HACCP?",
+                options: ["A. A cooking method", "B. A system for hazard prevention", "C. A type of baking oven", "D. A cleaning chemical"],
+                answer: "B",
+                translation: "HACCP là gì?"
+            },
+            {
+                question: "What color is the floor warning board?",
+                options: ["A. Red background, yellow text", "B. Yellow background, black content", "C. White background, green content", "D. Blue background, white text"],
+                answer: "B",
+                translation: "Biển cảnh báo sàn nhà có màu gì?"
+            },
+            {
+                question: "Which of the following belongs to PPE (Personal Protective Equipment)?",
+                options: ["A. Apron", "B. Hair net", "C. Face mask", "D. Chef hat"],
+                answer: "C",
+                translation: "Thiết bị bảo hộ cá nhân (PPE) bao gồm loại nào sau đây?"
+            },
+            {
+                question: "What should you do first when the mixing machine breaks down?",
+                options: ["A. Fix it immediately", "B. Inform the customer", "C. Turn off the power and lock it", "D. Use another machine"],
+                answer: "C",
+                translation: "Bạn nên làm gì đầu tiên khi máy trộn bị hỏng?"
+            },
+            {
+                question: "What is included in personal hygiene at the bakery?",
+                options: ["A. Wearing jewelry", "B. Wearing clean clothes and hair net", "C. Letting nails grow", "D. Using strong perfume"],
+                answer: "B",
+                translation: "Vệ sinh cá nhân tại tiệm bánh bao gồm những gì?"
+            },
+            {
+                question: "What kind of shoes must bakery workers wear?",
+                options: ["A. High heels", "B. Canvas shoes", "C. Safety shoes with anti-slip sole and metal toe", "D. Slippers"],
+                answer: "C",
+                translation: "Công nhân tiệm bánh phải đi loại giày nào?"
+            },
+            {
+                question: "When should workers wash their hands?",
+                options: ["A. Only before eating", "B. Only after work", "C. Frequently, especially after using toilet or touching raw food", "D. Once a day"],
+                answer: "C",
+                translation: "Khi nào công nhân nên rửa tay?"
+            },
+            {
+                question: "What is the correct order to clean bakery equipment?",
+                options: ["A. Boil water – dry – chemical", "B. Dry – chemical – boil water", "C. Remove dust – boil water – chemical, rinse, dry", "D. Chemical – water – dry"],
+                answer: "C",
+                translation: "Thứ tự đúng để làm sạch thiết bị làm bánh là gì?"
+            },
+            {
+                question: "What should NOT be done after using sanitizer on equipment?",
+                options: ["A. Let it dry", "B. Rinse again with water", "C. Leave it for a while", "D. Use it after drying"],
+                answer: "B",
+                translation: "Điều gì KHÔNG nên làm sau khi sử dụng chất khử trùng trên thiết bị?"
+            },
+            {
+                question: "What is the purpose of using sanitizer instead of regular detergent?",
+                options: ["A. It smells better", "B. It makes equipment shiny", "C. It kills bacteria", "D. It saves water"],
+                answer: "C",
+                translation: "Mục đích của việc sử dụng chất khử trùng thay vì chất tẩy rửa thông thường là gì?"
+            },
+            {
+                question: "When is it appropriate to use food retardation (retard)?",
+                options: ["A. When bread is undercooked", "B. When there are leftover ingredients", "C. When staff is lacking or too many orders", "D. When bread is not sold"],
+                answer: "C",
+                translation: "Khi nào thì thích hợp để sử dụng phương pháp ủ lạnh (retard) thực phẩm?"
+            },
+            {
+                question: "What happens if retarded dough is recovered too quickly?",
+                options: ["A. It becomes delicious", "B. It smells good", "C. It will blister outside and be dense inside", "D. It rises too fast"],
+                answer: "C",
+                translation: "Điều gì sẽ xảy ra nếu bột ủ lạnh được phục hồi quá nhanh?"
+            },
+            {
+                question: "What is the correct temperature to bring retarded dough to before use?",
+                options: ["A. 18°C", "B. 28°C", "C. 35°C", "D. 10°C"],
+                answer: "B",
+                translation: "Nhiệt độ đúng để đưa bột ủ lạnh về trước khi sử dụng là bao nhiêu?"
+            },
+            {
+                question: "What is included in the bakery's food safety plan?",
+                options: ["A. Guessing food freshness", "B. Ignoring temperature of cooked foods", "C. Measuring critical control points (HACCP)", "D. Using only fresh ingredients"],
+                answer: "C",
+                translation: "Kế hoạch an toàn thực phẩm của tiệm bánh bao gồm những gì?"
+            },
+            {
+                question: "What are examples of PPC (Personal Protective Clothing)?",
+                options: ["A. Aprons, hair nets, boots", "B. Glasses, gloves, masks", "C. Uniforms, gloves, sanitizer", "D. Helmets, glasses, socks"],
+                answer: "A",
+                translation: "Ví dụ về Quần áo Bảo hộ Cá nhân (PPC) là gì?"
+            },
+            {
+                question: "What is the background and content color of the wet floor warning board?",
+                options: ["A. Yellow background, black content", "B. Black background, red content", "C. White background, green content", "D. Red background, yellow content"],
+                answer: "A",
+                translation: "Màu nền và màu chữ của biển cảnh báo sàn ướt là gì?"
+            },
+            {
+                question: "What is the color used for emergency warnings like electric or fire issues?",
+                options: ["A. Blue", "B. Green", "C. Red", "D. Orange"],
+                answer: "C",
+                translation: "Màu nào được sử dụng cho các cảnh báo khẩn cấp như vấn đề điện hoặc cháy?"
+            },
+            {
+                question: "What does HACCP stand for?",
+                options: ["A. Hot Air Control for Clean Production", "B. Hazard Analysis and Critical Control Points", "C. Health Advice on Clean Cooking Plans", "D. Hygiene Association for Cooked Products"],
+                answer: "B",
+                translation: "HACCP là viết tắt của từ gì?"
+            },
+            {
+                question: "What should you do if the mixing machine is broken?",
+                options: ["A. Keep using it", "B. Call a customer", "C. Turn off the power, move it to a room and lock it", "D. Leave it in the kitchen"],
+                answer: "C",
+                translation: "Bạn nên làm gì nếu máy trộn bị hỏng?"
+            }
+        ];
+
+        // Global variables to manage quiz state
+        let currentQuestionIndex = 0; // Tracks the current question being displayed
+        let score = 0; // Stores the user's score
+        // quizAnswers stores the user's selected answer for each question (e.g., 'C' for question 0)
+        let quizAnswers = new Array(questions.length).fill(null);
+        // quizFeedback stores whether the user's answer was 'correct' or 'incorrect' for each question
+        let quizFeedback = new Array(questions.length).fill(null);
+        // userTranslations stores the user's input for translation for each question
+        let userTranslations = new Array(questions.length).fill(''); // Initialize with empty strings
+        // translationChecked stores whether the user has clicked "Sample translation" for a question
+        let translationChecked = new Array(questions.length).fill(false);
+
+
+        // Get references to DOM elements
+        const quizPagesContainer = document.getElementById('quiz-pages');
+        const resultsPage = document.getElementById('results-page');
+        const finalScoreSpan = document.getElementById('final-score');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const restartBtn = document.getElementById('restart-btn');
+        const historyList = document.getElementById('history-list'); // Reference to the history list UL
+
+        /**
+         * Initializes or restarts the quiz.
+         * Resets score, current question index, and clears previous answers/feedback.
+         * Renders all questions and displays the first one.
+         */
+        function initializeQuiz() {
+            quizPagesContainer.innerHTML = ''; // Clear any existing question elements
+            score = 0; // Reset score
+            currentQuestionIndex = 0; // Go back to the first question
+            quizAnswers = new Array(questions.length).fill(null); // Clear all user answers
+            quizFeedback = new Array(questions.length).fill(null); // Clear all feedback
+            userTranslations = new Array(questions.length).fill(''); // Clear all user translations
+            translationChecked = new Array(questions.length).fill(false); // Reset translation check status
+            totalQuestionsSpan.textContent = questions.length; // Display total questions
+            renderQuestions(); // Create the HTML for all questions
+            showQuestion(currentQuestionIndex); // Show the first question
+            resultsPage.style.display = 'none'; // Hide the results page
+            quizPagesContainer.style.display = 'block'; // Ensure quiz pages are visible
+        }
+
+        /**
+         * Renders (creates the HTML for) all questions.
+         * Each question gets its own 'question-page' div.
+         */
+        function renderQuestions() {
+            questions.forEach((q, index) => {
+                const questionPage = document.createElement('div');
+                questionPage.classList.add('question-page');
+                questionPage.id = `question-page-${index}`; // Unique ID for each question page
+
+                // Construct the HTML for the question, options, feedback, and navigation buttons
+                questionPage.innerHTML = `
+                    <div class="question-info">
+                        <span>Câu ${index + 1}/${questions.length}</span>
+                        <span>Điểm: <span id="score-${index}">${quizFeedback[index] === 'correct' ? 1 : 0}</span></span>
+                    </div>
+                    <div class="question-text">${q.question}</div>
+                    <div class="options" id="options-${index}">
+                        ${q.options.map((option, optIndex) => `
+                            <label>
+                                <input type="radio" name="question-${index}" value="${option.charAt(0)}"
+                                    ${quizAnswers[index] === option.charAt(0) ? 'checked' : ''}
+                                    onchange="enableCheckButton(${index})">
+                                ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="feedback" id="feedback-${index}"></div>
+
+                    <!-- New Translation Section -->
+                    <div class="translation-section" id="translation-section-${index}">
+                        <label for="translation-input-${index}">Your Vietnamese Translation:</label>
+                        <textarea id="translation-input-${index}" oninput="storeTranslation(${index});">${userTranslations[index]}</textarea>
+                        <button class="check-translation-btn" id="check-translation-btn-${index}" onclick="showCorrectTranslation(${index})" disabled>Sample Translation</button>
+                        <div class="correct-translation" id="correct-translation-${index}" style="display: none;">
+                            ${q.translation}
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="nav-btn prev-btn" onclick="prevQuestion()" ${index === 0 ? 'disabled' : ''}>Previous</button>
+                        <button class="check-btn" id="check-btn-${index}" onclick="checkAnswer(${index})">Check Answer</button>
+                        <button class="nav-btn next-btn" onclick="nextQuestion()">Next</button>
+                    </div>
+                `;
+                quizPagesContainer.appendChild(questionPage); // Add the question page to the container
+
+                // Update score display if the question was already answered correctly during a restart
+                if (quizFeedback[index] === 'correct') {
+                    document.getElementById(`score-${index}`).textContent = '1';
+                }
+            });
+        }
+
+        /**
+         * Displays a specific question page and hides all others.
+         * @param {number} index - The index of the question to display.
+         */
+        function showQuestion(index) {
+            // Hide all question pages
+            document.querySelectorAll('.question-page').forEach((page) => {
+                page.classList.remove('active');
+            });
+
+            // Show the requested question page
+            const targetPage = document.getElementById(`question-page-${index}`);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            currentQuestionIndex = index; // Update the current question index
+            updateNavigationButtons(); // Enable/disable Prev/Next buttons based on current index
+            updateCheckButtonState(index); // Update check button state (enabled/disabled)
+            updateFeedbackDisplay(index); // Show/hide feedback based on if question was answered
+            updateOptionsEnabledState(index); // Enable/disable options based on if question was answered
+            updateTranslationDisplay(index); // Show/hide translation section and load user's previous translation
+            updateTranslationCheckButtonState(index); // Ensure translation button state is correct when showing question
+        }
+
+        /**
+         * Updates the disabled state of the "Previous" and "Next" navigation buttons.
+         */
+        function updateNavigationButtons() {
+            const currentPage = document.getElementById(`question-page-${currentQuestionIndex}`);
+            if (!currentPage) return;
+
+            const prevBtn = currentPage.querySelector('.prev-btn');
+            const nextBtn = currentPage.querySelector('.next-btn');
+
+            if (prevBtn) {
+                prevBtn.disabled = currentQuestionIndex === 0;
+            }
+
+            if (nextBtn) {
+                if (currentQuestionIndex === questions.length - 1) {
+                    nextBtn.textContent = 'Finish Quiz';
+                    nextBtn.disabled = false; // Ensure it's enabled for the last question to allow finishing.
+                } else {
+                    nextBtn.textContent = 'Next';
+                    nextBtn.disabled = false; // Always enabled for 'Next'
+                }
+            }
+        }
+
+        /**
+         * Updates the disabled state of the "Check Answer" button for a given question.
+         * It is disabled if no option is selected or if the question has been answered correctly.
+         * @param {number} index - The index of the question.
+         */
+        function updateCheckButtonState(index) {
+            const checkBtn = document.getElementById(`check-btn-${index}`);
+            const selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
+
+            if (checkBtn) {
+                // Check button is disabled if the question was answered correctly OR if no option is selected
+                checkBtn.disabled = (quizFeedback[index] === 'correct') || !selectedOption;
+            }
+        }
+
+        /**
+         * Enables the "Check Answer" button for a question when an option is selected.
+         * This is called by the `onchange` event of the radio buttons.
+         * @param {number} index - The index of the question.
+         */
+        function enableCheckButton(index) {
+            const checkBtn = document.getElementById(`check-btn-${index}`);
+            // Only enable if the question hasn't been answered correctly yet
+            if (checkBtn && quizFeedback[index] !== 'correct') {
+                checkBtn.disabled = false;
+            }
+        }
+
+        /**
+         * Updates the display of feedback messages for a given question.
+         * @param {number} index - The index of the question.
+         */
+        function updateFeedbackDisplay(index) {
+            const feedbackDiv = document.getElementById(`feedback-${index}`);
+            if (feedbackDiv) {
+                if (quizFeedback[index] === 'correct') {
+                    feedbackDiv.textContent = "Correct!";
+                    feedbackDiv.classList.remove('incorrect');
+                    feedbackDiv.classList.add('correct');
+                    feedbackDiv.style.opacity = 1;
+                    feedbackDiv.style.transform = 'translateY(0)';
+                } else if (quizFeedback[index] === 'incorrect') {
+                    feedbackDiv.textContent = `Sai rồi. Vui lòng thử lại.`; // Do not show correct answer here
+                    feedbackDiv.classList.remove('correct');
+                    feedbackDiv.classList.add('incorrect');
+                    feedbackDiv.style.opacity = 1;
+                    feedbackDiv.style.transform = 'translateY(0)';
+                } else {
+                    feedbackDiv.textContent = '';
+                    feedbackDiv.classList.remove('correct', 'incorrect');
+                    feedbackDiv.style.opacity = 0;
+                    feedbackDiv.style.transform = 'translateY(-10px)';
+                }
+            }
+        }
+
+        /**
+         * Updates the enabled/disabled state of options for a given question.
+         * Options are disabled only if the question has been answered correctly.
+         * @param {number} index - The index of the question.
+         */
+        function updateOptionsEnabledState(index) {
+            const optionsDiv = document.getElementById(`options-${index}`);
+            if (optionsDiv) {
+                const radios = optionsDiv.querySelectorAll('input[type="radio"]');
+                const questionAnsweredCorrectly = quizFeedback[index] === 'correct';
+
+                radios.forEach(radio => {
+                    radio.disabled = questionAnsweredCorrectly;
+                });
+            }
+        }
+
+
+        /**
+         * Checks the user's selected answer for a given question against the correct answer.
+         * Updates score, displays feedback, and disables options/check button.
+         * Also displays the translation section.
+         * @param {number} index - The index of the question to check.
+         */
+        function checkAnswer(index) {
+            const selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
+            const feedbackDiv = document.getElementById(`feedback-${index}`);
+            const scoreSpan = document.getElementById(`score-${index}`);
+            const checkBtn = document.getElementById(`check-btn-${index}`);
+            const optionsDiv = document.getElementById(`options-${index}`);
+            const translationSection = document.getElementById(`translation-section-${index}`);
+
+            // If no option is selected, show a message and do nothing else
+            if (!selectedOption) {
+                feedbackDiv.textContent = "Please select an answer to check.";
+                feedbackDiv.classList.remove('correct', 'incorrect');
+                feedbackDiv.style.opacity = 1; // Ensure feedback is visible
+                feedbackDiv.style.transform = 'translateY(0)';
+                return;
+            }
+
+            const userAnswer = selectedOption.value;
+
+            if (userAnswer === questions[index].answer) {
+                feedbackDiv.textContent = "Correct!";
+                feedbackDiv.classList.remove('incorrect');
+                feedbackDiv.classList.add('correct');
+                if (quizFeedback[index] !== 'correct') { // Prevent double counting score if re-checking
+                    score++;
+                    quizFeedback[index] = 'correct'; // Mark as correct
+                }
+                scoreSpan.textContent = '1'; // Display score for this question as 1
+
+                checkBtn.disabled = true; // Disable check button after checking
+                // Disable all radio buttons for this question after checking to prevent changes
+                optionsDiv.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.disabled = true;
+                });
+
+                // Show the translation section after checking the answer
+                if (translationSection) {
+                    translationSection.style.display = 'block';
+                    updateTranslationCheckButtonState(index); // Update state for translation check button
+                }
+
+            } else {
+                feedbackDiv.textContent = `Sai rồi. Vui lòng thử lại.`; // Incorrect message, no correct answer revealed
+                feedbackDiv.classList.remove('correct');
+                feedbackDiv.classList.add('incorrect');
+                if (quizFeedback[index] === 'correct') { // If previously correct and now wrong (shouldn't happen with disabled options but for robustness)
+                    score--;
+                }
+                quizFeedback[index] = 'incorrect'; // Mark as incorrect
+                scoreSpan.textContent = '0'; // Display score for this question as 0
+
+                checkBtn.disabled = false; // Keep check button enabled for re-selection
+                // Keep radio buttons enabled for re-selection
+                optionsDiv.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.disabled = false;
+                    // Uncheck the incorrect option to encourage re-selection (optional, but good UX)
+                    if(radio.value === userAnswer) {
+                        radio.checked = false;
+                    }
+                });
+
+                // Keep translation section hidden if answer is incorrect
+                if (translationSection) {
+                    translationSection.style.display = 'none';
+                }
+            }
+
+            // Trigger animation for feedback display
+            feedbackDiv.style.opacity = 1;
+            feedbackDiv.style.transform = 'translateY(0)';
+        }
+
+        /**
+         * Stores the user's translation input for a given question.
+         * @param {number} index - The index of the question.
+         */
+        function storeTranslation(index) {
+            const translationInput = document.getElementById(`translation-input-${index}`);
+            if (translationInput) {
+                userTranslations[index] = translationInput.value;
+                updateTranslationCheckButtonState(index); // Update button state whenever input changes
+            }
+        }
+
+        /**
+         * Updates the disabled state of the "Sample Translation" button.
+         * It is enabled only if the translation input has text and the sample translation hasn't been shown yet.
+         * @param {number} index - The index of the question.
+         */
+        function updateTranslationCheckButtonState(index) {
+            const checkTranslationBtn = document.getElementById(`check-translation-btn-${index}`);
+            const translationInput = document.getElementById(`translation-input-${index}`);
+            if (checkTranslationBtn && translationInput) {
+                // Button is enabled if there's text in the textarea AND the translation hasn't been shown yet.
+                checkTranslationBtn.disabled = translationInput.value.trim() === '' || translationChecked[index];
+            }
+        }
+
+        /**
+         * Shows the correct translation for the current question.
+         * @param {number} index - The index of the question.
+         */
+        function showCorrectTranslation(index) {
+            const correctTranslationDiv = document.getElementById(`correct-translation-${index}`);
+            const checkTranslationBtn = document.getElementById(`check-translation-btn-${index}`);
+            const translationInput = document.getElementById(`translation-input-${index}`);
+
+            if (correctTranslationDiv) {
+                correctTranslationDiv.style.display = 'block'; // Show the correct translation
+                translationChecked[index] = true; // Mark that translation has been checked
+                if (checkTranslationBtn) {
+                    checkTranslationBtn.disabled = true; // Disable the button after showing
+                }
+                if (translationInput) {
+                    translationInput.disabled = true; // Disable textarea after showing sample translation
+                }
+            }
+        }
+
+        /**
+         * Updates the visibility and content of the translation section when a question is shown.
+         * @param {number} index - The index of the question.
+         */
+        function updateTranslationDisplay(index) {
+            const translationSection = document.getElementById(`translation-section-${index}`);
+            const translationInput = document.getElementById(`translation-input-${index}`);
+            const correctTranslationDiv = document.getElementById(`correct-translation-${index}`);
+            const checkTranslationBtn = document.getElementById(`check-translation-btn-${index}`);
+
+            if (translationSection) {
+                // Only show the translation section if the question has been answered correctly
+                if (quizFeedback[index] === 'correct') {
+                    translationSection.style.display = 'block';
+                } else {
+                    translationSection.style.display = 'none';
+                }
+            }
+
+            // Load user's previous translation if available
+            if (translationInput) {
+                translationInput.value = userTranslations[index];
+                // Disable textarea if sample translation has been shown
+                translationInput.disabled = translationChecked[index];
+            }
+
+            // Show/hide correct translation and update button state
+            if (correctTranslationDiv) {
+                correctTranslationDiv.style.display = translationChecked[index] ? 'block' : 'none';
+            }
+            updateTranslationCheckButtonState(index); // Re-evaluate button state based on stored data
+        }
+
+
+        /**
+         * Navigates to the previous question.
+         */
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion(currentQuestionIndex);
+            }
+        }
+
+        /**
+         * Navigates to the next question or displays the results if it's the last question.
+         */
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+            } else {
+                // If it's the last question and 'Finish Quiz' is clicked
+                displayResults();
+            }
+        }
+
+        /**
+         * Displays the final results page.
+         */
+        function displayResults() {
+            quizPagesContainer.style.display = 'none'; // Hide quiz questions
+            resultsPage.style.display = 'block'; // Show results page
+            finalScoreSpan.textContent = score; // Update final score
+
+            // Save current quiz result to history
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('vi-VN', {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit'
+            });
+            const newResult = {
+                score: score,
+                total: questions.length,
+                date: formattedDate
+            };
+
+            let quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+            quizHistory.push(newResult);
+            localStorage.setItem('quizHistory', JSON.stringify(quizHistory));
+
+            // Display history
+            renderQuizHistory();
+        }
+
+        /**
+         * Renders the quiz history from local storage.
+         */
+        function renderQuizHistory() {
+            historyList.innerHTML = ''; // Clear existing history entries
+            let quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+
+            if (quizHistory.length === 0) {
+                const noHistoryItem = document.createElement('li');
+                noHistoryItem.textContent = 'Chưa có lịch sử làm bài.';
+                historyList.appendChild(noHistoryItem);
+                return;
+            }
+
+            // Display most recent entries first
+            quizHistory.slice().reverse().forEach((entry, index) => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <span>${entry.date}</span>
+                    <span class="score-entry">Đúng: ${entry.score}/${entry.total}</span>
+                `;
+                historyList.appendChild(listItem);
+            });
+        }
+
+        // Event Listeners for initial load and restart button
+        window.onload = initializeQuiz;
+        restartBtn.onclick = initializeQuiz;
+    </script>
+</body>
+</html>
