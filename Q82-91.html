@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Ôn Tập Tiếng Việt</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        h1 {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700; /* font-bold */
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .stage {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .stage.active {
+            display: flex;
+        }
+        .button-group button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+        .button-group button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .button-group button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        @media (min-width: 640px) {
+            .options-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .option-button {
+            background-color: #ecf0f1;
+            color: #34495e;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .option-button:hover:not(.correct):not(.incorrect) {
+            background-color: #dce1e5;
+        }
+        .option-button.correct {
+            background-color: #2ecc71;
+            color: white;
+            border-color: #27ae60;
+            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+        }
+        .option-button.incorrect {
+            background-color: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+        }
+        input[type="text"] {
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+        }
+        .message {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .message.success {
+            color: #27ae60;
+        }
+        .message.error {
+            color: #c0392b;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+        .summary-item span {
+            font-weight: 600;
+        }
+        .summary-item .correct-answer {
+            color: #27ae60;
+            font-weight: normal;
+        }
+        .summary-item .your-answer {
+            color: #c0392b;
+            font-weight: normal;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 10px;
+            margin-top: 15px;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #3498db;
+            border-radius: 5px;
+            transition: width 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1 id="quizTitle">Quiz Ôn Tập Tiếng Việt</h1>
+
+        <!-- Start Stage -->
+        <div id="startStage" class="stage active">
+            <p class="text-lg text-gray-700">Chào mừng bạn đến với bài quiz ôn tập từ vựng tiếng Việt!</p>
+            <p class="text-md text-gray-600">Bạn sẽ nghe một từ, gõ lại từ đó, và sau đó trả lời câu hỏi trắc nghiệm.</p>
+            <div class="button-group">
+                <button id="startButton">Bắt đầu Quiz</button>
+            </div>
+        </div>
+
+        <!-- Listening/Typing Stage -->
+        <div id="listeningStage" class="stage">
+            <div class="progress-bar-container">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
+            <p class="text-xl font-semibold text-gray-800 mb-4">Hãy nghe và gõ lại từ:</p>
+            <button id="listenButton" class="button-group-button mb-4">Nghe lại từ</button>
+            <input type="text" id="wordInput" placeholder="Gõ từ vào đây...">
+            <p id="typingMessage" class="message"></p>
+            <div class="button-group">
+                <button id="submitWordButton">Kiểm tra từ</button>
+            </div>
+        </div>
+
+        <!-- Question Stage -->
+        <div id="questionStage" class="stage">
+            <div class="progress-bar-container">
+                <div id="progressBarQuestion" class="progress-bar"></div>
+            </div>
+            <p id="questionText" class="text-xl font-semibold text-gray-800 mb-4"></p>
+            <div id="optionsContainer" class="options-grid">
+                <!-- Options will be dynamically loaded here -->
+            </div>
+            <p id="answerMessage" class="message"></p>
+            <div class="button-group">
+                <button id="nextQuestionButton" disabled>Câu hỏi tiếp theo</button>
+            </div>
+        </div>
+
+        <!-- Summary Stage -->
+        <div id="summaryStage" class="stage">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Kết quả Quiz</h2>
+            <p class="text-2xl font-bold text-gray-700 mb-4">Bạn đã trả lời đúng <span id="scoreDisplay" class="text-blue-600">0</span> / <span id="totalQuestionsDisplay">0</span> câu.</p>
+            <div id="summaryDetails" class="text-left">
+                <!-- Summary details will be loaded here -->
+            </div>
+            <div class="button-group mt-6">
+                <button id="restartButton">Làm lại Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dữ liệu quiz từ file DOCX đã được phân tích.
+        // Cấu trúc: { word: "Từ tiếng Anh", question: "Nghĩa là gì?", options: ["A", "B", "C", "D"], correctWord: "Từ tiếng Anh", correctOption: "Đáp án đúng (ví dụ: C)" }
+        // Lưu ý: Phần `correctWord` dùng cho bước "listening/typing", `correctOption` dùng cho bước "trắc nghiệm".
+        const quizData = [
+            {
+                word: "Enriched bread",
+                question: "Từ \"Enriched bread\" nghĩa là gì?",
+                options: ["Bánh mì giòn", "Bánh mì không men", "Bánh mì tăng cường dinh dưỡng", "Bánh mì có nhân trái cây"],
+                correctWord: "Enriched bread",
+                correctOption: "Bánh mì tăng cường dinh dưỡng"
+            },
+            {
+                word: "Custard cream",
+                question: "\"Custard cream\" là gì trong tiếng Việt?",
+                options: ["Kem sữa đặc", "Kem trứng", "Bơ nhạt", "Kem phô mai"],
+                correctWord: "Custard cream",
+                correctOption: "Kem trứng"
+            },
+            {
+                word: "Moisture",
+                question: "Từ \"Moisture\" có nghĩa là gì?",
+                options: ["Bột mì", "Độ ẩm", "Hơi nóng", "Nhiệt độ"],
+                correctWord: "Moisture",
+                correctOption: "Độ ẩm"
+            },
+            {
+                word: "Puff pastry turnover",
+                question: "\"Puff pastry turnover\" là gì?",
+                options: ["Bánh mì tròn", "Bánh xốp cán lớp có nhân", "Bánh gạo", "Bánh mì sandwich"],
+                correctWord: "Puff pastry turnover",
+                correctOption: "Bánh xốp cán lớp có nhân"
+            },
+            {
+                word: "Stollen",
+                question: "\"Stollen\" là loại bánh gì?",
+                options: ["Bánh rán Tây Ban Nha", "Bánh nhân phô mai", "Bánh truyền thống Đức", "Bánh que phô mai"],
+                correctWord: "Stollen",
+                correctOption: "Bánh truyền thống Đức"
+            },
+            {
+                word: "Agar",
+                question: "Từ \"Agar\" nghĩa là gì?",
+                options: ["Gân", "Thạch từ rong biển đỏ", "Sữa đặc", "Nước đường"],
+                correctWord: "Agar",
+                correctOption: "Thạch từ rong biển đỏ"
+            },
+            {
+                word: "Roll out",
+                question: "\"Roll out\" có nghĩa là gì?",
+                options: ["Nướng bánh", "Gấp lớp", "Cán mỏng", "Phủ bột"],
+                correctWord: "Roll out",
+                correctOption: "Cán mỏng"
+            },
+            {
+                word: "Churros",
+                question: "\"Churros\" là gì?",
+                options: ["Bánh nhân nho khô", "Bánh cuộn", "Bánh chiên Tây Ban Nha", "Bánh mì ngọt kiểu Pháp"],
+                correctWord: "Churros",
+                correctOption: "Bánh chiên Tây Ban Nha"
+            },
+            {
+                word: "Fit into",
+                question: "\"Fit into\" có nghĩa là gì?",
+                options: ["Phủ đều", "Trải ra", "Cắt nhỏ", "Khớp vào, vừa với"],
+                correctWord: "Fit into",
+                correctOption: "Khớp vào, vừa với"
+            },
+            {
+                word: "Pectin",
+                question: "Từ \"Pectin\" nghĩa là gì?",
+                options: ["Chất tạo đông từ trái cây", "Đường bột", "Bột mì", "Men khô"],
+                correctWord: "Pectin",
+                correctOption: "Chất tạo đông từ trái cây"
+            },
+            {
+                word: "Fluffy",
+                question: "“Fluffy” có nghĩa là gì?",
+                options: ["Cứng, dai", "Giòn rụm", "Xốp, nhẹ", "Béo ngậy"],
+                correctWord: "Fluffy",
+                correctOption: "Xốp, nhẹ"
+            },
+            {
+                word: "Burnt",
+                question: "“Burnt” nghĩa là gì?",
+                options: ["Được nướng vàng", "Bị cháy", "Chưa chín", "Vừa chín tới"],
+                correctWord: "Burnt",
+                correctOption: "Bị cháy"
+            },
+            {
+                word: "Topping",
+                question: "“Topping” là gì trong làm bánh?",
+                options: ["Nhân bánh", "Lớp phủ trên bánh", "Lớp bột dưới cùng", "Lớp kem trứng"],
+                correctWord: "Topping",
+                correctOption: "Lớp phủ trên bánh"
+            },
+            {
+                word: "A living organism",
+                question: "“A living organism” nghĩa là gì?",
+                options: ["Chất hóa học", "Vi khuẩn có hại", "Sinh vật sống", "Hợp chất nhân tạo"],
+                correctWord: "A living organism",
+                correctOption: "Sinh vật sống"
+            },
+            {
+                word: "Berliner",
+                question: "“Berliner” là gì?",
+                options: ["Bánh quy", "Bánh nhân mứt kiểu Đức", "Bánh mì ổ dài", "Bánh trứng nướng"],
+                correctWord: "Berliner",
+                correctOption: "Bánh nhân mứt kiểu Đức"
+            },
+            {
+                word: "Plait",
+                question: "“Plait” có nghĩa là gì?",
+                options: ["Lớp bột mềm", "Cán mỏng", "Tết bím", "Cắt hình chữ nhật"],
+                correctWord: "Plait",
+                correctOption: "Tết bím"
+            },
+            {
+                word: "Fold in thirds",
+                question: "“Fold in thirds” là gì?",
+                options: ["Gấp làm ba phần", "Gấp đôi lại", "Gấp 4 lần", "Gấp theo hình vuông"],
+                correctWord: "Fold in thirds",
+                correctOption: "Gấp làm ba phần"
+            },
+            {
+                word: "Glaze",
+                question: "“Glaze” nghĩa là gì?",
+                options: ["Lớp kem trứng", "Lớp phủ bóng", "Lớp đường trắng", "Lớp bột khô"],
+                correctWord: "Glaze",
+                correctOption: "Lớp phủ bóng"
+            },
+            {
+                word: "Savory dish",
+                question: "“Savory dish” là gì?",
+                options: ["Món tráng miệng", "Món ăn nhẹ", "Món mặn", "Món khai vị"],
+                correctWord: "Savory dish",
+                correctOption: "Món mặn"
+            },
+            {
+                word: "Soft bread",
+                question: "“Soft bread” có nghĩa là gì?",
+                options: ["Bánh mì ngọt", "Bánh mì mềm", "Bánh mì có lớp vỏ dày", "Bánh mì không có nhân"],
+                correctWord: "Soft bread",
+                correctOption: "Bánh mì mềm"
+            },
+            {
+                word: "Instant yeast",
+                question: "“Instant yeast” có nghĩa là gì?",
+                options: ["Men tươi", "Men chua", "Men khô nhanh", "Men tự nhiên"],
+                correctWord: "Instant yeast",
+                correctOption: "Men khô nhanh"
+            },
+            {
+                word: "Wild yeast",
+                question: "“Wild yeast” nghĩa là gì?",
+                options: ["Men nuôi công nghiệp", "Men có màu đỏ", "Men hoang dã", "Men tươi"],
+                correctWord: "Wild yeast",
+                correctOption: "Men hoang dã"
+            },
+            {
+                word: "One side of the dough",
+                question: "“One side of the dough” là gì?",
+                options: ["Một mặt của bột", "Cả hai mặt bột", "Mép bánh", "Lớp ngoài cùng"],
+                correctWord: "One side of the dough",
+                correctOption: "Một mặt của bột"
+            },
+            {
+                word: "Triple fold",
+                question: "“Triple fold” nghĩa là gì?",
+                options: ["Gấp 2 lần", "Gấp 3 lần", "Gấp đôi", "Gấp theo chiều ngang"],
+                correctWord: "Triple fold",
+                correctOption: "Gấp 3 lần"
+            },
+            {
+                word: "Puff",
+                question: "“Puff” có nghĩa là gì?",
+                options: ["Bánh dẹt", "Lớp phồng", "Lớp cứng", "Cục bột"],
+                correctWord: "Puff",
+                correctOption: "Lớp phồng"
+            },
+            {
+                word: "Be obtained by",
+                question: "“Be obtained by” nghĩa là gì?",
+                options: ["Bị hỏng bởi", "Được tạo ra bằng cách", "Bị phá hủy bởi", "Không thể sản xuất từ"],
+                correctWord: "Be obtained by",
+                correctOption: "Được tạo ra bằng cách"
+            },
+            {
+                word: "Red seaweed",
+                question: "“Red seaweed” là gì?",
+                options: ["Rong biển đỏ", "Cá đỏ", "Rêu đỏ", "Lá lốt"],
+                correctWord: "Red seaweed",
+                correctOption: "Rong biển đỏ"
+            },
+            {
+                word: "Hard crusty",
+                question: "“Hard crusty” nghĩa là gì?",
+                options: ["Mềm và dai", "Vỏ giòn cứng", "Dày và bở", "Nhão và xốp"],
+                correctWord: "Hard crusty",
+                correctOption: "Vỏ giòn cứng"
+            },
+            {
+                word: "Rectangle",
+                question: "“Rectangle” là gì?",
+                options: ["Hình tròn", "Hình vuông", "Hình chữ nhật", "Hình tam giác"],
+                correctWord: "Rectangle",
+                correctOption: "Hình chữ nhật"
+            },
+            {
+                word: "Bomboloni",
+                question: "“Bomboloni” là gì?",
+                options: ["Bánh rán có nhân kem kiểu Ý", "Bánh mì ổ dài", "Bánh gừng", "Bánh chocolate"],
+                correctWord: "Bomboloni",
+                correctOption: "Bánh rán có nhân kem kiểu Ý"
+            },
+            {
+                word: "Volume of dough",
+                question: "“Volume of dough” nghĩa là gì?",
+                options: ["Khối lượng bột khô", "Lượng nước trong bột", "Thể tích của khối bột", "Mật độ của men"],
+                correctWord: "Volume of dough",
+                correctOption: "Thể tích của khối bột"
+            },
+            {
+                word: "Be folded in thirds",
+                question: "“Be folded in thirds” là gì?",
+                options: ["Gấp theo hình tròn", "Gấp làm ba phần", "Cuộn thành cuốn", "Gấp làm hai"],
+                correctWord: "Be folded in thirds",
+                correctOption: "Gấp làm ba phần"
+            },
+            {
+                word: "Filling",
+                question: "“Filling” trong làm bánh nghĩa là gì?",
+                options: ["Lớp ngoài", "Nhân bánh", "Đế bánh", "Lớp phủ"],
+                correctWord: "Filling",
+                correctOption: "Nhân bánh"
+            },
+            {
+                word: "Tendon",
+                question: "“Tendon” có nghĩa là gì?",
+                options: ["Xương", "Da", "Gân", "Lòng đỏ"],
+                correctWord: "Tendon",
+                correctOption: "Gân"
+            },
+            {
+                word: "Ligament",
+                question: "“Ligament” nghĩa là gì?",
+                options: ["Cơ bắp", "Dây chằng", "Mỡ", "Da dày"],
+                correctWord: "Ligament",
+                correctOption: "Dây chằng"
+            },
+            {
+                word: "Melt",
+                question: "“Melt” là gì?",
+                options: ["Đông đặc", "Nở phồng", "Tan chảy", "Đóng băng"],
+                correctWord: "Melt",
+                correctOption: "Tan chảy"
+            },
+            {
+                word: "Spritzkuchen",
+                question: "“Spritzkuchen” là gì?",
+                options: ["Bánh cuộn", "Bánh kem", "Bánh rán Đức", "Bánh mì đen"],
+                correctWord: "Spritzkuchen",
+                correctOption: "Bánh rán Đức"
+            },
+            {
+                word: "Flakey layer",
+                question: "“Flakey layer” nghĩa là gì?",
+                options: ["Lớp dẻo", "Lớp giòn đặc", "Lớp tách xốp", "Lớp nhão"],
+                correctWord: "Flakey layer",
+                correctOption: "Lớp tách xốp"
+            },
+            {
+                word: "Be identical to ...",
+                question: "“Be identical to ...” nghĩa là gì?",
+                options: ["Trái ngược với ...", "Khác biệt với ...", "Tương tự với ...", "Giống hệt với ..."],
+                correctWord: "Be identical to ...",
+                correctOption: "Giống hệt với ..."
+            },
+            {
+                word: "Panettone",
+                question: "“Panettone” là gì?",
+                options: ["Bánh mì Ý có nho khô", "Bánh quy mặn", "Bánh chocolate", "Bánh chuối nướng"],
+                correctWord: "Panettone",
+                correctOption: "Bánh mì Ý có nho khô"
+            },
+            {
+                word: "Place",
+                question: "“Place” có nghĩa là gì?",
+                options: ["Cán mỏng", "Đặt", "Lăn tròn", "Cắt đôi"],
+                correctWord: "Place",
+                correctOption: "Đặt"
+            },
+            {
+                word: "Lay",
+                question: "“Lay” nghĩa là gì?",
+                options: ["Gấp", "Nướng", "Trải ra", "Đổ bột"],
+                correctWord: "Lay",
+                correctOption: "Trải ra"
+            },
+            {
+                word: "Dessert",
+                question: "“Dessert” là gì?",
+                options: ["Món khai vị", "Món ăn mặn", "Món tráng miệng", "Món chính"],
+                correctWord: "Dessert",
+                correctOption: "Món tráng miệng"
+            },
+            {
+                word: "Cooked fruit",
+                question: "“Cooked fruit” nghĩa là gì?",
+                options: ["Trái cây nướng", "Trái cây còn sống", "Trái cây đã nấu", "Trái cây đông lạnh"],
+                correctWord: "Cooked fruit",
+                correctOption: "Trái cây đã nấu"
+            },
+            {
+                word: "Dried fruit",
+                question: "“Dried fruit” là gì?",
+                options: ["Trái cây tươi", "Trái cây đóng hộp", "Trái cây sấy khô", "Trái cây lên men"],
+                correctWord: "Dried fruit",
+                correctOption: "Trái cây sấy khô"
+            },
+            {
+                word: "Panettone",
+                question: "“Panettone” thường có đặc điểm nào?",
+                options: ["Có phô mai chảy", "Có hương bạc hà", "Có nho khô và trái cây", "Không có nhân"],
+                correctWord: "Panettone",
+                correctOption: "Có nho khô và trái cây"
+            },
+            {
+                word: "Basic artisan bread",
+                question: "“Basic artisan bread” là gì?",
+                options: ["Bánh làm bằng máy", "Bánh mì thủ công cơ bản", "Bánh sandwich trắng", "Bánh mì không nướng"],
+                correctWord: "Basic artisan bread",
+                correctOption: "Bánh mì thủ công cơ bản"
+            },
+            {
+                word: "Lofty",
+                question: "“Lofty” nghĩa là gì?",
+                options: ["Dày nặng", "Nhẹ, cao và xốp", "Giòn cứng", "Ẩm và chảy"],
+                correctWord: "Lofty",
+                correctOption: "Nhẹ, cao và xốp"
+            },
+            {
+                word: "Letter fold",
+                question: "“Letter fold” nghĩa là gì?",
+                options: ["Gấp hình vuông", "Gấp hình chữ nhật", "Gấp kiểu lá thư", "Gấp kiểu tam giác"],
+                correctWord: "Letter fold",
+                correctOption: "Gấp kiểu lá thư"
+            },
+            {
+                word: "A single-fold",
+                question: "“A single-fold” nghĩa là gì?",
+                options: ["Gấp một lần", "Gấp hai lần", "Gấp ba lần", "Không gấp"],
+                correctWord: "A single-fold",
+                correctOption: "Gấp một lần"
+            },
+            {
+                word: "Brioche",
+                question: "“Brioche” là gì?",
+                options: ["Bánh mì nướng giòn", "Bánh mì tròn nhân kem", "Bánh mì bơ trứng kiểu Pháp", "Bánh mì gạo lứt"],
+                correctWord: "Brioche",
+                correctOption: "Bánh mì bơ trứng kiểu Pháp"
+            },
+            {
+                word: "Spritzkuchen",
+                question: "“Spritzkuchen” là loại bánh gì?",
+                options: ["Bánh mì ổ", "Bánh rán Đức", "Bánh kem Ý", "Bánh cuộn mặn"],
+                correctWord: "Spritzkuchen",
+                correctOption: "Bánh rán Đức"
+            },
+            {
+                word: "Festive occasion",
+                question: "“Festive occasion” là gì?",
+                options: ["Dịp lễ hội", "Tiệc sinh nhật", "Ngày thường", "Buổi học nấu ăn"],
+                correctWord: "Festive occasion",
+                correctOption: "Dịp lễ hội"
+            },
+            {
+                word: "Contain",
+                question: "“Contain” có nghĩa là gì?",
+                options: ["Nấu chín", "Hấp thụ", "Đựng, chứa", "Rửa sạch"],
+                correctWord: "Contain",
+                correctOption: "Đựng, chứa"
+            },
+            {
+                word: "A breakfast pastry",
+                question: "“A breakfast pastry” là gì?",
+                options: ["Món tráng miệng", "Bánh ăn sáng", "Bánh cho trẻ em", "Bánh mặn ăn tối"],
+                correctWord: "A breakfast pastry",
+                correctOption: "Bánh ăn sáng"
+            },
+            {
+                word: "Rectangle",
+                question: "“Rectangle” là gì?",
+                options: ["Hình tròn", "Hình vuông", "Hình chữ nhật", "Hình tam giác"],
+                correctWord: "Rectangle",
+                correctOption: "Hình chữ nhật"
+            },
+            {
+                word: "Fold",
+                question: "“Fold” có nghĩa là gì?",
+                options: ["Trộn đều", "Gấp", "Nướng", "Cán"],
+                correctWord: "Fold",
+                correctOption: "Gấp"
+            },
+            {
+                word: "Topping",
+                question: "“Topping” thường dùng để làm gì?",
+                options: ["Cho vào bên trong bánh", "Trang trí lên mặt bánh", "Dùng để trộn với bột", "Dùng để làm lớp đáy"],
+                correctWord: "Topping",
+                correctOption: "Trang trí lên mặt bánh"
+            },
+            {
+                word: "Hot cross bun",
+                question: "“Hot cross bun” là gì?",
+                options: ["Bánh bao nhân thịt", "Bánh ngọt có dấu thánh giá", "Bánh mì sandwich", "Bánh mì nướng không nhân"],
+                correctWord: "Hot cross bun",
+                correctOption: "Bánh ngọt có dấu thánh giá"
+            },
+            {
+                word: "A laminated dough",
+                question: "“A laminated dough” là gì?",
+                options: ["Bột trộn nước", "Bột không men", "Bột cán nhiều lớp", "Bột có nếp gấp"],
+                correctWord: "A laminated dough",
+                correctOption: "Bột cán nhiều lớp"
+            },
+            {
+                word: "On one-half of the dough",
+                question: "“On one-half of the dough” là gì?",
+                options: ["Trên một nửa của khối bột", "Dưới khối bột", "Trong khối bột", "Xung quanh khối bột"],
+                correctWord: "On one-half of the dough",
+                correctOption: "Trên một nửa của khối bột"
+            },
+            {
+                word: "Be folded in thirds",
+                question: "“Be folded in thirds” có nghĩa là gì?",
+                options: ["Gấp thành ba phần bằng nhau", "Gấp theo chiều dài", "Cuộn tròn", "Gấp chéo"],
+                correctWord: "Be folded in thirds",
+                correctOption: "Gấp thành ba phần bằng nhau"
+            },
+            {
+                word: "Pectin",
+                question: "“Pectin” là gì?",
+                options: ["Hợp chất tạo màu", "Men sinh học", "Chất tạo đông từ trái cây", "Chất ngọt tự nhiên"],
+                correctWord: "Pectin",
+                correctOption: "Chất tạo đông từ trái cây"
+            },
+            {
+                word: "Glaze",
+                question: "“Glaze” được sử dụng để làm gì?",
+                options: ["Làm nhân bánh", "Làm lớp phủ bóng", "Làm kem nền", "Làm lớp đáy"],
+                correctWord: "Glaze",
+                correctOption: "Làm lớp phủ bóng"
+            },
+            {
+                word: "Bun dough",
+                question: "“Bun dough” là gì?",
+                options: ["Bột bánh bao ngọt", "Bột bánh mì đặc ruột", "Bột gạo", "Bột chiên"],
+                correctWord: "Bun dough",
+                correctOption: "Bột bánh bao ngọt"
+            },
+            {
+                word: "Puff pastry turnover",
+                question: "“Puff pastry turnover” có nghĩa là gì?",
+                options: ["Bánh có lớp vỏ mềm", "Bánh quy mặn", "Bánh cán lớp có nhân", "Bánh mì ổ"],
+                correctWord: "Puff pastry turnover",
+                correctOption: "Bánh cán lớp có nhân"
+            },
+            {
+                word: "Fresh yeast",
+                question: "“Fresh yeast” là gì?",
+                options: ["Men chua", "Men tươi", "Men khô", "Men từ gạo"],
+                correctWord: "Fresh yeast",
+                correctOption: "Men tươi"
+            },
+            {
+                word: "A flakey layer",
+                question: "“A flakey layer” là gì?",
+                options: ["Lớp bánh mềm", "Lớp bánh dai", "Lớp tách xốp", "Lớp bột dày"],
+                correctWord: "A flakey layer",
+                correctOption: "Lớp tách xốp"
+            },
+            {
+                word: "Churros",
+                question: "“Churros” là gì?",
+                options: ["Bánh Pháp", "Bánh Đức", "Bánh chiên Tây Ban Nha", "Bánh sữa Ý"],
+                correctWord: "Churros",
+                correctOption: "Bánh chiên Tây Ban Nha"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let quizHistory = []; // Lưu trữ lịch sử các câu trả lời
+        let shuffledQuizData = []; // Dữ liệu quiz đã xáo trộn
+
+        // Lấy các phần tử DOM
+        const startStage = document.getElementById('startStage');
+        const listeningStage = document.getElementById('listeningStage');
+        const questionStage = document.getElementById('questionStage');
+        const summaryStage = document.getElementById('summaryStage');
+
+        const startButton = document.getElementById('startButton');
+        const listenButton = document.getElementById('listenButton');
+        const wordInput = document.getElementById('wordInput');
+        const submitWordButton = document.getElementById('submitWordButton');
+        const typingMessage = document.getElementById('typingMessage');
+
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const answerMessage = document.getElementById('answerMessage');
+        const nextQuestionButton = document.getElementById('nextQuestionButton');
+
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const totalQuestionsDisplay = document.getElementById('totalQuestionsDisplay');
+        const summaryDetails = document.getElementById('summaryDetails');
+        const restartButton = document.getElementById('restartButton');
+
+        const progressBar = document.getElementById('progressBar');
+        const progressBarQuestion = document.getElementById('progressBarQuestion');
+
+        // Hàm chuyển đổi giữa các stage
+        function showStage(stageId) {
+            const stages = [startStage, listeningStage, questionStage, summaryStage];
+            stages.forEach(stage => {
+                if (stage.id === stageId) {
+                    stage.classList.add('active');
+                } else {
+                    stage.classList.remove('active');
+                }
+            });
+        }
+
+        // Hàm xáo trộn mảng
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Cập nhật thanh tiến độ
+        function updateProgressBar(current, total, barElement) {
+            const progress = (current / total) * 100;
+            barElement.style.width = `${progress}%`;
+        }
+
+        // Hàm phát âm từ
+        function speakWord(word) {
+            // Kiểm tra xem trình duyệt có hỗ trợ SpeechSynthesis không
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US'; // Hoặc 'en-GB', tùy theo giọng bạn muốn
+                utterance.rate = 0.8; // Tốc độ đọc
+                speechSynthesis.speak(utterance);
+            } else {
+                console.warn('Trình duyệt không hỗ trợ SpeechSynthesis API.');
+                typingMessage.textContent = 'Trình duyệt của bạn không hỗ trợ tính năng phát âm. Vui lòng nhập từ.';
+                typingMessage.classList.add('error');
+            }
+        }
+
+        // Bắt đầu quiz
+        startButton.addEventListener('click', () => {
+            currentQuestionIndex = 0;
+            score = 0;
+            quizHistory = [];
+            shuffledQuizData = shuffleArray([...quizData]); // Xáo trộn dữ liệu quiz
+            totalQuestionsDisplay.textContent = shuffledQuizData.length; // Cập nhật tổng số câu hỏi
+            loadListeningStage();
+            showStage('listeningStage');
+        });
+
+        // Load Listening Stage
+        function loadListeningStage() {
+            const currentQuestion = shuffledQuizData[currentQuestionIndex];
+            if (!currentQuestion) {
+                showSummary();
+                return;
+            }
+
+            wordInput.value = '';
+            typingMessage.textContent = '';
+            typingMessage.classList.remove('success', 'error');
+            submitWordButton.disabled = false;
+            wordInput.disabled = false;
+            listenButton.disabled = false;
+
+            speakWord(currentQuestion.word);
+            updateProgressBar(currentQuestionIndex, shuffledQuizData.length, progressBar);
+        }
+
+        // Nghe lại từ
+        listenButton.addEventListener('click', () => {
+            const currentQuestion = shuffledQuizData[currentQuestionIndex];
+            if (currentQuestion) {
+                speakWord(currentQuestion.word);
+            }
+        });
+
+        // Kiểm tra từ gõ
+        submitWordButton.addEventListener('click', () => {
+            const currentQuestion = shuffledQuizData[currentQuestionIndex];
+            const userAnswer = wordInput.value.trim();
+            const correctAnswer = currentQuestion.correctWord.trim();
+
+            if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                typingMessage.textContent = 'Chính xác! Tiếp tục với câu hỏi.';
+                typingMessage.classList.remove('error');
+                typingMessage.classList.add('success');
+                wordInput.disabled = true;
+                submitWordButton.disabled = true;
+                listenButton.disabled = true;
+                setTimeout(loadQuestionStage, 1000); // Tự động chuyển sang phần câu hỏi
+            } else {
+                typingMessage.textContent = `Chưa đúng. Từ đúng là: "${correctAnswer}". Vui lòng thử lại.`;
+                typingMessage.classList.remove('success');
+                typingMessage.classList.add('error');
+            }
+        });
+
+        // Load Question Stage
+        function loadQuestionStage() {
+            const currentQuestion = shuffledQuizData[currentQuestionIndex];
+            if (!currentQuestion) {
+                showSummary();
+                return;
+            }
+
+            questionText.textContent = currentQuestion.question;
+            optionsContainer.innerHTML = ''; // Xóa các tùy chọn cũ
+            answerMessage.textContent = '';
+            answerMessage.classList.remove('success', 'error');
+            nextQuestionButton.disabled = true;
+
+            // Xáo trộn thứ tự các đáp án hiển thị để tránh vị trí cố định
+            const shuffledOptions = shuffleArray([...currentQuestion.options]);
+
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-button');
+                button.addEventListener('click', () => checkAnswer(button, option, currentQuestion));
+                optionsContainer.appendChild(button);
+            });
+            updateProgressBar(currentQuestionIndex, shuffledQuizData.length, progressBarQuestion);
+            showStage('questionStage');
+        }
+
+        // Kiểm tra đáp án trắc nghiệm
+        function checkAnswer(selectedButton, selectedOption, currentQuestion) {
+            const correctOptionText = currentQuestion.correctOption;
+            const isCorrect = (selectedOption === correctOptionText);
+
+            // Ghi lại lịch sử câu hỏi
+            quizHistory.push({
+                question: currentQuestion.question,
+                correctWord: currentQuestion.correctWord,
+                correctAnswer: correctOptionText,
+                userAnswer: selectedOption,
+                isCorrect: isCorrect
+            });
+
+            Array.from(optionsContainer.children).forEach(button => {
+                button.disabled = true; // Vô hiệu hóa tất cả các nút sau khi chọn
+                if (button.textContent === correctOptionText) {
+                    button.classList.add('correct');
+                } else if (button === selectedButton && !isCorrect) {
+                    button.classList.add('incorrect');
+                }
+            });
+
+            if (isCorrect) {
+                score++;
+                answerMessage.textContent = 'Chính xác!';
+                answerMessage.classList.remove('error');
+                answerMessage.classList.add('success');
+            } else {
+                answerMessage.textContent = `Sai rồi. Đáp án đúng là: "${correctOptionText}"`;
+                answerMessage.classList.remove('success');
+                answerMessage.classList.add('error');
+            }
+            nextQuestionButton.disabled = false;
+        }
+
+        // Chuyển sang câu hỏi tiếp theo
+        nextQuestionButton.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < shuffledQuizData.length) {
+                loadListeningStage(); // Quay lại stage nghe/gõ
+                showStage('listeningStage');
+            } else {
+                showSummary();
+            }
+        });
+
+        // Hiển thị phần tổng kết
+        function showSummary() {
+            scoreDisplay.textContent = score;
+            totalQuestionsDisplay.textContent = shuffledQuizData.length;
+            summaryDetails.innerHTML = '';
+
+            quizHistory.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.classList.add('summary-item');
+
+                const questionSpan = document.createElement('span');
+                questionSpan.textContent = `Câu ${index + 1}: ${item.question}`;
+                div.appendChild(questionSpan);
+
+                const answerDiv = document.createElement('div');
+                answerDiv.innerHTML = `Đúng: <span class="correct-answer">${item.correctAnswer}</span><br> Bạn: <span class="${item.isCorrect ? 'correct-answer' : 'your-answer'}">${item.userAnswer}</span>`;
+                div.appendChild(answerDiv);
+
+                summaryDetails.appendChild(div);
+            });
+
+            showStage('summaryStage');
+        }
+
+        // Làm lại Quiz
+        restartButton.addEventListener('click', () => {
+            showStage('startStage');
+        });
+
+        // Xử lý phím Enter trong ô nhập từ
+        wordInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Ngăn chặn hành vi mặc định của Enter (ví dụ: submit form)
+                submitWordButton.click();
+            }
+        });
+    </script>
+</body>
+</html>
