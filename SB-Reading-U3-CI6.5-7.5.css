@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Quiz - Unit 3 - A Healthy Life</title>
+    <style>
+        /* Basic styling for the body */
+        body {
+            font-family: 'Inter', Arial, sans-serif; /* Using Inter font */
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5; /* Light gray background */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for better content flow */
+            min-height: 100vh;
+        }
+
+        /* Container for the entire quiz */
+        .quiz-container {
+            max-width: 650px; /* Slightly wider for better readability */
+            width: 100%;
+            background-color: #ffffff; /* White background */
+            padding: 30px;
+            border-radius: 12px; /* More rounded corners */
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* Softer, deeper shadow */
+            margin-top: 30px; /* Add some margin from the top */
+        }
+
+        /* Styling for each question page */
+        .question-page {
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease-in-out; /* Fade-in animation */
+        }
+        .question-page.active {
+            display: block; /* Show active page */
+        }
+
+        /* Animation for fading in questions */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Information section (e.g., question number, score) */
+        .question-info {
+            font-size: 0.95em;
+            color: #6a737d; /* Slightly darker gray */
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee; /* Subtle separator */
+        }
+
+        /* Question text styling */
+        .question-text {
+            font-size: 1.25em; /* Larger font for question */
+            margin-bottom: 25px;
+            font-weight: 600; /* Semi-bold */
+            line-height: 1.5;
+            color: #2c3e50; /* Darker text */
+        }
+
+        /* Options container */
+        .options {
+            margin-bottom: 20px;
+        }
+
+        /* Styling for each option label */
+        .options label {
+            display: block;
+            margin-bottom: 12px; /* More space between options */
+            cursor: pointer;
+            padding: 14px 20px; /* More padding */
+            border: 1px solid #dcdcdc; /* Lighter border */
+            border-radius: 8px; /* Rounded corners for options */
+            transition: all 0.3s ease; /* Smooth transition for all properties */
+            background-color: #fcfcfc;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03); /* Very subtle shadow */
+            display: flex;
+            align-items: center;
+        }
+
+        /* Hover effect for options */
+        .options label:hover {
+            background-color: #e8f0fe; /* Light blue on hover */
+            border-color: #a8d4ff; /* Blue border on hover */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Slightly more prominent shadow */
+        }
+
+        /* Styling for radio buttons */
+        .options input[type="radio"] {
+            margin-right: 15px; /* More space for radio button */
+            transform: scale(1.2); /* Slightly larger radio button */
+            accent-color: #007bff; /* Accent color for checked radio */
+        }
+
+        /* Feedback message styling (correct/incorrect) */
+        .feedback {
+            margin-top: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            opacity: 0; /* Hidden by default */
+            transform: translateY(-10px);
+            animation: slideInFadeIn 0.4s forwards; /* Animation for feedback */
+        }
+        .feedback.correct {
+            background-color: #e6ffe6; /* Light green */
+            color: #28a745; /* Dark green */
+            border: 1px solid #28a745;
+        }
+        .feedback.incorrect {
+            background-color: #ffe6e6; /* Light red */
+            color: #dc3545; /* Dark red */
+            border: 1px solid #dc3545;
+        }
+
+        /* Animation for feedback message */
+        @keyframes slideInFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Translation section styling */
+        .translation-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px dashed #e0e0e0; /* Dashed line separator */
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .translation-section label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .translation-section textarea {
+            width: calc(100% - 22px); /* Adjust for padding and border */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            min-height: 60px;
+            resize: vertical; /* Allow vertical resizing */
+            margin-bottom: 15px;
+        }
+
+        /* Check Translation button */
+        .translation-section .check-translation-btn {
+            background-color: #17a2b8; /* Teal color */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .translation-section .check-translation-btn:hover:not(:disabled) {
+            background-color: #138496; /* Darker teal on hover */
+        }
+
+        .translation-section .check-translation-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+
+        .translation-section .correct-translation {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #e8f0fe; /* Light blue background */
+            border: 1px solid #a8d4ff;
+            border-radius: 8px;
+            font-weight: 500;
+            color: #0056b3; /* Darker blue text */
+            font-size: 1em;
+            line-height: 1.4;
+            display: none; /* Hidden by default, will be shown after checking translation */
+        }
+
+        /* Button container */
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px; /* Space between buttons */
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+        }
+
+        /* Common button styling */
+        .buttons button {
+            padding: 12px 22px; /* Generous padding */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.05em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex-grow: 1; /* Allow buttons to grow and fill space */
+            min-width: 120px; /* Minimum width for buttons */
+        }
+
+        /* Check Answer button styling */
+        .buttons .check-btn {
+            background-color: #007bff; /* Blue */
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+        }
+        .buttons .check-btn:hover:not(:disabled) {
+            background-color: #0056b3; /* Darker blue on hover */
+            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+        }
+        .buttons .check-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Navigation button styling */
+        .buttons .nav-btn {
+            background-color: #6c757d; /* Gray */
+            color: white;
+            box-shadow: 0 4px 10px rgba(108, 117, 125, 0.2);
+        }
+        .buttons .nav-btn:hover:not(:disabled) {
+            background-color: #5a6268; /* Darker gray on hover */
+            box-shadow: 0 6px 15px rgba(108, 117, 125, 0.3);
+        }
+        .buttons .nav-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Results page styling */
+        #results-page {
+            text-align: center;
+            display: none; /* Hidden by default */
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        #results-page h2 {
+            color: #007bff;
+            margin-bottom: 15px;
+            font-size: 2em;
+            font-weight: 700;
+        }
+        #results-page p {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            color: #4a4a4a;
+        }
+
+        /* Restart button styling */
+        #restart-btn {
+            background-color: #28a745; /* Green */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.15em;
+            font-weight: 600;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2);
+        }
+        #restart-btn:hover {
+            background-color: #218838; /* Darker green on hover */
+            box-shadow: 0 6px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        /* History section styling */
+        #quiz-history {
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        #quiz-history h3 {
+            font-size: 1.5em;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        #history-list {
+            list-style: none;
+            padding: 0;
+            max-height: 250px; /* Limit height and add scroll */
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+
+        #history-list li {
+            padding: 12px 15px;
+            border-bottom: 1px dashed #f0f0f0;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #history-list li:last-child {
+            border-bottom: none;
+        }
+
+        #history-list li span {
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        #history-list li .score-entry {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 500px) {
+            .quiz-container {
+                padding: 20px;
+                margin-top: 15px;
+            }
+            .question-text {
+                font-size: 1.1em;
+            }
+            .options label {
+                padding: 12px 15px;
+            }
+            .buttons button {
+                width: 100%; /* Full width buttons on small screens */
+                min-width: unset;
+                flex-grow: unset;
+            }
+            .translation-section textarea {
+                width: calc(100% - 20px); /* Adjust for padding only */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <div id="quiz-pages">
+            <!-- Questions will be dynamically injected here by JavaScript -->
+        </div>
+
+        <div id="results-page">
+            <h2>Quiz Completed!</h2>
+            <p>You scored <span id="final-score">0</span> out of <span id="total-questions">0</span>.</p>
+            <button id="restart-btn">Restart Quiz</button>
+
+            <div id="quiz-history">
+                <h3>Lịch sử làm bài:</h3>
+                <ul id="history-list">
+                    <!-- History items will be dynamically injected here -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Array containing all quiz questions, options, and correct answers
+        const questions = [
+            {
+                question: "Scientists continue to __________ the placebo effect to understand how belief influences healing.",
+                options: ["A. prescribe", "B. exploit", "C. unravel", "D. gauge"],
+                answer: "C",
+                translation: "Các nhà khoa học tiếp tục làm sáng tỏ hiệu ứng giả dược để hiểu cách niềm tin ảnh hưởng đến việc chữa bệnh."
+            },
+            {
+                question: "The field of __________ focuses on how drugs interact with the human body.",
+                options: ["A. psychiatry", "B. psychology", "C. pharmacology", "D. biotechnology"],
+                answer: "C",
+                translation: "Lĩnh vực dược lý học tập trung vào cách thuốc tương tác với cơ thể con người."
+            },
+            {
+                question: "A __________ company holds the exclusive right to manufacture the drug for 20 years.",
+                options: ["A. therapeutic", "B. patent", "C. pharmaceutical", "D. consistent"],
+                answer: "B",
+                translation: "Một công ty sở hữu bằng sáng chế có quyền độc quyền sản xuất thuốc trong 20 năm."
+            },
+            {
+                question: "The __________ status of that antidepressant was granted after years of clinical trials.",
+                options: ["A. authenticated", "B. inert", "C. patented", "D. therapeutic"],
+                answer: "C",
+                translation: "Tình trạng được cấp bằng sáng chế của thuốc chống trầm cảm đó đã được cấp sau nhiều năm thử nghiệm lâm sàng."
+            },
+            {
+                question: "The firm's financial __________ in the success of the drug made the trials highly controversial.",
+                options: ["A. stake", "B. boundary", "C. prospect", "D. crisis"],
+                answer: "A",
+                translation: "Cổ phần tài chính của công ty trong thành công của loại thuốc này đã khiến các thử nghiệm trở nên rất gây tranh cãi."
+            },
+            {
+                question: "They conducted multiple __________ to test the safety and efficacy of the new treatment.",
+                options: ["A. rituals", "B. clinical trials", "C. disorders", "D. assumptions"],
+                answer: "B",
+                translation: "Họ đã tiến hành nhiều thử nghiệm lâm sàng để kiểm tra tính an toàn và hiệu quả của phương pháp điều trị mới."
+            },
+            {
+                question: "In some studies, patients were unknowingly given an __________ substance that had no therapeutic effect.",
+                options: ["A. authenticated", "B. inert", "C. dominant", "D. bogus"],
+                answer: "B",
+                translation: "Trong một số nghiên cứu, bệnh nhân đã vô tình được cho một chất trơ không có tác dụng điều trị."
+            },
+            {
+                question: "Despite its __________ appearance, the medication had no actual effect on the illness.",
+                options: ["A. unsettling", "B. inert", "C. therapeutic", "D. consistent"],
+                answer: "B",
+                translation: "Mặc dù có vẻ ngoài trơ, loại thuốc này không có tác dụng thực sự đối với bệnh."
+            },
+            {
+                question: "The placebo effect demonstrates how treatment can improve a patient’s __________ even without active ingredients.",
+                options: ["A. empathy", "B. approval", "C. well-being", "D. futility"],
+                answer: "C",
+                translation: "Hiệu ứng giả dược chứng minh cách điều trị có thể cải thiện sức khỏe của bệnh nhân ngay cả khi không có thành phần hoạt tính."
+            },
+            {
+                question: "The company's rise to __________ in the pharmaceutical industry was due to its aggressive patent strategy.",
+                options: ["A. approval", "B. market", "C. preeminence", "D. coercion"],
+                answer: "C",
+                translation: "Sự vươn lên vị trí hàng đầu của công ty trong ngành dược phẩm là nhờ chiến lược bằng sáng chế hung hãn của họ."
+            },
+            {
+                question: "The marketing strategy of the firm heavily __________ on public trust and product branding.",
+                options: ["A. gauges", "B. hinges", "C. unravels", "D. prescribes"],
+                answer: "B",
+                translation: "Chiến lược tiếp thị của công ty phụ thuộc nhiều vào lòng tin của công chúng và thương hiệu sản phẩm."
+            },
+            {
+                question: "He spent years trying to __________ a new type of antidepressant that could act faster.",
+                options: ["A. devise", "B. prescribe", "C. aggregate", "D. comb"],
+                answer: "A",
+                translation: "Anh ấy đã dành nhiều năm để nghĩ ra một loại thuốc chống trầm cảm mới có thể tác dụng nhanh hơn."
+            },
+            {
+                question: "Some argue that the industry has begun to __________ emotional disorders for profit.",
+                options: ["A. venture", "B. prescribe", "C. exploit", "D. comb"],
+                answer: "C",
+                translation: "Một số người cho rằng ngành công nghiệp này đã bắt đầu khai thác các rối loạn cảm xúc để kiếm lợi nhuận."
+            },
+            {
+                question: "The findings were __________ by independent experts before publication.",
+                options: ["A. gauged", "B. authenticated", "C. baffled", "D. unsettled"],
+                answer: "B",
+                translation: "Những phát hiện này đã được xác thực bởi các chuyên gia độc lập trước khi xuất bản."
+            },
+            {
+                question: "The psychiatrist showed great __________ when listening to her patient’s trauma.",
+                options: ["A. empathy", "B. futility", "C. prospect", "D. coercion"],
+                answer: "A",
+                translation: "Bác sĩ tâm thần đã thể hiện sự đồng cảm lớn khi lắng nghe những chấn thương của bệnh nhân."
+            },
+            {
+                question: "Although the drug showed promise, it ultimately failed to pass the __________ process.",
+                options: ["A. patent", "B. aggregate", "C. drug-vetting", "D. jargon"],
+                answer: "C",
+                translation: "Mặc dù loại thuốc này có triển vọng, nhưng cuối cùng nó đã không vượt qua được quá trình kiểm duyệt thuốc."
+            },
+            {
+                question: "His behavior followed a disturbing __________ common in many depression cases.",
+                options: ["A. pattern", "B. assumption", "C. symptom", "D. prospect"],
+                answer: "A",
+                translation: "Hành vi của anh ấy theo một mô hình đáng lo ngại phổ biến trong nhiều trường hợp trầm cảm."
+            },
+            {
+                question: "The patient's condition appeared to __________ under long-term antidepressant use.",
+                options: ["A. baffle", "B. overcome", "C. gauge", "D. falter"],
+                answer: "D",
+                translation: "Tình trạng của bệnh nhân dường như suy yếu dưới việc sử dụng thuốc chống trầm cảm dài hạn."
+            },
+            {
+                question: "During the health __________, many patients turned to bogus treatments out of desperation.",
+                options: ["A. boundary", "B. crisis", "C. approval", "D. firm"],
+                answer: "B",
+                translation: "Trong cuộc khủng hoảng sức khỏe, nhiều bệnh nhân đã tìm đến các phương pháp điều trị giả mạo vì tuyệt vọng."
+            },
+            {
+                question: "The physician refused to __________ medication without a full psychological evaluation.",
+                options: ["A. gauge", "B. exploit", "C. prescribe", "D. assume"],
+                answer: "C",
+                translation: "Bác sĩ từ chối kê đơn thuốc mà không có đánh giá tâm lý đầy đủ."
+            },
+            {
+                question: "Pharmaceutical __________ is often criticized for prioritizing profit over people.",
+                options: ["A. assumption", "B. approval", "C. jargon", "D. marketing"],
+                answer: "D",
+                translation: "Tiếp thị dược phẩm thường bị chỉ trích vì ưu tiên lợi nhuận hơn con người."
+            },
+            {
+                question: "They were still waiting for the government’s __________ to distribute the new drug.",
+                options: ["A. empathy", "B. approval", "C. boundary", "D. futility"],
+                answer: "B",
+                translation: "Họ vẫn đang chờ sự chấp thuận của chính phủ để phân phối loại thuốc mới."
+            },
+            {
+                question: "She __________ combed through thousands of pages of clinical trial data to find inconsistencies.",
+                options: ["A. doggedly", "B. consistently", "C. therapeutically", "D. patiently"],
+                answer: "A",
+                translation: "Cô ấy đã kiên trì xem xét hàng ngàn trang dữ liệu thử nghiệm lâm sàng để tìm ra những điểm không nhất quán."
+            },
+            {
+                question: "His team attempted to __________ the data to discover meaningful patterns.",
+                options: ["A. prescribe", "B. aggregate", "C. baffle", "D. gauge"],
+                answer: "B",
+                translation: "Nhóm của anh ấy đã cố gắng tổng hợp dữ liệu để khám phá các mô hình có ý nghĩa."
+            },
+            {
+                question: "Without understanding the medical __________, patients often misinterpret drug labels.",
+                options: ["A. ritual", "B. jargon", "C. pattern", "D. symptom"],
+                answer: "B",
+                translation: "Nếu không hiểu biệt ngữ y tế, bệnh nhân thường hiểu sai nhãn thuốc."
+            },
+            {
+                question: "Researchers attempted to __________ the effect of the new drug across multiple age groups.",
+                options: ["A. gauge", "B. overcome", "C. blur", "D. display"],
+                answer: "A",
+                translation: "Các nhà nghiên cứu đã cố gắng đánh giá tác dụng của loại thuốc mới trên nhiều nhóm tuổi."
+            },
+            {
+                question: "Despite the promising start, the project ended in complete __________.",
+                options: ["A. futility", "B. prospect", "C. empathy", "D. market"],
+                answer: "A",
+                translation: "Mặc dù khởi đầu đầy hứa hẹn, dự án đã kết thúc trong sự vô ích hoàn toàn."
+            },
+            {
+                question: "They decided to __________ into a controversial area of neurological research.",
+                options: ["A. unravel", "B. falter", "C. venture", "D. prescribe"],
+                answer: "C",
+                translation: "Họ quyết định dấn thân vào một lĩnh vực nghiên cứu thần kinh gây tranh cãi."
+            },
+            {
+                question: "The __________ between science and commercial interest often leads to ethical debates.",
+                options: ["A. relief", "B. well-being", "C. boundary", "D. pattern"],
+                answer: "C",
+                translation: "Ranh giới giữa khoa học và lợi ích thương mại thường dẫn đến các cuộc tranh luận đạo đức."
+            },
+            {
+                question: "The medication brought temporary __________ to patients suffering from anxiety.",
+                options: ["A. approval", "B. relief", "C. disorder", "D. falter"],
+                answer: "B",
+                translation: "Loại thuốc này đã mang lại sự nhẹ nhõm tạm thời cho những bệnh nhân bị lo âu."
+            },
+            {
+                question: "Some scientists argue that the mind plays a larger role than expected in __________ relief.",
+                options: ["A. pharmaceutical", "B. symptom", "C. placebo", "D. drug-vetting"],
+                answer: "C",
+                translation: "Một số nhà khoa học cho rằng tâm trí đóng vai trò lớn hơn mong đợi trong việc giảm đau do giả dược."
+            },
+            {
+                question: "Patients with depressive __________ may respond differently to the same treatment.",
+                options: ["A. assumptions", "B. symptoms", "C. patterns", "D. disorders"],
+                answer: "D",
+                translation: "Bệnh nhân mắc các rối loạn trầm cảm có thể phản ứng khác nhau với cùng một phương pháp điều trị."
+            },
+            {
+                question: "The research team hopes to __________ the biological mechanisms behind anxiety.",
+                options: ["A. devise", "B. gauge", "C. unravel", "D. prescribe"],
+                answer: "C",
+                translation: "Nhóm nghiên cứu hy vọng sẽ làm sáng tỏ các cơ chế sinh học đằng sau sự lo âu."
+            },
+            {
+                question: "False data in clinical trials can seriously __________ the entire approval process.",
+                options: ["A. authenticate", "B. exploit", "C. baffle", "D. display"],
+                answer: "C",
+                translation: "Dữ liệu sai lệch trong các thử nghiệm lâm sàng có thể làm bối rối nghiêm trọng toàn bộ quá trình phê duyệt."
+            },
+            {
+                question: "He invested in a promising startup aiming to develop a new __________ antidepressant.",
+                options: ["A. dominant", "B. therapeutic", "C. inert", "D. consistent"],
+                answer: "B",
+                translation: "Anh ấy đã đầu tư vào một công ty khởi nghiệp đầy hứa hẹn nhằm phát triển một loại thuốc chống trầm cảm trị liệu mới."
+            },
+            {
+                question: "The doctor refused to give in to patient __________ to prescribe unnecessary medication.",
+                options: ["A. empathy", "B. pressure", "C. approval", "D. coercion"],
+                answer: "D",
+                translation: "Bác sĩ từ chối nhượng bộ trước sự ép buộc của bệnh nhân để kê đơn thuốc không cần thiết."
+            },
+            {
+                question: "Even trained professionals struggled to identify the __________ drug from the real one.",
+                options: ["A. dominant", "B. inert", "C. bogus", "D. therapeutic"],
+                answer: "C",
+                translation: "Ngay cả các chuyên gia được đào tạo cũng gặp khó khăn trong việc xác định thuốc giả từ thuốc thật."
+            },
+            {
+                question: "Each candidate drug must pass rigorous __________ trials before being approved.",
+                options: ["A. consistent", "B. placebo", "C. pharmaceutical", "D. drug-vetting"],
+                answer: "D",
+                translation: "Mỗi loại thuốc ứng cử viên phải trải qua các thử nghiệm kiểm duyệt thuốc nghiêm ngặt trước khi được phê duyệt."
+            },
+            {
+                question: "In psychology, __________ are often based on repeated behaviors over time.",
+                options: ["A. rituals", "B. patterns", "C. disorders", "D. stakes"],
+                answer: "B",
+                translation: "Trong tâm lý học, các mô hình thường dựa trên hành vi lặp đi lặp lại theo thời gian."
+            },
+            {
+                question: "They struggled to gain market __________ in a field dominated by three major firms.",
+                options: ["A. prospect", "B. preeminence", "C. assumption", "D. venture"],
+                answer: "B",
+                translation: "Họ đã phải vật lộn để giành được vị trí dẫn đầu thị trường trong một lĩnh vực bị chi phối bởi ba công ty lớn."
+            },
+            {
+                question: "Many researchers __________ that the placebo effect is often underestimated.",
+                options: ["A. prescribe", "B. gauge", "C. assume", "D. stake"],
+                answer: "C",
+                translation: "Nhiều nhà nghiên cứu cho rằng hiệu ứng giả dược thường bị đánh giá thấp."
+            },
+            {
+                question: "The psychiatrist explained that __________ can be emotional as well as physical.",
+                options: ["A. relief", "B. approval", "C. futility", "D. coercion"],
+                answer: "A",
+                translation: "Bác sĩ tâm thần giải thích rằng sự nhẹ nhõm có thể là cảm xúc cũng như thể chất."
+            },
+            {
+                question: "The researchers were able to maintain __________ results across different trials.",
+                options: ["A. inert", "B. consistent", "C. futile", "D. dominant"],
+                answer: "B",
+                translation: "Các nhà nghiên cứu đã có thể duy trì kết quả nhất quán trên các thử nghiệm khác nhau."
+            },
+            {
+                question: "There is growing concern over the ethical __________ of psychiatric drug marketing.",
+                options: ["A. boundaries", "B. approvals", "C. disorders", "D. assumptions"],
+                answer: "A",
+                translation: "Có mối lo ngại ngày càng tăng về các ranh giới đạo đức của tiếp thị thuốc tâm thần."
+            },
+            {
+                question: "The study highlights the difficulty of separating genuine improvement from __________ responses.",
+                options: ["A. inert", "B. placebo", "C. therapeutic", "D. pharmaceutical"],
+                answer: "B",
+                translation: "Nghiên cứu nhấn mạnh khó khăn trong việc tách biệt sự cải thiện thực sự khỏi các phản ứng giả dược."
+            },
+            {
+                question: "Many drug companies invest heavily in creating a strong brand to earn consumer __________.",
+                options: ["A. empathy", "B. approval", "C. preeminence", "D. futility"],
+                answer: "B",
+                translation: "Nhiều công ty dược phẩm đầu tư mạnh vào việc tạo ra một thương hiệu mạnh để giành được sự chấp thuận của người tiêu dùng."
+            },
+            {
+                question: "The drug showed promise in animals, but human trials yielded __________ results.",
+                options: ["A. bogus", "B. unsettling", "C. dominant", "D. therapeutic"],
+                answer: "B",
+                translation: "Loại thuốc này cho thấy hứa hẹn trên động vật, nhưng các thử nghiệm trên người lại cho kết quả đáng lo ngại."
+            },
+            {
+                question: "The public often misunderstands the __________ behind clinical drug testing.",
+                options: ["A. jargon", "B. empathy", "C. relief", "D. stake"],
+                answer: "A",
+                translation: "Công chúng thường hiểu lầm thuật ngữ chuyên ngành đằng sau việc thử nghiệm thuốc lâm sàng."
+            },
+            {
+                question: "The team's __________ effort resulted in a breakthrough treatment for bipolar disorder.",
+                options: ["A. futile", "B. dogged", "C. coercive", "D. unstable"],
+                answer: "B",
+                translation: "Nỗ lực kiên trì của nhóm đã dẫn đến một phương pháp điều trị đột phá cho rối loạn lưỡng cực."
+            },
+            {
+                question: "At first, the new theory seemed logical, but later trials failed to __________ the findings.",
+                options: ["A. gauge", "B. authenticate", "C. prescribe", "D. exploit"],
+                answer: "B",
+                translation: "Ban đầu, lý thuyết mới có vẻ hợp lý, nhưng các thử nghiệm sau đó đã không xác thực được những phát hiện."
+            }
+        ];
+
+        // Global variables to manage quiz state
+        let currentQuestionIndex = 0; // Tracks the current question being displayed
+        let score = 0; // Stores the user's score
+        // quizAnswers stores the user's selected answer for each question (e.g., 'C' for question 0)
+        let quizAnswers = new Array(questions.length).fill(null);
+        // quizFeedback stores whether the user's answer was 'correct' or 'incorrect' for each question
+        let quizFeedback = new Array(questions.length).fill(null);
+        // userTranslations stores the user's input for translation for each question
+        let userTranslations = new Array(questions.length).fill(''); // Initialize with empty strings
+        // translationChecked stores whether the user has clicked "Sample translation" for a question
+        let translationChecked = new Array(questions.length).fill(false);
+
+
+        // Get references to DOM elements
+        const quizPagesContainer = document.getElementById('quiz-pages');
+        const resultsPage = document.getElementById('results-page');
+        const finalScoreSpan = document.getElementById('final-score');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const restartBtn = document.getElementById('restart-btn');
+        const historyList = document.getElementById('history-list'); // Reference to the history list UL
+
+
+        /**
+         * Initializes or restarts the quiz.
+         * Resets score, current question index, and clears previous answers/feedback.
+         * Renders all questions and displays the first one.
+         */
+        function initializeQuiz() {
+            quizPagesContainer.innerHTML = ''; // Clear any existing question elements
+            score = 0; // Reset score
+            currentQuestionIndex = 0; // Go back to the first question
+            quizAnswers = new Array(questions.length).fill(null); // Clear all user answers
+            quizFeedback = new Array(questions.length).fill(null); // Clear all feedback
+            userTranslations = new Array(questions.length).fill(''); // Clear all user translations
+            translationChecked = new Array(questions.length).fill(false); // Reset translation check status
+            totalQuestionsSpan.textContent = questions.length; // Display total questions
+            renderQuestions(); // Create the HTML for all questions
+            showQuestion(currentQuestionIndex); // Show the first question
+            resultsPage.style.display = 'none'; // Hide the results page
+            quizPagesContainer.style.display = 'block'; // Ensure quiz pages are visible
+        }
+
+        /**
+         * Renders (creates the HTML for) all questions.
+         * Each question gets its own 'question-page' div.
+         */
+        function renderQuestions() {
+            questions.forEach((q, index) => {
+                const questionPage = document.createElement('div');
+                questionPage.classList.add('question-page');
+                questionPage.id = `question-page-${index}`; // Unique ID for each question page
+
+                // Construct the HTML for the question, options, feedback, and navigation buttons
+                questionPage.innerHTML = `
+                    <div class="question-info">
+                        <span>Câu ${index + 1}/${questions.length}</span>
+                        <span>Điểm: <span id="score-${index}">${quizFeedback[index] === 'correct' ? 1 : 0}</span></span>
+                    </div>
+                    <div class="question-text">${q.question}</div>
+                    <div class="options" id="options-${index}">
+                        ${q.options.map((option, optIndex) => `
+                            <label>
+                                <input type="radio" name="question-${index}" value="${option.charAt(0)}"
+                                    ${quizAnswers[index] === option.charAt(0) ? 'checked' : ''}
+                                    onchange="enableCheckButton(${index})">
+                                ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="feedback" id="feedback-${index}"></div>
+
+                    <!-- New Translation Section -->
+                    <div class="translation-section" id="translation-section-${index}">
+                        <label for="translation-input-${index}">Your Vietnamese Translation:</label>
+                        <textarea id="translation-input-${index}" oninput="storeTranslation(${index});">${userTranslations[index]}</textarea>
+                        <button class="check-translation-btn" id="check-translation-btn-${index}" onclick="showCorrectTranslation(${index})" disabled>Sample Translation</button>
+                        <div class="correct-translation" id="correct-translation-${index}" style="display: none;">
+                            ${q.translation}
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="nav-btn prev-btn" onclick="prevQuestion()" ${index === 0 ? 'disabled' : ''}>Previous</button>
+                        <button class="check-btn" id="check-btn-${index}" onclick="checkAnswer(${index})">Check Answer</button>
+                        <button class="nav-btn next-btn" onclick="nextQuestion()">Next</button>
+                    </div>
+                `;
+                quizPagesContainer.appendChild(questionPage); // Add the question page to the container
+
+                // Update score display if the question was already answered correctly during a restart
+                if (quizFeedback[index] === 'correct') {
+                    document.getElementById(`score-${index}`).textContent = '1';
+                }
+            });
+        }
+
+        /**
+         * Displays a specific question page and hides all others.
+         * @param {number} index - The index of the question to display.
+         */
+        function showQuestion(index) {
+            // Hide all question pages
+            document.querySelectorAll('.question-page').forEach((page) => {
+                page.classList.remove('active');
+            });
+
+            // Show the requested question page
+            const targetPage = document.getElementById(`question-page-${index}`);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            currentQuestionIndex = index; // Update the current question index
+            updateNavigationButtons(); // Enable/disable Prev/Next buttons based on current index
+            updateCheckButtonState(index); // Update check button state (enabled/disabled)
+            updateFeedbackDisplay(index); // Show/hide feedback based on if question was answered
+            updateOptionsEnabledState(index); // Enable/disable options based on if question was answered
+            updateTranslationDisplay(index); // Show/hide translation section and load user's previous translation
+            updateTranslationCheckButtonState(index); // Ensure translation button state is correct when showing question
+        }
+
+        /**
+         * Updates the disabled state of the "Previous" and "Next" navigation buttons.
+         */
+        function updateNavigationButtons() {
+            // Get buttons for the currently active question page
+            const currentPage = document.getElementById(`question-page-${currentQuestionIndex}`);
+            if (!currentPage) return;
+
+            const prevBtn = currentPage.querySelector('.prev-btn');
+            const nextBtn = currentPage.querySelector('.next-btn');
+
+            // Disable 'Previous' button on the first question
+            if (prevBtn) {
+                prevBtn.disabled = currentQuestionIndex === 0;
+            }
+
+            // Disable 'Next' button on the last question, or change text to 'Finish Quiz'
+            if (nextBtn) {
+                if (currentQuestionIndex === questions.length - 1) {
+                    nextBtn.textContent = 'Finish Quiz';
+                } else {
+                    nextBtn.textContent = 'Next';
+                }
+            }
+        }
+
+        /**
+         * Updates the disabled state of the "Check Answer" button for a given question.
+         * It is disabled if no option is selected or if the question has already been answered.
+         * @param {number} index - The index of the question.
+         */
+        function updateCheckButtonState(index) {
+            const checkBtn = document.getElementById(`check-btn-${index}`);
+            const selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
+
+            if (checkBtn) {
+                // If the question was already answered correctly, keep the check button disabled
+                if (quizFeedback[index] === 'correct') {
+                    checkBtn.disabled = true;
+                } else {
+                    // Otherwise, disable if no option is selected
+                    checkBtn.disabled = !selectedOption;
+                }
+            }
+        }
+
+        /**
+         * Enables the "Check Answer" button for a question when an option is selected.
+         * This is called by the `onchange` event of the radio buttons.
+         * @param {number} index - The index of the question.
+         */
+        function enableCheckButton(index) {
+            const checkBtn = document.getElementById(`check-btn-${index}`);
+            // Only enable if the question hasn't been answered correctly yet
+            if (checkBtn && quizFeedback[index] !== 'correct') {
+                checkBtn.disabled = false;
+            }
+        }
+
+        /**
+         * Updates the display of feedback messages for a given question.
+         * @param {number} index - The index of the question.
+         */
+        function updateFeedbackDisplay(index) {
+            const feedbackDiv = document.getElementById(`feedback-${index}`);
+            if (feedbackDiv) {
+                if (quizFeedback[index] === 'correct') {
+                    feedbackDiv.textContent = "Correct!";
+                    feedbackDiv.classList.remove('incorrect');
+                    feedbackDiv.classList.add('correct');
+                    feedbackDiv.style.opacity = 1;
+                    feedbackDiv.style.transform = 'translateY(0)';
+                } else if (quizFeedback[index] === 'incorrect') {
+                    feedbackDiv.textContent = `Sai rồi. Vui lòng thử lại.`; // Changed: Do not show correct answer here
+                    feedbackDiv.classList.remove('correct');
+                    feedbackDiv.classList.add('incorrect');
+                    feedbackDiv.style.opacity = 1;
+                    feedbackDiv.style.transform = 'translateY(0)';
+                } else {
+                    feedbackDiv.textContent = '';
+                    feedbackDiv.classList.remove('correct', 'incorrect');
+                    feedbackDiv.style.opacity = 0;
+                    feedbackDiv.style.transform = 'translateY(-10px)';
+                }
+            }
+        }
+
+        /**
+         * Updates the enabled/disabled state of options for a given question.
+         * @param {number} index - The index of the question.
+         */
+        function updateOptionsEnabledState(index) {
+            const optionsDiv = document.getElementById(`options-${index}`);
+            if (optionsDiv) {
+                const radios = optionsDiv.querySelectorAll('input[type="radio"]');
+                const questionAnsweredCorrectly = quizFeedback[index] === 'correct';
+
+                radios.forEach(radio => {
+                    // Options are disabled only if the question has been answered CORRECTLY
+                    radio.disabled = questionAnsweredCorrectly;
+                });
+            }
+        }
+
+
+        /**
+         * Checks the user's selected answer for a given question against the correct answer.
+         * Updates score, displays feedback, and disables options/check button.
+         * Also displays the translation section.
+         * @param {number} index - The index of the question to check.
+         */
+        function checkAnswer(index) {
+            const selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
+            const feedbackDiv = document.getElementById(`feedback-${index}`);
+            const scoreSpan = document.getElementById(`score-${index}`);
+            const checkBtn = document.getElementById(`check-btn-${index}`);
+            const optionsDiv = document.getElementById(`options-${index}`);
+            const translationSection = document.getElementById(`translation-section-${index}`);
+            const correctTranslationDiv = document.getElementById(`correct-translation-${index}`);
+            const checkTranslationBtn = document.getElementById(`check-translation-btn-${index}`);
+            const translationInput = document.getElementById(`translation-input-${index}`);
+
+            // If no option is selected, show a message and do nothing else
+            if (!selectedOption) {
+                feedbackDiv.textContent = "Please select an answer to check.";
+                feedbackDiv.classList.remove('correct', 'incorrect');
+                feedbackDiv.style.opacity = 1;
+                feedbackDiv.style.transform = 'translateY(0)';
+                return;
+            }
+
+            const userAnswer = selectedOption.value;
+            const correctAnswer = questions[index].answer;
+
+            // Always show the translation section after the user attempts an answer
+            if (translationSection) {
+                translationSection.style.display = 'block';
+            }
+
+            if (userAnswer === correctAnswer) {
+                feedbackDiv.textContent = "Correct!";
+                feedbackDiv.classList.remove('incorrect');
+                feedbackDiv.classList.add('correct');
+                if (quizFeedback[index] !== 'correct') { // Prevent double counting score if re-checking
+                    score++;
+                    quizFeedback[index] = 'correct'; // Mark as correct
+                }
+                scoreSpan.textContent = '1'; // Display score for this question as 1
+
+                checkBtn.disabled = true; // Disable check button after correct answer
+                // Disable all radio buttons for this question after correct answer
+                optionsDiv.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.disabled = true;
+                });
+
+                // Auto-show sample translation and disable its button and textarea
+                if (correctTranslationDiv) {
+                    correctTranslationDiv.style.display = 'block';
+                    translationChecked[index] = true;
+                }
+                if (checkTranslationBtn) {
+                    checkTranslationBtn.disabled = true;
+                }
+                if (translationInput) {
+                    translationInput.disabled = true;
+                }
+
+            } else {
+                feedbackDiv.textContent = `Sai rồi. Vui lòng thử lại.`; // Incorrect message, no correct answer revealed
+                feedbackDiv.classList.remove('correct');
+                feedbackDiv.classList.add('incorrect');
+                // Do not change score if incorrect
+                quizFeedback[index] = 'incorrect'; // Mark as incorrect
+                scoreSpan.textContent = '0'; // Display score for this question as 0
+
+                checkBtn.disabled = false; // Keep check button enabled for re-selection
+                // Keep radio buttons enabled for re-selection
+                optionsDiv.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.disabled = false;
+                    // Uncheck the incorrect option to encourage re-selection (optional, but good UX)
+                    if(radio.value === userAnswer) {
+                        radio.checked = false;
+                    }
+                });
+
+                // Ensure correct translation content is hidden and button is enabled for user to click
+                if (correctTranslationDiv) {
+                    correctTranslationDiv.style.display = 'none';
+                }
+                translationChecked[index] = false; // Reset this so the button can be clicked
+                updateTranslationCheckButtonState(index); // Re-enable the button if needed
+                if (translationInput) { // Enable translation input for user to type
+                    translationInput.disabled = false;
+                }
+            }
+
+            // Trigger animation for feedback display
+            feedbackDiv.style.opacity = 1;
+            feedbackDiv.style.transform = 'translateY(0)';
+        }
+
+        /**
+         * Stores the user's translation input for a given question.
+         * @param {number} index - The index of the question.
+         */
+        function storeTranslation(index) {
+            const translationInput = document.getElementById(`translation-input-${index}`);
+            if (translationInput) {
+                userTranslations[index] = translationInput.value;
+                updateTranslationCheckButtonState(index); // Update button state whenever input changes
+            }
+        }
+
+        /**
+         * Updates the disabled state of the "Sample Translation" button.
+         * It is enabled only if the translation input has text and the sample translation hasn't been shown yet.
+         * @param {number} index - The index of the question.
+         */
+        function updateTranslationCheckButtonState(index) {
+            const checkTranslationBtn = document.getElementById(`check-translation-btn-${index}`);
+            const translationInput = document.getElementById(`translation-input-${index}`);
+            if (checkTranslationBtn && translationInput) {
+                // Button is enabled if there's text in the textarea AND the translation hasn't been shown yet.
+                // Also disabled if the main answer was correct (because sample translation is auto-shown then).
+                checkTranslationBtn.disabled = translationInput.value.trim() === '' || translationChecked[index] || (quizFeedback[index] === 'correct');
+            }
+        }
+
+        /**
+         * Shows the correct translation for the current question.
+         * @param {number} index - The index of the question.
+         */
+        function showCorrectTranslation(index) {
+            const correctTranslationDiv = document.getElementById(`correct-translation-${index}`);
+            const checkTranslationBtn = document.getElementById(`check-translation-btn-${index}`);
+            const translationInput = document.getElementById(`translation-input-${index}`);
+
+            if (correctTranslationDiv) {
+                correctTranslationDiv.style.display = 'block'; // Show the correct translation
+                translationChecked[index] = true; // Mark that translation has been checked
+                if (checkTranslationBtn) {
+                    checkTranslationBtn.disabled = true; // Disable the button after showing
+                }
+                if (translationInput) { // Disable the user's translation textarea after sample is shown
+                    translationInput.disabled = true;
+                }
+            }
+        }
+
+        /**
+         * Updates the visibility and content of the translation section when a question is shown.
+         * @param {number} index - The index of the question.
+         */
+        function updateTranslationDisplay(index) {
+            const translationSection = document.getElementById(`translation-section-${index}`);
+            const translationInput = document.getElementById(`translation-input-${index}`);
+            const correctTranslationDiv = document.getElementById(`correct-translation-${index}`);
+            const checkTranslationBtn = document.getElementById(`check-translation-btn-${index}`);
+
+            // The translation section should be visible if the question has been answered (correctly or incorrectly)
+            if (translationSection) {
+                translationSection.style.display = (quizAnswers[index] !== null) ? 'block' : 'none';
+            }
+
+            // Load user's previous translation if available
+            if (translationInput) {
+                translationInput.value = userTranslations[index];
+                // Disable textarea if sample translation has been shown OR if the question was answered correctly (auto-shown)
+                translationInput.disabled = translationChecked[index] || (quizFeedback[index] === 'correct');
+            }
+
+            // Show/hide correct translation content
+            if (correctTranslationDiv) {
+                correctTranslationDiv.style.display = translationChecked[index] ? 'block' : 'none';
+            }
+            // Update button state (e.g., enable/disable based on whether sample translation has been shown)
+            updateTranslationCheckButtonState(index);
+        }
+
+
+        /**
+         * Navigates to the previous question.
+         */
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion(currentQuestionIndex);
+            }
+        }
+
+        /**
+         * Navigates to the next question or displays the results if it's the last question.
+         */
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+            } else {
+                // If it's the last question and 'Finish Quiz' is clicked
+                displayResults();
+            }
+        }
+
+        /**
+         * Displays the final results page.
+         */
+        function displayResults() {
+            quizPagesContainer.style.display = 'none'; // Hide quiz questions
+            resultsPage.style.display = 'block'; // Show results page
+            finalScoreSpan.textContent = score; // Update final score
+
+            // Save current quiz result to history
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('vi-VN', {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit'
+            });
+            const newResult = {
+                score: score,
+                total: questions.length,
+                date: formattedDate
+            };
+
+            let quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+            quizHistory.push(newResult);
+            localStorage.setItem('quizHistory', JSON.stringify(quizHistory));
+
+            // Display history
+            renderQuizHistory();
+        }
+
+        /**
+         * Renders the quiz history from local storage.
+         */
+        function renderQuizHistory() {
+            historyList.innerHTML = ''; // Clear existing history entries
+            let quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+
+            if (quizHistory.length === 0) {
+                const noHistoryItem = document.createElement('li');
+                noHistoryItem.textContent = 'Chưa có lịch sử làm bài.';
+                historyList.appendChild(noHistoryItem);
+                return;
+            }
+
+            // Display most recent entries first
+            quizHistory.slice().reverse().forEach((entry, index) => {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <span>${entry.date}</span>
+                    <span class="score-entry">Đúng: ${entry.score}/${entry.total}</span>
+                `;
+                historyList.appendChild(listItem);
+            });
+        }
+
+        // Event Listeners for initial load and restart button
+        window.onload = initializeQuiz;
+        restartBtn.onclick = initializeQuiz;
+    </script>
+</body>
+</html>
+
