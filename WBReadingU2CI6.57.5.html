@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Test: An invention to dye for</title>
+    <!-- Load Tailwind CSS from CDN for beautiful and responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light background */
+            color: #334155; /* Main text color */
+        }
+        /* Ensure elements have rounded corners */
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+        /* Button styling */
+        .btn-primary {
+            background-color: #3b82f6; /* Blue color */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb; /* Darker blue on hover */
+        }
+        /* Styling for questions and answers */
+        .question-container {
+            background-color: white;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+        .option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #cbd5e1; /* Light gray border */
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .option-label:hover {
+            background-color: #e2e8f0; /* Light background on hover */
+            border-color: #94a3b8; /* Darker border */
+        }
+        .option-label input[type="radio"],
+        .option-label input[type="checkbox"] {
+            margin-right: 0.75rem;
+            accent-color: #3b82f6; /* Radio/checkbox color */
+        }
+        /* Styling for correct and wrong answers on the results page */
+        .correct-answer {
+            background-color: #d1fae5; /* Light green */
+            border-color: #10b981; /* Green border */
+        }
+        .wrong-answer {
+            background-color: #fee2e2; /* Light red */
+            border-color: #ef4444; /* Red border */
+        }
+        /* Hide results page initially */
+        #results-page {
+            display: none;
+        }
+        .article-content {
+            white-space: pre-wrap; /* Preserve line breaks and white space */
+        }
+        .text-input, .select-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            margin-top: 0.5rem;
+            box-sizing: border-box; /* Ensure padding doesn't affect total width */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-4 max-w-4xl">
+        <!-- Quiz Page -->
+        <div id="quiz-page" class="bg-white p-6 rounded-lg shadow-xl">
+            <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Reading Test: An invention to dye for</h1>
+
+            <!-- Reading Passage Section -->
+            <div class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">An invention to dye for: the colour purple</h2>
+                <div class="article-content text-gray-600 leading-relaxed text-base">
+A 19th century research chemist was trying to make medicine when, instead, he came up with a coloured dye that has ensured the world is a brighter place.
+AOf all the colours, purple has perhaps the most powerful connotations. From the earliest cultures to the present day, people have sought to harness its visual power to mark themselves out as better than those around them. From bishops to kings, pop stars to fashion models, its wearing has been a calculated act of showing off. In ancient Rome, for example, purple was such a revered colour that only the emperor was allowed to wear it. Indeed, an emperor who was referred to as porphyrogenitus, (‘born to the purple’) was especially important, since this meant that he had inherited his position through family connections rather than seizing power through military force.
+BBut why purple? At that time, purple dye was an expensive substance produced in a complicated, foul-smelling and time-consuming process. This involved boiling thousands of molluscs in water in order to harvest their glandular juices. The technique had originally been developed by the Phoenicians over a thousand years previously, and it hadn’t changed since. Cheaper but poorer quality purple dyes could be made from lichens using an equally messy and unpleasant procedure, but they were not as bright, and the colour quickly faded. It was no surprise, therefore, that good purple dye was a rare and precious thing, and clothes dyed purple were beyond the financial means of most people.
+CHowever, times have changed. In the great consumer democracy of the 21st century, even the most humble citizen can choose it as the colour of their latest outfit. For that privilege, we must thank a young 19th century research chemist, William Perkin. A talented 15-year-old when he entered the Royal College of Chemistry in London in 1853, Perkin was immediately appointed as laboratory assistant to his tutor, August Wilhelm von Hofmann. He became determined to prove Hofmann’s claim that quinine, a drug used to treat fevers such as malaria, could be synthesised in a laboratory. However, rather than the cure desperately needed for people dying from malaria in tropical countries, he produced little more than a black, sticky mess that turned purple when dissolved in industrial alcohol. Perkin’s experiments could have been a complete waste of time, but to his surprise and, ultimately, financial benefit, his purple liquid turned out to be a long-lasting dye that was to transform fashion.
+DPerkin repeated his experiments in an improvised laboratory in his garden shed, perfecting the process for making the substance he had called mauveine after the French mallow plant. It was, says Simon Garfield, the author of Mauve which details Perkin’s life and work, an astonishing breakthrough. ‘Once you could do that you could make colour in a factory from chemicals rather than insects or plants. It opened up the prospect of mass-produced artificial dyes and made Perkin one of the first scientists to bridge the gap between pure chemistry and its industrial applications.’ It didn’t take long for the chemist, still only 18, to capitalise on his creation, patenting the product, convincing his father and brother to back it with savings, and finding a manufacturer who could help him bring it rapidly to the market. The buying public loved it, and clothes coloured with purple started appearing in shops up and down the country.
+Appropriately, considering the origins of Perkin’s colour, he was to receive a helping hand from the two most important women of the day. Queen Victoria caused a sensation when she stepped out at the Royal Exhibition in 1862 wearing a silk gown dyed with mauveine. In Paris, Napoleon III’s wife, Empress Eugenie, amazed the court when she was seen wearing it. To propel the scientist further on the way to a great fortune, the fashion of the time was for broad skirts that, happily for him, needed a lot of his revolutionary new dye.
+E Perkins, ever the serious scientist, would have been among the first to point out that his mauve is just one of a range of colours described in everyday language as purple. Not itself a true colour of the spectrum – that position is given to indigo and violet – purple normally refers to those colours which inhabit the limits of human perception in the area between red and violet. Newton excluded the colour from his colour wheel. Scientists today talk about the ‘line of purples’ which include violet, mauve, magenta, indigo and lilac.
+FIn the alternative medical practice of colour therapy, which practitioners say can trace its origins back to ancient India, the ‘purple range’ colours of indigo and violet are vital. They refer to spiritual energy centres known as chakras and are situated in the head. The colours and their ‘medical’ qualities were first officially listed by the Swiss scientist Dr Max Luscher, who said that appropriately coloured lights, applied to specific chakras, could treat ailments from depression to grief. Julia Kubler is one of Britain’s leading colour therapists and has been using colours to treat patients at her clinic at Manningtree, Essex, for 15 years. Purple, she says, ‘is consistent with intuition and higher understanding, with spirituality and meditation. It combines the coolness of blue with a bit of red that makes it not just passive but active.’
+It is hardly the most outlandish of claims for this most enigmatic of colours. Variously touted as the colour of everything from insanity to equality, it is enjoying a new role as the symbol of political compromise. Purple may have had its origins in the ancient world, but thanks to a young chemist, it still has a brilliant future.
+                </div>
+            </div>
+
+            <!-- Quiz Questions Section -->
+            <form id="quiz-form">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">Questions 1–6: Choose the correct heading for each section (A–F)</h2>
+                <div class="list-of-headings mb-6 p-4 bg-gray-100 rounded-lg">
+                    <p class="font-bold mb-2">List of headings</p>
+                    <ul class="list-disc list-inside text-sm text-gray-700">
+                        <li>i From the laboratory to the High Street</li>
+                        <li>ii Seeking royal support</li>
+                        <li>iii An unexpected but fortunate side result</li>
+                        <li>iv The healing power of purple</li>
+                        <li>v An old problem</li>
+                        <li>vi Standing out from the crowd</li>
+                        <li>vii Finding an alternative cure for a common illness</li>
+                        <li>viii Part of a larger family</li>
+                        <li>ix An ancient manufacturing practice</li>
+                    </ul>
+                </div>
+
+                <!-- Question 1 (Section A) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">1. Section A</p>
+                    <select name="q_match_A" class="select-input">
+                        <option value="">Choose a heading</option>
+                        <option value="i">i From the laboratory to the High Street</option>
+                        <option value="ii">ii Seeking royal support</option>
+                        <option value="iii">iii An unexpected but fortunate side result</option>
+                        <option value="iv">iv The healing power of purple</option>
+                        <option value="v">v An old problem</option>
+                        <option value="vi">vi Standing out from the crowd</option>
+                        <option value="vii">vii Finding an alternative cure for a common illness</option>
+                        <option value="viii">viii Part of a larger family</option>
+                        <option value="ix">ix An ancient manufacturing practice</option>
+                    </select>
+                </div>
+
+                <!-- Question 2 (Section B) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">2. Section B</p>
+                    <select name="q_match_B" class="select-input">
+                        <option value="">Choose a heading</option>
+                        <option value="i">i From the laboratory to the High Street</option>
+                        <option value="ii">ii Seeking royal support</option>
+                        <option value="iii">iii An unexpected but fortunate side result</option>
+                        <option value="iv">iv The healing power of purple</option>
+                        <option value="v">v An old problem</option>
+                        <option value="vi">vi Standing out from the crowd</option>
+                        <option value="vii">vii Finding an alternative cure for a common illness</option>
+                        <option value="viii">viii Part of a larger family</option>
+                        <option value="ix">ix An ancient manufacturing practice</option>
+                    </select>
+                </div>
+
+                <!-- Question 3 (Section C) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">3. Section C</p>
+                    <select name="q_match_C" class="select-input">
+                        <option value="">Choose a heading</option>
+                        <option value="i">i From the laboratory to the High Street</option>
+                        <option value="ii">ii Seeking royal support</option>
+                        <option value="iii">iii An unexpected but fortunate side result</option>
+                        <option value="iv">iv The healing power of purple</option>
+                        <option value="v">v An old problem</option>
+                        <option value="vi">vi Standing out from the crowd</option>
+                        <option value="vii">vii Finding an alternative cure for a common illness</option>
+                        <option value="viii">viii Part of a larger family</option>
+                        <option value="ix">ix An ancient manufacturing practice</option>
+                    </select>
+                </div>
+
+                <!-- Question 4 (Section D) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">4. Section D</p>
+                    <select name="q_match_D" class="select-input">
+                        <option value="">Choose a heading</option>
+                        <option value="i">i From the laboratory to the High Street</option>
+                        <option value="ii">ii Seeking royal support</option>
+                        <option value="iii">iii An unexpected but fortunate side result</option>
+                        <option value="iv">iv The healing power of purple</option>
+                        <option value="v">v An old problem</option>
+                        <option value="vi">vi Standing out from the crowd</option>
+                        <option value="vii">vii Finding an alternative cure for a common illness</option>
+                        <option value="viii">viii Part of a larger family</option>
+                        <option value="ix">ix An ancient manufacturing practice</option>
+                    </select>
+                </div>
+
+                <!-- Question 5 (Section E) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">5. Section E</p>
+                    <select name="q_match_E" class="select-input">
+                        <option value="">Choose a heading</option>
+                        <option value="i">i From the laboratory to the High Street</option>
+                        <option value="ii">ii Seeking royal support</option>
+                        <option value="iii">iii An unexpected but fortunate side result</option>
+                        <option value="iv">iv The healing power of purple</option>
+                        <option value="v">v An old problem</option>
+                        <option value="vi">vi Standing out from the crowd</option>
+                        <option value="vii">vii Finding an alternative cure for a common illness</option>
+                        <option value="viii">viii Part of a larger family</option>
+                        <option value="ix">ix An ancient manufacturing practice</option>
+                    </select>
+                </div>
+
+                <!-- Question 6 (Section F) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">6. Section F</p>
+                    <select name="q_match_F" class="select-input">
+                        <option value="">Choose a heading</option>
+                        <option value="i">i From the laboratory to the High Street</option>
+                        <option value="ii">ii Seeking royal support</option>
+                        <option value="iii">iii An unexpected but fortunate side result</option>
+                        <option value="iv">iv The healing power of purple</option>
+                        <option value="v">v An old problem</option>
+                        <option value="vi">vi Standing out from the crowd</option>
+                        <option value="vii">vii Finding an alternative cure for a common illness</option>
+                        <option value="viii">viii Part of a larger family</option>
+                        <option value="ix">ix An ancient manufacturing practice</option>
+                    </select>
+                </div>
+
+                <h2 class="text-2xl font-semibold mb-4 mt-8 text-gray-700">Questions 7-10: Choose TWO letters, A-E.</h2>
+                <!-- Questions 7-8 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">7-8. What TWO points does the writer make about the colour purple and purple dye before William Perkin's creation?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="checkbox" name="q_checkboxes_7_8" value="A"> A It was only used to colour clothes.
+                        </label>
+                        <label class="option-label">
+                            <input type="checkbox" name="q_checkboxes_7_8" value="B"> B It was originally produced for Roman emperors.
+                        </label>
+                        <label class="option-label">
+                            <input type="checkbox" name="q_checkboxes_7_8" value="C"> C It was not easy to make.
+                        </label>
+                        <label class="option-label">
+                            <input type="checkbox" name="q_checkboxes_7_8" value="D"> D There were many different techniques used to make it.
+                        </label>
+                        <label class="option-label">
+                            <input type="checkbox" name="q_checkboxes_7_8" value="E"> E Some purple dyes were inferior to others.
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Questions 9-10 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">9-10. What TWO things about William Perkin are true, according to the passage?</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="checkbox" name="q_checkboxes_9_10" value="A"> A He taught Chemistry at a college in London.
+                        </label>
+                        <label class="option-label">
+                            <input type="checkbox" name="q_checkboxes_9_10" value="B"> B He believed that quinine could be artificially produced.
+                        </label>
+                        <label class="option-label">
+                            <input type="checkbox" name="q_checkboxes_9_10" value="C"> C He extracted the substance for his dye from a common plant.
+                        </label>
+                        <label class="option-label">
+                            <input type="checkbox" name="q_checkboxes_9_10" value="D"> D He quickly realised the financial benefits of his new creation.
+                        </label>
+                        <label class="option-label">
+                            <input type="checkbox" name="q_checkboxes_9_10" value="E"> E He set a new fashion trend for large skirts.
+                        </label>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-semibold mb-4 mt-8 text-gray-700">Questions 11-14: Complete the summary below. (Choose NO MORE THAN TWO WORDS)</h2>
+                <!-- Question 11 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">11. The purple range of colours plays an essential role in colour therapy, a form of <span class="underline">               </span>.</p>
+                    <input type="text" name="q_summary_11" class="text-input" placeholder="Enter your answer (max 2 words)">
+                </div>
+
+                <!-- Question 12 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">12. Colour therapy is said to have originated many years ago in <span class="underline">               </span> and is still used by colour therapists such as Julia Kubler, who uses it to</p>
+                    <input type="text" name="q_summary_12" class="text-input" placeholder="Enter your answer (max 2 words)">
+                </div>
+
+                <!-- Question 13 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">13. <span class="underline">               </span> with various health issues.</p>
+                    <input type="text" name="q_summary_13" class="text-input" placeholder="Enter your answer (max 2 words)">
+                </div>
+
+                <!-- Question 14 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">14. According to Kubler, purple <span class="underline">               </span> aspects of two colours, making it both active and passive.</p>
+                    <input type="text" name="q_summary_14" class="text-input" placeholder="Enter your answer (max 2 words)">
+                </div>
+
+                <div class="text-center mt-6">
+                    <button type="submit" class="btn-primary">Complete Test</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Page (initially hidden) -->
+        <div id="results-page" class="bg-white p-6 rounded-lg shadow-xl mt-8">
+            <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">Test Results</h2>
+            <p class="text-xl text-center mb-6">Your Score: <span id="score" class="font-bold text-blue-600"></span> / 12</p>
+
+            <div id="answers-review" class="space-y-4">
+                <!-- Answers will be displayed here by JavaScript -->
+            </div>
+
+            <div class="text-center mt-8">
+                <button id="retake-quiz" class="btn-primary">Retake Test</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Define correct answers for each question
+        const correctAnswers = {
+            // Matching Headings
+            'q_match_A': 'vi',
+            'q_match_B': 'ix',
+            'q_match_C': 'iii',
+            'q_match_D': 'i',
+            'q_match_E': 'viii',
+            'q_match_F': 'iv',
+
+            // Choose TWO letters (checkboxes, grouped)
+            'q_checkboxes_7_8': ['C', 'E'], // Sorted for consistent comparison
+            'q_checkboxes_9_10': ['B', 'D'], // Sorted for consistent comparison
+
+            // Summary Completion (normalized to lowercase for comparison)
+            'q_summary_11': 'medical practice',
+            'q_summary_12': 'ancient india',
+            'q_summary_13': 'treat patients',
+            'q_summary_14': 'combines'
+        };
+
+        // Get necessary DOM elements
+        const quizForm = document.getElementById('quiz-form');
+        const quizPage = document.getElementById('quiz-page');
+        const resultsPage = document.getElementById('results-page');
+        const scoreDisplay = document.getElementById('score');
+        const answersReview = document.getElementById('answers-review');
+        const retakeQuizButton = document.getElementById('retake-quiz');
+
+        // Event listener for quiz form submission
+        quizForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            try {
+                let score = 0;
+                answersReview.innerHTML = ''; // Clear previous answers review
+
+                // Process Matching Headings questions
+                const headingQuestions = ['A', 'B', 'C', 'D', 'E', 'F'];
+                headingQuestions.forEach(section => {
+                    const questionId = `q_match_${section}`;
+                    const selectedOption = document.querySelector(`select[name="${questionId}"]`);
+                    // Retrieve the full question text from the UI
+                    const questionElement = selectedOption ? selectedOption.closest('.question-container') : null;
+                    const questionText = questionElement ? questionElement.querySelector('p').textContent : `Section ${section}`; // Fallback
+
+                    const userAnswer = selectedOption ? selectedOption.value : '';
+                    const correctAnswer = correctAnswers[questionId];
+
+                    const reviewItem = document.createElement('div');
+                    reviewItem.classList.add('p-3', 'rounded-lg', 'border', 'mb-2');
+
+                    let feedbackHtml = `<p class="font-semibold">${questionText}</p>`; // Use the exact question text from UI
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        reviewItem.classList.add('correct-answer');
+                        feedbackHtml += `<p class="text-green-700">Your answer: ${userAnswer} (Correct)</p>`;
+                    } else {
+                        reviewItem.classList.add('wrong-answer');
+                        feedbackHtml += `<p class="text-red-700">Your answer: ${userAnswer ? userAnswer : 'Not answered'} (Incorrect)</p>`;
+                        feedbackHtml += `<p class="text-blue-700">Correct answer: ${correctAnswer}</p>`;
+                    }
+                    answersReview.appendChild(reviewItem);
+                });
+
+                // Process Choose TWO letters questions
+                const checkboxGroups = ['q_checkboxes_7_8', 'q_checkboxes_9_10'];
+                checkboxGroups.forEach((groupId, index) => {
+                    const selectedCheckboxes = Array.from(document.querySelectorAll(`input[name="${groupId}"]:checked`)).map(cb => cb.value).sort();
+                    const correctAnswersForGroup = correctAnswers[groupId].slice().sort(); // Use slice() to avoid modifying original array
+                    const questionText = document.querySelector(`input[name="${groupId}"]`).closest('.question-container').querySelector('p').textContent;
+
+                    const reviewItem = document.createElement('div');
+                    reviewItem.classList.add('p-3', 'rounded-lg', 'border', 'mb-2');
+
+                    let feedbackHtml = `<p class="font-semibold">${questionText}</p>`;
+
+                    // Compare sorted arrays
+                    if (selectedCheckboxes.length === correctAnswersForGroup.length &&
+                        selectedCheckboxes.every((val, i) => val === correctAnswersForGroup[i])) {
+                        score++;
+                        reviewItem.classList.add('correct-answer');
+                        feedbackHtml += `<p class="text-green-700">Your answers: ${selectedCheckboxes.join(', ')} (Correct)</p>`;
+                    } else {
+                        reviewItem.classList.add('wrong-answer');
+                        feedbackHtml += `<p class="text-red-700">Your answers: ${selectedCheckboxes.length > 0 ? selectedCheckboxes.join(', ') : 'Not answered'} (Incorrect)</p>`;
+                        feedbackHtml += `<p class="text-blue-700">Correct answers: ${correctAnswersForGroup.join(', ')}</p>`;
+                    }
+                    answersReview.appendChild(reviewItem);
+                });
+
+
+                // Process Summary Completion questions
+                const summaryQuestions = ['11', '12', '13', '14'];
+                summaryQuestions.forEach(qNum => {
+                    const questionId = `q_summary_${qNum}`;
+                    const textInput = document.querySelector(`input[name="${questionId}"]`);
+                    const userAnswer = textInput ? textInput.value.trim().toLowerCase() : '';
+                    const correctAnswer = correctAnswers[questionId];
+                    const questionText = textInput.closest('.question-container').querySelector('p').textContent;
+
+                    const reviewItem = document.createElement('div');
+                    reviewItem.classList.add('p-3', 'rounded-lg', 'border', 'mb-2');
+
+                    let feedbackHtml = `<p class="font-semibold">${questionText}</p>`;
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        reviewItem.classList.add('correct-answer');
+                        feedbackHtml += `<p class="text-green-700">Your answer: ${textInput.value.trim()} (Correct)</p>`;
+                    } else {
+                        reviewItem.classList.add('wrong-answer');
+                        feedbackHtml += `<p class="text-red-700">Your answer: ${textInput.value.trim() ? textInput.value.trim() : 'Not answered'} (Incorrect)</p>`;
+                        feedbackHtml += `<p class="text-blue-700">Correct answer: ${correctAnswer}</p>`;
+                    }
+                    answersReview.appendChild(reviewItem);
+                });
+
+                // Display the score
+                scoreDisplay.textContent = score;
+
+                // Transition from quiz page to results page
+                quizPage.style.display = 'none';
+                resultsPage.style.display = 'block';
+
+            } catch (error) {
+                console.error("An error occurred during quiz submission:", error);
+                // Optionally, display a user-friendly error message
+                alert("Đã xảy ra lỗi khi hoàn thành bài kiểm tra. Vui lòng thử lại hoặc liên hệ hỗ trợ.");
+            }
+        });
+
+        // Event listener for "Retake Test" button
+        retakeQuizButton.addEventListener('click', function() {
+            // Reset the quiz form
+            quizForm.reset();
+            // Hide results page and show quiz page again
+            resultsPage.style.display = 'none';
+            quizPage.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
