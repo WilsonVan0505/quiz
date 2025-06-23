@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictation Quiz</title>
+    <style>
+        /* Basic styling for the body and overall container */
+        body {
+            font-family: 'Inter', sans-serif; /* Using Inter font as per instructions */
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6; /* Light background */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Ensure it takes full viewport height */
+        }
+        /* Main quiz container styling */
+        .quiz-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px; /* Rounded corners */
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1); /* Soft shadow */
+            max-width: 800px;
+            width: 100%;
+            margin: 20px auto;
+            border: 1px solid #e0e0e0;
+            position: relative; /* Essential for positioning the timer absolutely */
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        /* Styling for the YouTube video embed */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio (height / width) */
+            height: 0;
+            margin-bottom: 25px;
+            border-radius: 8px; /* Rounded corners for video */
+            overflow: hidden; /* Hide anything outside rounded corners */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Timer display styling */
+        #timer-display {
+            text-align: center;
+            font-size: 1.5em; /* Adjusted font size to fit well */
+            font-weight: bold;
+            color: #d9534f; /* Red color for timer */
+            padding: 10px 15px; /* Adequate padding */
+            border: 2px solid #d9534f;
+            border-radius: 8px;
+            background-color: #ffebeb;
+            margin-bottom: 20px; /* Space between timer and submit button */
+            width: fit-content; /* Make it fit its content */
+            margin-left: auto; /* Center horizontally */
+            margin-right: auto; /* Center horizontally */
+        }
+
+
+        /* Styling for each dialogue section */
+        .dialogue-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #dcdcdc;
+            border-radius: 8px; /* Rounded corners */
+            background-color: #fcfcfc;
+        }
+        /* Styling for each line in the dialogue */
+        .dialogue-line {
+            display: flex;
+            align-items: baseline; /* Align text at the bottom for better flow */
+            flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .speaker {
+            font-weight: bold;
+            margin-right: 10px;
+            color: #34495e;
+            min-width: 60px; /* Ensures speaker name is aligned */
+        }
+        /* Styling for the blank input fields */
+        .blank-input {
+            border: 1px solid #aaddff; /* Softer blue border */
+            padding: 10px 12px;
+            border-radius: 6px; /* Slightly more rounded */
+            width: 120px; /* Adjusted to a fixed shorter width */
+            margin: 0 5px; /* Spacing around the input */
+            outline: none; /* Remove default outline */
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            flex-shrink: 0; /* Prevent input from shrinking */
+        }
+        .blank-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Focus glow */
+        }
+        /* Submit button styling */
+        .submit-button, .retake-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px; /* Rounded corners */
+            cursor: pointer;
+            font-size: 1.2em;
+            margin-top: 30px;
+            display: block;
+            width: 100%;
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .submit-button:hover, .retake-button:hover {
+            background-color: #218838;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+        .submit-button:active, .retake-button:active {
+            transform: translateY(1px);
+        }
+        .retake-button {
+            background-color: #007bff; /* Blue color for retake button */
+            margin-top: 15px; /* Spacing between submit and retake */
+        }
+        .retake-button:hover {
+            background-color: #0056b3;
+        }
+        /* Results section styling */
+        .results-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px dashed #cccccc; /* Dashed line separator */
+            text-align: center;
+        }
+        .results-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        .result-item {
+            margin-bottom: 12px;
+            text-align: left;
+            padding: 8px 0;
+            border-bottom: 1px dotted #e0e0e0;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .correct {
+            color: #28a745; /* Green for correct answers */
+            font-weight: bold;
+        }
+        .incorrect {
+            color: #dc3545; /* Red for incorrect answers */
+            font-weight: bold;
+        }
+        .score {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin-top: 25px;
+            color: #007bff; /* Blue for score */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+        /* Utility class to hide elements */
+        .hide {
+            display: none;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .quiz-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            h1 {
+                font-size: 1.6em;
+            }
+            .dialogue-line {
+                flex-direction: column; /* Stack elements vertically */
+                align-items: flex-start; /* Align text to the left */
+            }
+            .speaker {
+                margin-bottom: 5px;
+            }
+            .blank-input {
+                width: 100%; /* Full width on small screens */
+                max-width: none; /* Remove max-width constraint */
+                margin: 5px 0; /* Adjust margin for stacking */
+            }
+            .submit-button, .retake-button {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+            .retake-button {
+                margin-top: 10px;
+            }
+            .score {
+                font-size: 1.8em;
+            }
+            #timer-display {
+                font-size: 1em; /* Even smaller font on mobile */
+                padding: 6px 12px;
+                margin-bottom: 15px; /* Adjust margin for smaller screens */
+            }
+        }
+    </style>
+    <!-- Optional: Link to Google Fonts for 'Inter' if not already available in environment -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1 id="quiz-title">Dictation - U7 - Track 23</h1>
+
+        <!-- YouTube Video Embed -->
+        <div class="video-container">
+            <iframe id="youtube-video" src="https://www.youtube.com/embed/maxsoxK3N_g"
+                    title="YouTube video player for Dictation Quiz"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen>
+            </iframe>
+        </div>
+
+        <div id="quiz-form">
+            <div id="timer-display"></div> <!-- Timer re-added here -->
+            <div class="dialogue-section">
+                <!-- Dialogue lines from the provided document -->
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> Good afternoon everyone. Could you all listen very carefully because I'm going to give you some important information about our trip tomorrow. So . . . we're going to leave on (1) <input type="text" id="blank1" class="blank-input"> morning, the (2) <input type="text" id="blank2" class="blank-input"> of June.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> As you already know, I'm sure, this is going to be a very interesting trip to a famous castle, which is called (3) <input type="text" id="blank3" class="blank-input"> Castle . You spell that H-A-R-L-O-W.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> Could you write that down on your (4) <input type="text" id="blank4" class="blank-input"> page, please?
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> Now, we’re going to leave school very early – at (5) <input type="text" id="blank5" class="blank-input"> a.m. – and please don't be late because we've got a long journey to the castle. It'll take us (6) <input type="text" id="blank6" class="blank-input"> and a half hours to get there.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> Now, when we get to the castle, a very friendly man will give us a tour of the castle building – that will be at (7) <input type="text" id="blank7" class="blank-input"> a.m.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> So, first we’re going to visit the rooms inside the castle. They're very (8) <input type="text" id="blank8" class="blank-input"> and interesting and will give you an idea of the (9) <input type="text" id="blank9" class="blank-input"> of this great building.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> There's also a small (10) <input type="text" id="blank10" class="blank-input"> near the castle – so we'll visit that next.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> Then I'm sure you'll all be hungry, so we'll have (11) <input type="text" id="blank11" class="blank-input"> at 1.30 p.m.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> Now we won't have long for lunch – just (12) <input type="text" id="blank12" class="blank-input"> an hour – because we've got lots to do in the afternoon. So we're just going to eat our (13) <input type="text" id="blank13" class="blank-input"> outside – please remember to bring some with you.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> You can go to the castle restaurant to get (14) <input type="text" id="blank14" class="blank-input">.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> Then, after lunch, at two o'clock in the afternoon, we're going to walk round the (15) <input type="text" id="blank15" class="blank-input"> and castle gardens. They're really lovely.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> There are (16) <input type="text" id="blank16" class="blank-input"> animals in the gardens, so please look out for them and tick any wild animals you see on your information page.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> There are also some very interesting (17) <input type="text" id="blank17" class="blank-input">, for example, unusual butterflies and spiders. If you see any, please draw pictures of the insects and (18) <input type="text" id="blank18" class="blank-input"> them.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> Oh yes … you must stay in (19) <input type="text" id="blank19" class="blank-input"> when you visit the gardens and everyone must be back on the (20) <input type="text" id="blank20" class="blank-input"> at 5.30, please.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> We really want to leave as quickly as we can so that we get to school again at (21) <input type="text" id="blank21" class="blank-input"> in the evening. Please ask your parents to be there to pick you up then.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> Now, just a few words about what to bring with you tomorrow. I've talked about sandwiches, and it's always good to have a (22) <input type="text" id="blank22" class="blank-input"> – but not an expensive one – and don't lose it.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> Then, of course, don't forget your (23) <input type="text" id="blank23" class="blank-input"> because it might be cold.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> And … oh yes … remember an (24) <input type="text" id="blank24" class="blank-input"> because it could rain tomorrow I'm afraid.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> You can bring some (25) <input type="text" id="blank25" class="blank-input"> for things like postcards. They aren't very expensive.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> And in the castle gardens you can also buy ice creams and (26) <input type="text" id="blank26" class="blank-input">.
+                </div>
+                <div class="dialogue-line">
+                    <span class="speaker">Teacher:</span> Well, get to bed early tonight and I'll see you all in the morning!
+                </div>
+            </div>
+
+            <button type="submit" class="submit-button" onclick="submitQuiz()">Submit</button>
+        </div>
+
+        <div id="results-section" class="results-section hide">
+            <h2>Your Results</h2>
+            <div id="score-display" class="score"></div>
+            <div id="answers-display"></div>
+            <button class="retake-button" onclick="resetQuiz()">Retake Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        // Define the correct answers for each blank
+        const answers = {
+            blank1: "Wednesday",
+            blank2: "12th",
+            blank3: "Harlow",
+            blank4: "information",
+            blank5: "7.30",
+            blank6: "two",
+            blank7: "11",
+            blank8: "old",
+            blank9: "history",
+            blank10: "museum",
+            blank11: "lunch",
+            blank12: "half",
+            blank13: "sandwiches",
+            blank14: "drinks",
+            blank15: "river",
+            blank16: "wild",
+            blank17: "insects",
+            blank18: "colour",
+            blank19: "groups",
+            blank20: "bus",
+            blank21: "7.45",
+            blank22: "camera",
+            blank23: "coat",
+            blank24: "umbrella",
+            blank25: "money",
+            blank26: "snacks"
+        };
+
+        let timerInterval;
+        const maxTimeInSeconds = 30 * 60; // 30 minutes in seconds
+        let timeLeft = maxTimeInSeconds;
+        
+        // Updated YouTube video ID
+        const youtubeVideoId = "maxsoxK3N_g"; 
+
+        /**
+         * Formats seconds into MM:SS format.
+         * @param {number} totalSeconds - The total number of seconds.
+         * @returns {string} Formatted time string (MM:SS).
+         */
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        /**
+         * Starts or resumes the countdown timer.
+         */
+        function startTimer() {
+            const timerDisplay = document.getElementById('timer-display');
+            if (!timerDisplay) {
+                console.error("Timer display element not found!");
+                return;
+            }
+
+            if (timerInterval) clearInterval(timerInterval); // Clear any existing interval
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = formatTime(timeLeft);
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.textContent = "Time's up!";
+                    submitQuiz(); // Automatically submit when time is up
+                }
+            }, 1000); // Update every 1 second
+        }
+
+        /**
+         * Stops the countdown timer.
+         */
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        /**
+         * Submits the quiz, calculates the score, and displays results.
+         */
+        function submitQuiz() {
+            stopTimer(); // Stop the timer when quiz is submitted
+
+            const quizForm = document.getElementById('quiz-form');
+            const resultsSection = document.getElementById('results-section');
+            const videoContainer = document.querySelector('.video-container'); // Get video container
+            const youtubeIframe = document.getElementById('youtube-video'); // Get the iframe
+            const quizTitle = document.getElementById('quiz-title'); // Get quiz title
+            if (!quizForm || !resultsSection || !videoContainer || !youtubeIframe || !quizTitle) {
+                console.error("One or more core elements not found during submission!");
+                return;
+            }
+
+            let score = 0;
+            const totalBlanks = Object.keys(answers).length;
+            const answersDisplay = document.getElementById('answers-display');
+            if (!answersDisplay) {
+                console.error("Answers display element not found!");
+                return;
+            }
+            answersDisplay.innerHTML = ''; // Clear previous results
+
+            // Loop through each blank, check the answer, and display results
+            for (const blankId in answers) {
+                const inputElement = document.getElementById(blankId);
+                if (inputElement) {
+                    const userAnswer = inputElement.value.trim().toLowerCase(); // Get user input, trim whitespace, convert to lowercase
+                    const correctAnswer = answers[blankId].toLowerCase(); // Get correct answer, convert to lowercase
+                    const blankNumber = blankId.replace('blank', ''); // Get the blank number (e.g., "1", "2")
+
+                    const resultItem = document.createElement('div');
+                    resultItem.classList.add('result-item');
+
+                    let statusClass = '';
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        statusClass = 'correct';
+                    } else {
+                        statusClass = 'incorrect';
+                    }
+
+                    // Format the result item for better readability, removing Status
+                    resultItem.innerHTML = `
+                        <span class="${statusClass}">Question ${blankNumber}:</span><br>
+                        Your Answer: <strong>${inputElement.value}</strong><br>
+                        Correct Answer: <strong>${answers[blankId]}</strong>
+                    `;
+                    answersDisplay.appendChild(resultItem);
+                } else {
+                    console.warn(`Input element with ID '${blankId}' not found.`);
+                }
+            }
+
+            // Display the total score in the format "Score: X/Y"
+            const scoreDisplay = document.getElementById('score-display');
+            if (!scoreDisplay) {
+                console.error("Score display element not found!");
+                return;
+            }
+            scoreDisplay.textContent = `Score: ${score}/${totalBlanks}`;
+
+            // Show the results section and hide the quiz form, video, and quiz title
+            quizForm.classList.add('hide');
+            resultsSection.classList.remove('hide');
+            videoContainer.classList.add('hide'); // Hide video on results page
+            quizTitle.classList.add('hide'); // Hide quiz title on results page
+
+            // Stop the YouTube video by setting its src to an empty string
+            youtubeIframe.src = "";
+        }
+
+        /**
+         * Resets the quiz to its initial state, clearing inputs and hiding results.
+         */
+        function resetQuiz() {
+            const quizForm = document.getElementById('quiz-form');
+            const resultsSection = document.getElementById('results-section');
+            const timerDisplay = document.getElementById('timer-display'); // Re-added
+            const videoContainer = document.querySelector('.video-container'); // Get video container
+            const youtubeIframe = document.getElementById('youtube-video'); // Get the iframe
+            const quizTitle = document.getElementById('quiz-title'); // Get quiz title
+            if (!quizForm || !resultsSection || !timerDisplay || !videoContainer || !youtubeIframe || !quizTitle) {
+                console.error("One or more core elements not found during reset!");
+                return;
+            }
+
+            // Clear all input fields
+            const inputElements = document.querySelectorAll('.blank-input');
+            inputElements.forEach(input => {
+                input.value = '';
+            });
+
+            // Clear results display
+            document.getElementById('answers-display').innerHTML = '';
+            document.getElementById('score-display').textContent = '';
+
+            // Hide results section and show quiz form, video, and quiz title
+            resultsSection.classList.add('hide');
+            quizForm.classList.remove('hide');
+            videoContainer.classList.remove('hide'); // Show video when quiz is reset
+            quizTitle.classList.remove('hide'); // Show quiz title when quiz is reset
+
+            // Reset and restart the timer
+            timeLeft = maxTimeInSeconds;
+            timerDisplay.textContent = formatTime(timeLeft); // Initialize display
+            startTimer();
+
+            // Reset the YouTube video to its original source
+            youtubeIframe.src = `https://www.youtube.com/embed/${youtubeVideoId}`;
+        }
+
+        // Initialize the timer display and start the timer when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const timerDisplay = document.getElementById('timer-display'); // Get reference here
+            if (timerDisplay) { // Check if it exists before using
+                timerDisplay.textContent = formatTime(timeLeft);
+                startTimer();
+            } else {
+                console.error("Timer display element not found on DOMContentLoaded!");
+            }
+        });
+    </script>
+</body>
+</html>
