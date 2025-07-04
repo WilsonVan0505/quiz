@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Test: Reintroducing Elms to Britain</title>
+    <!-- Load Tailwind CSS from CDN for beautiful and responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light background */
+            color: #334155; /* Main text color */
+        }
+        /* Ensure elements have rounded corners */
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+        /* Button styling */
+        .btn-primary {
+            background-color: #3b82f6; /* Blue color */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb; /* Darker blue on hover */
+        }
+        /* Styling for questions and answers */
+        .question-container {
+            background-color: white;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+        .option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #cbd5e1; /* Light gray border */
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .option-label:hover {
+            background-color: #e2e8f0; /* Light background on hover */
+            border-color: #94a3b8; /* Darker border */
+        }
+        .option-label input[type="radio"],
+        .option-label input[type="checkbox"] {
+            margin-right: 0.75rem;
+            accent-color: #3b82f6; /* Radio/checkbox color */
+        }
+        /* Styling for correct and wrong answers on the results page */
+        .correct-answer {
+            background-color: #d1fae5; /* Light green */
+            border-color: #10b981; /* Green border */
+        }
+        .wrong-answer {
+            background-color: #fee2e2; /* Light red */
+            border-color: #ef4444; /* Red border */
+        }
+        /* Hide results page initially */
+        #results-page {
+            display: none;
+        }
+        .article-content {
+            white-space: pre-wrap; /* Preserve line breaks and white space */
+        }
+        .text-input, .select-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            margin-top: 0.5rem;
+            box-sizing: border-box; /* Ensure padding doesn't affect total width */
+        }
+        .list-of-options ul {
+            list-style-type: none; /* Remove default bullet */
+            padding-left: 0;
+        }
+        .list-of-options li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-4 max-w-4xl">
+        <!-- Quiz Page -->
+        <div id="quiz-page" class="bg-white p-6 rounded-lg shadow-xl">
+            <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Reading Test: Reintroducing Elms to Britain</h1>
+
+            <!-- Reading Passage Section -->
+            <div class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">Test1-reading-passage2 to Britain</h2>
+                <div class="article-content text-gray-600 leading-relaxed text-base">
+Mark Rowe investigates attempts to reintroduce elms to Britain
+
+A Around 25 million elms, accounting for 90% of all elm trees in the UK, died during the 1960s and ’70s of Dutch elm disease. In the aftermath, the elm, once so dominant in the British landscape, was largely forgotten. However, there’s now hope the elm may be reintroduced to the countryside of central and southern England. Any reintroduction will start from a very low base. ‘The impact of the disease is difficult to picture if you hadn’t seen what was there before,’ says Matt Elliot of the Woodland Trust. ‘You look at old photographs from the 1960s and it’s only then that you realise the impact [elms had] … They were significant, large trees … then they were gone.’
+
+B The disease is caused by a fungus that blocks the elms’ vascular (water, nutrient and food transport) system, causing branches to wilt and die. A first epidemic, which occurred in the 1920s, gradually died down, but in the ’70s a second epidemic was triggered by shipments of elm from Canada. The wood came in the form of logs destined for boat building and its intact bark was perfect for the elm bark beetles that spread the deadly fungus. This time, the beetles carried a much more virulent strain that destroyed the vast majority of British elms.
+
+C Today, elms still exist in the Southern English countryside but mostly only in low hedgerows between fields. ‘We have millions of small elms in hedgerows but they get targeted by the beetle as soon as they reach a certain size,’ says Karen Russell, co-author of the report ‘Where we are with elm’. Once the trunk of the elm reaches 10–15 centimetres or so in diameter, it becomes a perfect size for beetles to lay eggs and for the fungus to take hold. Yet mature specimens have been identified, in counties such as Cambridgeshire, that are hundreds of years old, and have mysteriously escaped the epidemic.
+
+D For centuries, elm ran a close second to oak as the hardwood tree of choice in Britain and was in many instances the most prominent tree in the landscape. Not only was elm common in European forests, it became a key component of birch, ash and hazel woodlands. The use of elm is thought to go back to the Bronze Age, when it was widely used for tools. Elm was also the preferred material for shields and early swords. In the 18th century, it was planted more widely and its wood was used for items such as storage crates and flooring. It was also suitable for items that experienced high levels of impact and was used to build the keel of the 19th-century sailing ship Cutty Sark as well as mining equipment.
+
+E Given how ingrained elm is in British culture, it’s unsurprising the tree has many advocates. Amongst them is Peter Bourne of the National Elm Collection in Brighton. ‘I saw Dutch elm disease unfold as a small boy,’ he says. ‘The elm seemed to be part of rural England, but I remember watching trees just lose their leaves and that really stayed with me.’ Today, the city of Brighton’s elms total about 17,000. Local factors appear to have contributed to their survival. Strong winds from the sea make it difficult for the determined elm bark beetle to attack this coastal city’s elm population. However, the situation is precarious. ‘The beetles can just march in if we’re not careful, as the threat is right on our doorstep,’ says Bourne.
+
+F Any prospect of the elm returning relies heavily on trees being either resistant to, or tolerant of, the disease. This means a widespread reintroduction would involve existing or new hybrid strains derived from resistant, generally non-native elm species. A new generation of seedlings have been bred and tested to see if they can withstand the fungus by cutting a small slit on the bark and injecting a tiny amount of the pathogen. ‘The effects are very quick,’ says Russell. ‘You return in four to six weeks and trees that are resistant show no symptoms, whereas those that are susceptible show leaf loss and may even have died completely.’
+
+G All of this raises questions of social acceptance, acknowledges Russell. ‘If we’re putting elm back into the landscape, a small element of it is not native – are we bothered about that?’ For her, the environmental case for reintroducing elm is strong. ‘They will host wildlife, which is a good thing.’ Others are more wary. ‘On the face of it, it seems like a good idea,’ says Elliot. The problem, he suggests, is that ‘You’re replacing a native species with a horticultural analogue*. You’re effectively cloning.’ There’s also the risk of introducing new diseases. Rather than plant new elms, the Woodland Trust emphasises providing space to those elms that have survived independently. ‘Sometimes the best thing you can do is just give nature time to recover … over time, you might get resistance,’ says Elliot.
+* horticultural analogue: a cultivated plant species that is genetically similar to an existing species
+                </div>
+            </div>
+
+            <!-- Quiz Questions Section -->
+            <form id="quiz-form">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">Questions 1–5: Which section contains the following information?</h2>
+                <p class="mb-4 text-gray-600">In boxes 1–5 on your answer sheet, write the correct letter, A–G. You may use any letter more than once.</p>
+
+                <!-- Question 1 (14) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">1. reference to the research problems that arise from there being only a few surviving large elms</p>
+                    <select name="q1" class="select-input">
+                        <option value="">Choose a section</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="G">G</option>
+                    </select>
+                </div>
+
+                <!-- Question 2 (15) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">2. details of a difference of opinion about the value of reintroducing elms to Britain</p>
+                    <select name="q2" class="select-input">
+                        <option value="">Choose a section</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="G">G</option>
+                    </select>
+                </div>
+
+                <!-- Question 3 (16) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">3. reference to how Dutch elm disease was brought into Britain</p>
+                    <select name="q3" class="select-input">
+                        <option value="">Choose a section</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="G">G</option>
+                    </select>
+                </div>
+
+                <!-- Question 4 (17) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">4. a description of the conditions that have enabled a location in Britain to escape Dutch elm disease</p>
+                    <select name="q4" class="select-input">
+                        <option value="">Choose a section</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="G">G</option>
+                    </select>
+                </div>
+
+                <!-- Question 5 (18) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">5. reference to the stage at which young elms become vulnerable to Dutch elm disease</p>
+                    <select name="q5" class="select-input">
+                        <option value="">Choose a section</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="G">G</option>
+                    </select>
+                </div>
+
+                <h2 class="text-2xl font-semibold mb-4 mt-8 text-gray-700">Questions 6–10: Look at the following statements and the list of people below. Match each statement with the correct person, A, B, or C.</h2>
+                <p class="mb-4 text-gray-600">NB You may use any letter more than once.</p>
+                <div class="list-of-options mb-6 p-4 bg-gray-100 rounded-lg">
+                    <p class="font-bold mb-2">List of People</p>
+                    <ul>
+                        <li>A. Matt Elliot</li>
+                        <li>B. Karen Russell</li>
+                        <li>C. Peter Bourne</li>
+                    </ul>
+                </div>
+
+                <!-- Question 6 (19) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">6. If a tree gets infected with Dutch elm disease, the damage rapidly becomes visible.</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="A"> A
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="B"> B
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="C"> C
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 7 (20) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">7. It may be better to wait and see if the mature elms that have survived continue to flourish.</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="A"> A
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="B"> B
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="C"> C
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 8 (21) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">8. There must be an explanation for the survival of some mature elms.</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="A"> A
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="B"> B
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="C"> C
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 9 (22) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">9. We need to be aware that insects carrying Dutch elm disease are not very far away.</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q9" value="A"> A
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q9" value="B"> B
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q9" value="C"> C
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 10 (23) -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">10. You understand the effect Dutch elm disease has had when you see evidence of how prominent the tree once was.</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q10" value="A"> A
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q10" value="B"> B
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q10" value="C"> C
+                        </label>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-semibold mb-4 mt-8 text-gray-700">Questions 11–13: Complete the summary below.</h2>
+                <p class="mb-4 text-gray-600">Choose <strong>ONE WORD ONLY</strong> from the passage for each answer.</p>
+
+                <!-- Notes Section -->
+                <div class="mb-6 p-4 bg-gray-100 rounded-lg notes-section">
+                    <p class="font-bold mb-2">Uses of a popular tree</p>
+                    <ul>
+                        <!-- Question 11 (24) -->
+                        <li>
+                            <p class="text-base mb-2">For hundreds of years, the only tree that was more popular in Britain than elm was <span class="underline">_______</span>.</p>
+                            <input type="text" name="q11" class="text-input" placeholder="Enter your answer (max 1 word)">
+                        </li>
+                        <!-- Question 12 (25) -->
+                        <li>
+                            <p class="text-base mb-2">Starting in the Bronze Age, many tools were made from elm and people also used it to make weapons. In the 18th century, it was grown to provide wood for boxes and <span class="underline">_______</span>. </p>
+                            <input type="text" name="q12" class="text-input" placeholder="Enter your answer (max 1 word)">
+                        </li>
+                        <!-- Question 13 (26) -->
+                        <li>
+                            <p class="text-base mb-2">Due to its strength, elm was often used for mining equipment and the Cutty Sark’s <span class="underline">_______</span> was also constructed from elm.</p>
+                            <input type="text" name="q13" class="text-input" placeholder="Enter your answer (max 1 word)">
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="text-center mt-6">
+                    <button type="submit" class="btn-primary">Complete Test</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Page (initially hidden) -->
+        <div id="results-page" class="bg-white p-6 rounded-lg shadow-xl mt-8">
+            <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">Test Results</h2>
+            <p class="text-xl text-center mb-6">Your Score: <span id="score" class="font-bold text-blue-600"></span> / 13</p>
+
+            <div id="answers-review" class="space-y-4">
+                <!-- Answers will be displayed here by JavaScript -->
+            </div>
+
+            <div class="text-center mt-8">
+                <button id="retake-quiz" class="btn-primary">Retake Test</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Define correct answers for each question
+        const correctAnswers = {
+            // Questions 1-5: Which section contains the following information? (Mapping original Q# to new Q#)
+            'q1': 'C', // Original Q14
+            'q2': 'G', // Original Q15
+            'q3': 'B', // Original Q16
+            'q4': 'E', // Original Q17
+            'q5': 'C', // Original Q18
+
+            // Questions 6-10: Match statement with person (Mapping original Q# to new Q#)
+            'q6': 'B', // Original Q19
+            'q7': 'A', // Original Q20
+            'q8': 'B', // Original Q21
+            'q9': 'C', // Original Q22
+            'q10': 'A', // Original Q23
+
+            // Questions 11-13: Complete the summary (Mapping original Q# to new Q#)
+            'q11': 'oak', // Original Q24
+            'q12': 'flooring', // Original Q25
+            'q13': 'keel' // Original Q26
+        };
+
+        // Get necessary DOM elements
+        const quizForm = document.getElementById('quiz-form');
+        const quizPage = document.getElementById('quiz-page');
+        const resultsPage = document.getElementById('results-page');
+        const scoreDisplay = document.getElementById('score');
+        const answersReview = document.getElementById('answers-review');
+        const retakeQuizButton = document.getElementById('retake-quiz');
+
+        // Event listener for quiz form submission
+        quizForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            try {
+                let score = 0;
+                answersReview.innerHTML = ''; // Clear previous answers review
+
+                // Process Questions 1-5 (Matching Section)
+                for (let i = 1; i <= 5; i++) {
+                    const questionId = `q${i}`;
+                    const selectedOption = document.querySelector(`select[name="${questionId}"]`);
+                    const questionElement = selectedOption ? selectedOption.closest('.question-container') : null;
+                    const questionText = questionElement ? questionElement.querySelector('p').textContent : `Question ${i}`;
+
+                    const userAnswer = selectedOption ? selectedOption.value : '';
+                    const correctAnswer = correctAnswers[questionId];
+
+                    const reviewItem = document.createElement('div');
+                    reviewItem.classList.add('p-3', 'rounded-lg', 'border', 'mb-2');
+
+                    let feedbackHtml = `<p class="font-semibold">${i}. ${questionText}</p>`;
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        reviewItem.classList.add('correct-answer');
+                        feedbackHtml += `<p class="text-green-700">Your answer: ${userAnswer} (Correct)</p>`;
+                    } else {
+                        reviewItem.classList.add('wrong-answer');
+                        feedbackHtml += `<p class="text-red-700">Your answer: ${userAnswer ? userAnswer : 'Not answered'} (Incorrect)</p>`;
+                        feedbackHtml += `<p class="text-blue-700">Correct answer: ${correctAnswer}</p>`;
+                    }
+                    reviewItem.innerHTML = feedbackHtml;
+                    answersReview.appendChild(reviewItem);
+                }
+
+                // Process Questions 6-10 (Match Statement with Person)
+                for (let i = 6; i <= 10; i++) {
+                    const questionId = `q${i}`;
+                    const selectedOption = document.querySelector(`input[name="${questionId}"]:checked`);
+                    const questionElement = selectedOption ? selectedOption.closest('.question-container') : null;
+                    const questionText = questionElement ? questionElement.querySelector('p').textContent : `Question ${i}`;
+
+                    const userAnswer = selectedOption ? selectedOption.value : null;
+                    const correctAnswer = correctAnswers[questionId];
+
+                    const reviewItem = document.createElement('div');
+                    reviewItem.classList.add('p-3', 'rounded-lg', 'border', 'mb-2');
+
+                    let feedbackHtml = `<p class="font-semibold">${i}. ${questionText}</p>`;
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        reviewItem.classList.add('correct-answer');
+                        feedbackHtml += `<p class="text-green-700">Your answer: ${userAnswer} (Correct)</p>`;
+                    } else {
+                        reviewItem.classList.add('wrong-answer');
+                        feedbackHtml += `<p class="text-red-700">Your answer: ${userAnswer ? userAnswer : 'Not answered'} (Incorrect)</p>`;
+                        feedbackHtml += `<p class="text-blue-700">Correct answer: ${correctAnswer}</p>`;
+                    }
+                    reviewItem.innerHTML = feedbackHtml;
+                    answersReview.appendChild(reviewItem);
+                }
+
+                // Process Questions 11-13 (Complete the Summary)
+                for (let i = 11; i <= 13; i++) {
+                    const questionId = `q${i}`;
+                    const textInput = document.querySelector(`input[name="${questionId}"]`);
+                    const questionElement = textInput ? textInput.closest('li') : null;
+                    let questionText = questionElement ? questionElement.querySelector('p').textContent : `Question ${i}`;
+                    questionText = questionText.replace(/_______/, '').trim(); // Clean up placeholder
+
+                    const userAnswer = textInput ? textInput.value.trim().toLowerCase() : '';
+                    const correctAnswer = correctAnswers[questionId].toLowerCase();
+
+                    const reviewItem = document.createElement('div');
+                    reviewItem.classList.add('p-3', 'rounded-lg', 'border', 'mb-2');
+
+                    let feedbackHtml = `<p class="font-semibold">${i}. ${questionText}</p>`;
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        reviewItem.classList.add('correct-answer');
+                        feedbackHtml += `<p class="text-green-700">Your answer: ${textInput.value.trim()} (Correct)</p>`;
+                    } else {
+                        reviewItem.classList.add('wrong-answer');
+                        feedbackHtml += `<p class="text-red-700">Your answer: ${textInput.value.trim() ? textInput.value.trim() : 'Not answered'} (Incorrect)</p>`;
+                        feedbackHtml += `<p class="text-blue-700">Correct answer: ${correctAnswers[questionId]}</p>`;
+                    }
+                    reviewItem.innerHTML = feedbackHtml;
+                    answersReview.appendChild(reviewItem);
+                }
+
+                // Display the score
+                scoreDisplay.textContent = score;
+
+                // Transition from quiz page to results page
+                quizPage.style.display = 'none';
+                resultsPage.style.display = 'block';
+
+            } catch (error) {
+                console.error("An error occurred during quiz submission:", error);
+                const errorMessageDiv = document.createElement('div');
+                errorMessageDiv.className = 'p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg mt-4';
+                errorMessageDiv.textContent = 'An error occurred while completing the test. Please try again or contact support.';
+                quizPage.appendChild(errorMessageDiv);
+            }
+        });
+
+        // Event listener for "Retake Test" button
+        retakeQuizButton.addEventListener('click', function() {
+            // Reset the quiz form
+            quizForm.reset();
+            // Hide results page and show quiz page again
+            resultsPage.style.display = 'none';
+            quizPage.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
