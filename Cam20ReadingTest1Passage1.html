@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Test: The Kākāpō</title>
+    <!-- Load Tailwind CSS from CDN for beautiful and responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light background */
+            color: #334155; /* Main text color */
+        }
+        /* Ensure elements have rounded corners */
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+        /* Button styling */
+        .btn-primary {
+            background-color: #3b82f6; /* Blue color */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb; /* Darker blue on hover */
+        }
+        /* Styling for questions and answers */
+        .question-container {
+            background-color: white;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+        .option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #cbd5e1; /* Light gray border */
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .option-label:hover {
+            background-color: #e2e8f0; /* Light background on hover */
+            border-color: #94a3b8; /* Darker border */
+        }
+        .option-label input[type="radio"],
+        .option-label input[type="checkbox"] {
+            margin-right: 0.75rem;
+            accent-color: #3b82f6; /* Radio/checkbox color */
+        }
+        /* Styling for correct and wrong answers on the results page */
+        .correct-answer {
+            background-color: #d1fae5; /* Light green */
+            border-color: #10b981; /* Green border */
+        }
+        .wrong-answer {
+            background-color: #fee2e2; /* Light red */
+            border-color: #ef4444; /* Red border */
+        }
+        /* Hide results page initially */
+        #results-page {
+            display: none;
+        }
+        .article-content {
+            white-space: pre-wrap; /* Preserve line breaks and white space */
+        }
+        .text-input, .select-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            margin-top: 0.5rem;
+            box-sizing: border-box; /* Ensure padding doesn't affect total width */
+        }
+        .notes-section ul {
+            list-style-type: none; /* Remove default bullet */
+            padding-left: 0;
+        }
+        .notes-section li {
+            position: relative;
+            padding-left: 1.5rem; /* Space for custom bullet */
+            margin-bottom: 0.5rem;
+        }
+        .notes-section li::before {
+            content: '•'; /* Custom bullet point */
+            position: absolute;
+            left: 0;
+            color: #334155; /* Color of the bullet */
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto p-4 max-w-4xl">
+        <!-- Quiz Page -->
+        <div id="quiz-page" class="bg-white p-6 rounded-lg shadow-xl">
+            <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Reading Test: The Kākāpō</h1>
+
+            <!-- Reading Passage Section -->
+            <div class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">The kākāpō</h2>
+                <div class="article-content text-gray-600 leading-relaxed text-base">
+The kākāpō is a nocturnal, flightless parrot that is critically endangered and one of New Zealand’s unique treasures
+
+The kākāpō, also known as the owl parrot, is a large, forest-dwelling bird, with a pale owl-like face. Up to 64 cm in length, it has predominantly yellow-green feathers, forward-facing eyes, a large grey beak, large blue feet, and relatively short wings and tail. It is the world’s only flightless parrot, and is also possibly one of the world’s longest-living birds, with a reported lifespan of up to 100 years.
+
+Kākāpō are solitary birds and tend to occupy the same home range for many years. They forage on the ground and climb high into trees. They often leap from trees and flap their wings, but at best manage a controlled descent to the ground. They are entirely vegetarian, with their diet including the leaves, roots and bark of trees as well as bulbs, and fern fronds.
+
+Kākāpō breed in summer and autumn, but only in years when food is plentiful. Males play no part in incubation or chick-rearing – females alone incubate eggs and feed the chicks. The 1–4 eggs are laid in soil, which is repeatedly turned over before and during incubation. The female kākāpō has to spend long periods away from the nest searching for food, which leaves the unattended eggs and chicks particularly vulnerable to predators.
+
+Before humans arrived, kākāpō were common throughout New Zealand’s forests. However, this all changed with the arrival of the first Polynesian settlers about 700 years ago. For the early settlers, the flightless kākāpō was easy prey. They ate its meat and used its feathers to make soft cloaks. With them came the Polynesian dog and rat, which also preyed on kākāpō. By the time European colonisers arrived in the early 1800s, kākāpō had become confined to the central North Island and forested parts of the South Island. The fall in kākāpō numbers was accelerated by European colonisation. A great deal of habitat was lost through forest clearance, and introduced species such as deer depleted the remaining forests of food. Other predators such as cats, stoats and two more species of rat were also introduced.
+The kākāpō were in serious trouble.
+
+In 1894, the New Zealand government launched its first attempt to save the kākāpō. Conservationist Richard Henry led an effort to relocate several hundred of the birds to predator-free Resolution Island in Fiordland. Unfortunately, the island didn’t remain predator free – stoats arrived within six years, eventually destroying the kākāpō population. By the mid-1900s, the kākāpō was practically a lost species.
+Only a few clung to life in the most isolated parts of New Zealand.
+
+From 1949 to 1973, the newly formed New Zealand Wildlife Service made over 60 expeditions to find kākāpō, focusing mainly on Fiordland. Six were caught, but there were no females amongst them and all but one died within a few months of captivity. In 1974, a new initiative was launched, and by 1977, 18 more kākāpō were found in Fiordland. However, there were still no females. In 1977, a large population of males was spotted in Rakiura – a large island free from stoats, ferrets and weasels. There were about 200 individuals, and in 1980 it was confirmed females were also present.
+These birds have been the foundation of all subsequent work in managing the species.
+
+Unfortunately, predation by feral cats on Rakiura Island led to a rapid decline in kākāpō numbers. As a result, during 1980–97, the surviving population was evacuated to three island sanctuaries: Codfish Island, Maud Island and Little Barrier Island. However, breeding success was hard to achieve. Rats were found to be a major predator of kākāpō chicks and an insufficient number of chicks survived to offset adult mortality. By 1995, although at least 12 chicks had been produced on the islands, only three had survived. The kākāpō population had dropped to 51 birds. The critical situation prompted an urgent review of kākāpō management in New Zealand.
+
+In 1996, a new Recovery Plan was launched, together with a specialist advisory group called the Kākāpō Scientific and Technical Advisory Committee and a higher amount of funding. Renewed steps were taken to control predators on the three islands. Cats were eradicated from Little Barrier Island in 1980, and possums were eradicated from Codfish Island by 1986. However, the population did not start to increase until rats were removed from all three islands, and the birds were more intensively managed. This involved moving the birds between islands, supplementary feeding of adults and rescuing and hand-raising any failing chicks.
+After the first five years of the Recovery Plan, the population was on target. By 2000, five new females had been produced, and the total population had grown to 62 birds. For the first time, there was cautious optimism for the future of kākāpō and by June 2020, a total of 210 birds was recorded.
+
+Today, kākāpō management continues to be guided by the kākāpō Recovery Plan. Its key goals are: minimise the loss of genetic diversity in the kākāpō population, restore or maintain sufficient habitat to accommodate the expected increase in the kākāpō population, and ensure stakeholders continue to be fully engaged in the preservation of the species.
+                </div>
+            </div>
+
+            <!-- Quiz Questions Section -->
+            <form id="quiz-form">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-700">Questions 1–6: Do the following statements agree with the information given in Reading Passage 1?</h2>
+                <p class="mb-4 text-gray-600">Write: <strong>TRUE</strong> if the statement agrees with the information, <strong>FALSE</strong> if the statement contradicts the information, <strong>NOT GIVEN</strong> if there is no information on this.</p>
+
+                <!-- Question 1 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">1. There are other parrots that share the kakapo’s inability to fly.</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="T"> TRUE
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="F"> FALSE
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="NG"> NOT GIVEN
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">2. Adult kakapo produce chicks every year.</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="T"> TRUE
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="F"> FALSE
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="NG"> NOT GIVEN
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">3. Adult male kakapo bring food back to nesting females.</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q3" value="T"> TRUE
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q3" value="F"> FALSE
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q3" value="NG"> NOT GIVEN
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">4. The Polynesian rat was a greater threat to the kakapo than Polynesian settlers.</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q4" value="T"> TRUE
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q4" value="F"> FALSE
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q4" value="NG"> NOT GIVEN
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">5. Kakapo were transferred from Rakiura Island to other locations because they were at risk from feral cats.</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="T"> TRUE
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="F"> FALSE
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="NG"> NOT GIVEN
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="question-container">
+                    <p class="font-semibold text-lg mb-3">6. One Recovery Plan initiative that helped increase the kakapo population size was caring for struggling young birds.</p>
+                    <div>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="T"> TRUE
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="F"> FALSE
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="NG"> NOT GIVEN
+                        </label>
+                    </div>
+                </div>
+
+                <h2 class="text-2xl font-semibold mb-4 mt-8 text-gray-700">Questions 7–13: Complete the notes below.</h2>
+                <p class="mb-4 text-gray-600">Choose <strong>ONE WORD AND/OR A NUMBER</strong> from the passage for each answer.</p>
+
+                <!-- Notes Section -->
+                <div class="mb-6 p-4 bg-gray-100 rounded-lg notes-section">
+                    <p class="font-bold mb-2">New Zealand’s kākāpō</p>
+                    <ul>
+                        <li>
+                            <p class="font-semibold mb-2">A type of parrot:</p>
+                            <ul>
+                                <!-- Question 7 -->
+                                <li>
+                                    <p class="text-base mb-2">- diet consists of fern fronds, various parts of a tree and <span class="underline">_______</span>.</p>
+                                    <input type="text" name="q7" class="text-input" placeholder="Enter your answer (max 1 word/number)">
+                                </li>
+                                <!-- Question 8 -->
+                                <li>
+                                    <p class="text-base mb-2">- nests are created in <span class="underline">_______</span> where eggs are laid.</p>
+                                    <input type="text" name="q8" class="text-input" placeholder="Enter your answer (max 1 word/number)">
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <p class="font-semibold mb-2">Arrival of Polynesian settlers</p>
+                            <ul>
+                                <!-- Question 9 -->
+                                <li>
+                                    <p class="text-base mb-2">- the <span class="underline">_______</span> of the kākāpō were used to make clothes.</p>
+                                    <input type="text" name="q9" class="text-input" placeholder="Enter your answer (max 1 word/number)">
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <p class="font-semibold mb-2">Arrival of European colonisers</p>
+                            <ul>
+                                <!-- Question 10 -->
+                                <li>
+                                    <p class="text-base mb-2">- <span class="underline">_______</span> were an animal which they introduced that ate the kākāpō’s food sources.</p>
+                                    <input type="text" name="q10" class="text-input" placeholder="Enter your answer (max 1 word/number)">
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <p class="font-semibold mb-2">Protecting kākāpō</p>
+                            <ul>
+                                <!-- Question 11 -->
+                                <li>
+                                    <p class="text-base mb-2">- a definite sighting of female kākāpō on Rakiura Island was reported in the year <span class="underline">_______</span>.</p>
+                                    <input type="text" name="q11" class="text-input" placeholder="Enter your answer (max 1 word/number)">
+                                </li>
+                                <!-- Question 12 -->
+                                <li>
+                                    <p class="text-base mb-2">- the Recovery Plan included an increase in <span class="underline">_______</span>.</p>
+                                    <input type="text" name="q12" class="text-input" placeholder="Enter your answer (max 1 word/number)">
+                                </li>
+                                <!-- Question 13 -->
+                                <li>
+                                    <p class="text-base mb-2">- a current goal of the Recovery Plan is to maintain the involvement of <span class="underline">_______</span> in kākāpō protection.</p>
+                                    <input type="text" name="q13" class="text-input" placeholder="Enter your answer (max 1 word/number)">
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="text-center mt-6">
+                    <button type="submit" class="btn-primary">Complete Test</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Page (initially hidden) -->
+        <div id="results-page" class="bg-white p-6 rounded-lg shadow-xl mt-8">
+            <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">Test Results</h2>
+            <p class="text-xl text-center mb-6">Your Score: <span id="score" class="font-bold text-blue-600"></span> / 13</p>
+
+            <div id="answers-review" class="space-y-4">
+                <!-- Answers will be displayed here by JavaScript -->
+            </div>
+
+            <div class="text-center mt-8">
+                <button id="retake-quiz" class="btn-primary">Retake Test</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Define correct answers for each question
+        const correctAnswers = {
+            // True/False/Not Given questions
+            'q1': 'F',
+            'q2': 'F',
+            'q3': 'F',
+            'q4': 'NG',
+            'q5': 'T',
+            'q6': 'T',
+
+            // Fill-in-the-blank questions (normalized to lowercase for comparison)
+            'q7': 'bulbs',
+            'q8': 'soil',
+            'q9': 'feathers',
+            'q10': 'deer',
+            'q11': '1980',
+            'q12': 'funding',
+            'q13': 'stakeholders'
+        };
+
+        // Get necessary DOM elements
+        const quizForm = document.getElementById('quiz-form');
+        const quizPage = document.getElementById('quiz-page');
+        const resultsPage = document.getElementById('results-page');
+        const scoreDisplay = document.getElementById('score');
+        const answersReview = document.getElementById('answers-review');
+        const retakeQuizButton = document.getElementById('retake-quiz');
+
+        // Event listener for quiz form submission
+        quizForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            try {
+                let score = 0;
+                answersReview.innerHTML = ''; // Clear previous answers review
+
+                // Process True/False/Not Given questions (q1-q6)
+                for (let i = 1; i <= 6; i++) {
+                    const questionId = `q${i}`;
+                    const selectedOption = document.querySelector(`input[name="${questionId}"]:checked`);
+                    const questionElement = document.querySelector(`input[name="${questionId}"]`).closest('.question-container');
+                    const questionText = questionElement ? questionElement.querySelector('p').textContent : `Question ${i}`;
+
+                    const userAnswer = selectedOption ? selectedOption.value : null;
+                    const correctAnswer = correctAnswers[questionId];
+
+                    const reviewItem = document.createElement('div');
+                    reviewItem.classList.add('p-3', 'rounded-lg', 'border', 'mb-2');
+
+                    let feedbackHtml = `<p class="font-semibold">${questionText}</p>`;
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        reviewItem.classList.add('correct-answer');
+                        feedbackHtml += `<p class="text-green-700">Your answer: ${userAnswer} (Correct)</p>`;
+                    } else {
+                        reviewItem.classList.add('wrong-answer');
+                        feedbackHtml += `<p class="text-red-700">Your answer: ${userAnswer ? userAnswer : 'Not answered'} (Incorrect)</p>`;
+                        feedbackHtml += `<p class="text-blue-700">Correct answer: ${correctAnswer}</p>`;
+                    }
+                    reviewItem.innerHTML = feedbackHtml;
+                    answersReview.appendChild(reviewItem);
+                }
+
+                // Process Fill-in-the-blank questions (q7-q13)
+                // Need to get the question text from the specific list item structure
+                const summaryQuestions = ['7', '8', '9', '10', '11', '12', '13'];
+                summaryQuestions.forEach(qNum => {
+                    const questionId = `q${qNum}`;
+                    const textInput = document.querySelector(`input[name="${questionId}"]`);
+                    // Find the closest list item (li) and then the paragraph within it
+                    const questionElement = textInput ? textInput.closest('li') : null;
+                    // Extract text, remove the input part, and clean up
+                    let questionText = questionElement ? questionElement.querySelector('p').textContent : `Question ${qNum}`;
+                    // Remove the placeholder and anything after it for cleaner display
+                    questionText = questionText.replace(/_______/, '').trim();
+
+
+                    const userAnswer = textInput ? textInput.value.trim().toLowerCase() : ''; // Normalize for comparison
+                    const correctAnswer = correctAnswers[questionId].toLowerCase(); // Normalize for comparison
+
+                    const reviewItem = document.createElement('div');
+                    reviewItem.classList.add('p-3', 'rounded-lg', 'border', 'mb-2');
+
+                    let feedbackHtml = `<p class="font-semibold">${qNum}. ${questionText}</p>`; // Add question number
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        reviewItem.classList.add('correct-answer');
+                        feedbackHtml += `<p class="text-green-700">Your answer: ${textInput.value.trim()} (Correct)</p>`; // Display original user input
+                    } else {
+                        reviewItem.classList.add('wrong-answer');
+                        feedbackHtml += `<p class="text-red-700">Your answer: ${textInput.value.trim() ? textInput.value.trim() : 'Not answered'} (Incorrect)</p>`;
+                        feedbackHtml += `<p class="text-blue-700">Correct answer: ${correctAnswers[questionId]}</p>`; // Display original correct answer
+                    }
+                    reviewItem.innerHTML = feedbackHtml;
+                    answersReview.appendChild(reviewItem);
+                });
+
+
+                // Display the score
+                scoreDisplay.textContent = score;
+
+                // Transition from quiz page to results page
+                quizPage.style.display = 'none';
+                resultsPage.style.display = 'block';
+
+            } catch (error) {
+                console.error("An error occurred during quiz submission:", error);
+                // Optionally, display a user-friendly error message
+                // This alert will appear in the browser's iframe, not a separate popup.
+                const errorMessageDiv = document.createElement('div');
+                errorMessageDiv.className = 'p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg mt-4';
+                errorMessageDiv.textContent = 'Đã xảy ra lỗi khi hoàn thành bài kiểm tra. Vui lòng thử lại hoặc liên hệ hỗ trợ.';
+                quizPage.appendChild(errorMessageDiv); // Add to current page
+            }
+        });
+
+        // Event listener for "Retake Test" button
+        retakeQuizButton.addEventListener('click', function() {
+            // Reset the quiz form
+            quizForm.reset();
+            // Hide results page and show quiz page again
+            resultsPage.style.display = 'none';
+            quizPage.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
