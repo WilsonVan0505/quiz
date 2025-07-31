@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Nghe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .speaker-icon {
+            font-size: 4rem;
+            color: #4f46e5;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+            margin-bottom: 20px;
+        }
+        .speaker-icon:hover {
+            transform: scale(1.1);
+        }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .action-button {
+            background-color: #4f46e5;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .action-button:hover {
+            background-color: #4338ca;
+            transform: translateY(-2px);
+        }
+        .action-button:active {
+            transform: translateY(0);
+        }
+        .text-display {
+            background-color: #eef2ff;
+            border: 1px solid #c7d2fe;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 80px;
+            text-align: left;
+            font-size: 1.05rem;
+            color: #374151;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">Luyện Nghe Tiếng Anh</h1>
+
+        <!-- Biểu tượng loa để phát câu hỏi -->
+        <i id="speakerIcon" class="fas fa-volume-up speaker-icon"></i>
+
+        <!-- Hiển thị câu hỏi -->
+        <div id="questionDisplay" class="text-display hidden">
+            <!-- Câu hỏi sẽ được hiển thị ở đây -->
+        </div>
+
+        <!-- Hiển thị đáp án -->
+        <div id="answerDisplay" class="text-display hidden">
+            <!-- Đáp án sẽ được hiển thị ở đây -->
+        </div>
+
+        <div class="button-group">
+            <!-- Nút để hiển thị câu hỏi -->
+            <button id="showQuestionButton" class="action-button">Hiện Câu Hỏi</button>
+            <!-- Nút để hiển thị đáp án -->
+            <button id="showAnswerButton" class="action-button">Hiện Đáp Án</button>
+            <!-- Nút để chuyển sang câu hỏi tiếp theo -->
+            <button id="nextQuestionButton" class="action-button">Câu Hỏi Kế Tiếp</button>
+        </div>
+    </div>
+
+    <script>
+        // Danh sách các cặp câu hỏi và "đáp án" (mã Q) được trích xuất từ file Tờ 2.docx
+        const questionsAndAnswers = [
+            { question: "Sometimes we retard bread, what does that mean to you?", answer: "Q55" },
+            { question: "How do you retard?", answer: "Q57" },
+            { question: "How do you recover Croissant? How do you recover before baking it?", answer: "Q68" },
+            { question: "How many kinds of basic bread you know?", answer: "Q71" },
+            { question: "Why would you use salt delay method to make bread? If you forget put salt into? It will hard or sticky? It is easy or hard to mold?", answer: "Q86" },
+            { question: "Which products do you use Sourdough?", answer: "Q97" },
+            { question: "If you compare soft and crusty bread in baking time which one is longer?", answer: "Q109" },
+            { question: "Can you just use a mixed flour, water and salt. Put some baking powder in and bake it?", answer: "Q119" },
+            { question: "When you make potato bread. Do you need to cook the potatoes first?", answer: "Q120" },
+            { question: "The temperature of dough is warm, how does dough affect to the yeast fermentation?", answer: "Q94" },
+            { question: "What would happen if you do not put salt in the dough? Color?", answer: "Q87" },
+            { question: "There are many different ways we can make bread. One of them would be an ADD methods, Instant methods. What does it mean? What ingredients in there?", answer: "Q76" },
+            { question: "Can I reduce the yeast if I retard?", answer: "Q58" },
+            { question: "When do you retard bread?", answer: "Q59" },
+            { question: "Your deck oven and rack oven are not working? What do you do?", answer: "Q60" },
+            { question: "With the retard, we also have to ensure does not crust when comes out. How would you mention that?", answer: "Q61" },
+            { question: "Sometimes you make crusty bread, what do you put into recipe to enhance the crust?", answer: "Q73" },
+            { question: "What different temperature between the baguette and soft breads?", answer: "Q83" },
+            { question: "How do you know the bread is baked? Do you cut it? Knock it? What's the sound?", answer: "Q93" },
+            { question: "We also have got chemical aerated bread. Tell me about that?", answer: "Q103" },
+            { question: "How do you make dough more crusty?", answer: "Q110" },
+            { question: "It's ready in the machine, and then you have to take it out? Okay and after let rest 5 to 10 minutes what are you doing then?", answer: "Q114" },
+            { question: "What to do when you use grains/nuts? Do you soak them?", answer: "Q99" },
+            { question: "How long do you rest ADD (Activated Dough Development) dough/Instant dough?", answer: "Q77" },
+            { question: "How do you recover the bread? If you move too fast, what happen to the bread?", answer: "Q69" },
+            { question: "How to change the formula/ recipe if we make for retarding dough?", answer: "Q63" },
+            { question: "When we retard, do you use less or more yeast?", answer: "Q56" },
+            { question: "What are the stages of producing bread?", answer: "Q74" },
+            { question: "What temperature do you bake baguettes? Do you use steam?", answer: "Q92" },
+            { question: "What to do when you use grains/nuts? Do you soak them?", answer: "Q99" },
+            { question: "If you look at crusty bread compare to soft bread – what is different in baking?", answer: "Q104" },
+            { question: "Sometimes you make crusty bread, what do you put into recipe to enhance the crust? You put another ingredient inside to make crustier?", answer: "Q106" },
+            { question: "Do we bake in high temperature or low temperature for crusty loaf?", answer: "Q107" },
+            { question: "What does the steam do?", answer: "Q108" },
+            { question: "If it is proven, how much does a bread expand?", answer: "Q116" },
+            { question: "Which one do you use for dark products. Is it baking powder or baking soda?", answer: "Q118" },
+            { question: "Proof time for BFP/BFD? (Bulk Fermented Dough)", answer: "Q96" },
+            { question: "What soft rolls do you make?", answer: "Q89" },
+            { question: "For sponge and dough, what you do?", answer: "Q84" },
+            { question: "You make different variety of bread, what is the different between ADD (Activated Dough Development) and BFD (Bulk Fermented Dough)?", answer: "Q79" },
+            { question: "How do you shape the bread, What kind of different shape of bread have you got?", answer: "Q72" },
+            { question: "What product would you retard with?", answer: "Q66" },
+            { question: "Do we need improver if we make dough for tomorrow?", answer: "Q62" },
+            { question: "What kind of products can you retard?", answer: "Q65" },
+            { question: "How do you recover the dough? What would happen if you move directly from freezer to proofer and bake it?", answer: "Q81" },
+            { question: "Examples of crusty rolls?", answer: "Q91" },
+            { question: "What is the color of bread?", answer: "Q91" },
+            { question: "How to bake bread enough when you check the crumb is still wet?", answer: "Q95" },
+            { question: "Do you use baking powder/ baking soda? What is inside baking powder? What breads do you use baking powder?", answer: "Q102" },
+            { question: "Crusty Bread vs Soft Bread, what is different in baking?", answer: "Q105" },
+            { question: "Sometimes you make bread re-crusty. What do you put into to enhance the crust? You put another ingredient inside to make more crusty, what do you use for Pasta Dura? What extra ingredients you put in Pasta Dura?", answer: "Q112" },
+            { question: "Which breads have no chemicals? Aerated bread? (chemical = yeast, baking powder, baking soda)", answer: "Q100" },
+            { question: "What is Salt-delayed method? When do you put salt in the dough? What does the dough is like?", answer: "Q85" },
+            { question: "What temperature to bake finger bun?", answer: "Q82" },
+            { question: "Where do you put it when you want to make retard for tomorrow or before a day?", answer: "Q80" },
+            { question: "Do you add less or more yeast with sponge and dough?", answer: "Q88" },
+            { question: "What do you do with starter/ polish/ biga? Do you put the starter dough in the fridge?", answer: "Q98" },
+            { question: "What chemicals do you use to lift up the products without using yeast?", answer: "Q101" },
+            { question: "If you puff ferment and you put the bread into different shape, what kind of shape can you put the bread into? What shape can you put the bread? What can you mold?", answer: "Q111" },
+            { question: "When you make bread, you put dough in the mixing machine? Tell me about how do you make it? And then how do you know it mixed?", answer: "Q113" },
+            { question: "What about if you rest the dough for 90 minute?", answer: "Q115" },
+            { question: "Talk about the crusty bread?", answer: "Q117" },
+            { question: "What happen if you put it rest in over one hours? And is it easy to mold or shape?", answer: "Q78" },
+            { question: "How do you know the dough is ready? What is the sound?", answer: "Q75" },
+            { question: "For retard, if you don't low down the temperature, what's wrong with the crumb?", answer: "Q70" },
+            { question: "Can we retard Fruit bun dough?", answer: "Q67" },
+            { question: "What kind of products can you retard?", answer: "Q64" }
+        ];
+
+        let currentQuestionIndex = 0;
+        const speakerIcon = document.getElementById('speakerIcon');
+        const questionDisplay = document.getElementById('questionDisplay');
+        const answerDisplay = document.getElementById('answerDisplay');
+        const showQuestionButton = document.getElementById('showQuestionButton');
+        const showAnswerButton = document.getElementById('showAnswerButton');
+        const nextQuestionButton = document.getElementById('nextQuestionButton');
+
+        // Hàm đọc văn bản thành giọng nói
+        function speakText(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US'; // Đặt ngôn ngữ là tiếng Anh
+            speechSynthesis.speak(utterance);
+        }
+
+        // Tải câu hỏi hiện tại
+        function loadQuestion() {
+            questionDisplay.classList.add('hidden');
+            answerDisplay.classList.add('hidden');
+            if (questionsAndAnswers.length > 0) {
+                // Đảm bảo chỉ hiển thị câu hỏi khi người dùng bấm nút
+                questionDisplay.textContent = questionsAndAnswers[currentQuestionIndex].question;
+                answerDisplay.textContent = questionsAndAnswers[currentQuestionIndex].answer; // Hiển thị mã Q
+            } else {
+                questionDisplay.textContent = "Không có câu hỏi nào.";
+                answerDisplay.textContent = "Không có đáp án nào.";
+            }
+        }
+
+        // Xử lý sự kiện khi bấm vào biểu tượng loa
+        speakerIcon.addEventListener('click', () => {
+            if (questionsAndAnswers.length > 0) {
+                speakText(questionsAndAnswers[currentQuestionIndex].question);
+            }
+        });
+
+        // Xử lý sự kiện khi bấm nút "Hiện Câu Hỏi"
+        showQuestionButton.addEventListener('click', () => {
+            questionDisplay.classList.remove('hidden');
+        });
+
+        // Xử lý sự kiện khi bấm nút "Hiện Đáp Án"
+        showAnswerButton.addEventListener('click', () => {
+            answerDisplay.classList.remove('hidden');
+        });
+
+        // Xử lý sự kiện khi bấm nút "Câu Hỏi Kế Tiếp"
+        nextQuestionButton.addEventListener('click', () => {
+            currentQuestionIndex = (currentQuestionIndex + 1) % questionsAndAnswers.length;
+            loadQuestion();
+        });
+
+        // Tải câu hỏi đầu tiên khi trang web được tải
+        document.addEventListener('DOMContentLoaded', loadQuestion);
+    </script>
+</body>
+</html>
