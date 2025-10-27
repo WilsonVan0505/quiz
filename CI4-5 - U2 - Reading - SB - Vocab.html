@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2 Vocabulary Quiz - Vietnamese Meanings (36 Questions)</title>
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .quiz-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .question-card {
+            background-color: #e9ecef;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+
+        .question-text {
+            font-size: 1.15em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        .options-container label {
+            display: block;
+            background-color: #fff;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .options-container label:hover {
+            background-color: #f0f8ff;
+            border-color: #007bff;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        /* Styling for correct/incorrect answers */
+        .correct-answer {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            font-weight: bold;
+            color: #155724;
+        }
+
+        .incorrect-answer {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+        }
+
+        /* Button styles */
+        #submit-btn, .results-container button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff; /* Changed to primary color */
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 30px;
+        }
+
+        #submit-btn:hover, .results-container button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Results section */
+        .results-container {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #28a745; /* Changed to success color */
+            border-radius: 10px;
+            margin-top: 30px;
+            background-color: #e2f0d9;
+        }
+
+        .results-container h2 {
+            color: #28a745;
+        }
+
+        .results-container p {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>A2 Vocabulary Quiz: Vietnamese Meanings</h1>
+        <p class="description">Chọn đáp án dịch nghĩa tiếng Việt đúng nhất cho từ vựng/cụm từ tiếng Anh. (Tổng 36 câu).</p>
+        
+        <div id="quiz-questions">
+            </div>
+
+        <button id="submit-btn" onclick="submitQuiz()">Submit Quiz</button>
+
+        <div id="results" class="results-container hidden">
+            <h2>Kết Quả Của Bạn 🎉</h2>
+            <p>Điểm: <span id="score">0</span> / 36</p>
+            <p>Phần trăm: <span id="percentage">0</span>%</p>
+            <button onclick="window.location.reload()">Làm lại</button>
+        </div>
+    </div>
+
+    <script>
+        /* JavaScript Code */
+        const quizData = [
+            {"question": "What does area mean?", "options": ["khu vực", "ngôi nhà", "ngọn núi", "con đường"], "correct": "khu vực"},
+            {"question": "What does distant areas mean?", "options": ["vùng gần", "vùng trung tâm", "vùng xa xôi", "vùng đông dân"], "correct": "vùng xa xôi"},
+            {"question": "What does Middle East mean?", "options": ["Bắc Âu", "Trung Đông", "Tây Phi", "Đông Nam Á"], "correct": "Trung Đông"},
+            {"question": "What does alone mean?", "options": ["vui vẻ", "đông đúc", "cùng nhau", "một mình"], "correct": "một mình"},
+            {"question": "What does explorer mean?", "options": ["nhà thám hiểm", "người du lịch", "học sinh", "giáo viên"], "correct": "nhà thám hiểm"},
+            {"question": "What does during a time mean?", "options": ["trước khi bắt đầu", "sau khi kết thúc", "trong suốt một thời gian", "vào buổi sáng"], "correct": "trong suốt một thời gian"},
+            {"question": "What does be regarded as ... mean?", "options": ["bị bỏ qua", "được xem như là", "bị cấm", "được khen"], "correct": "được xem như là"},
+            {"question": "What does especially mean?", "options": ["thỉnh thoảng", "đặc biệt là", "chỉ một lần", "thường xuyên"], "correct": "đặc biệt là"},
+            {"question": "What does extensively mean?", "options": ["một cách rộng rãi", "một cách chậm rãi", "một cách đơn giản", "một cách cẩn thận"], "correct": "một cách rộng rãi"},
+            {"question": "What does be born in ... mean?", "options": ["sinh ra ở", "làm việc ở", "sống ở", "được học ở"], "correct": "sinh ra ở"},
+            {"question": "What does formal education mean?", "options": ["giáo dục online", "giáo dục tự học", "giáo dục chính quy", "giáo dục thể chất"], "correct": "giáo dục chính quy"},
+            {"question": "What does artist parents mean?", "options": ["cha mẹ là giáo viên", "cha mẹ là nghệ sĩ", "cha mẹ là nông dân", "cha mẹ là bác sĩ"], "correct": "cha mẹ là nghệ sĩ"},
+            {"question": "What does nurse corps mean?", "options": ["hội học sinh", "bệnh viện", "đội ngũ y tá", "trường học"], "correct": "đội ngũ y tá"},
+            {"question": "What does attend mean?", "options": ["tham dự", "học thuộc", "từ chối", "rời đi"], "correct": "tham dự"},
+            {"question": "What does lead to ... mean?", "options": ["ngăn cản", "dẫn đến", "chuyển đến", "tránh xa"], "correct": "dẫn đến"},
+            {"question": "What does enable SB to Vo mean?", "options": ["giúp ai nghỉ ngơi", "cấm ai làm gì", "cho phép ai làm gì", "bắt ai làm gì"], "correct": "cho phép ai làm gì"},
+            {"question": "What does eventually mean?", "options": ["đôi khi", "thường xuyên", "cuối cùng", "ngay lập tức"], "correct": "cuối cùng"},
+            {"question": "What does become fluent in ... mean?", "options": ["bắt đầu học", "viết lại", "quên đi", "trở nên thành thạo"], "correct": "trở nên thành thạo"},
+            {"question": "What does at the age of ... mean?", "options": ["trong suốt", "ở độ tuổi", "sau khi", "trước khi"], "correct": "ở độ tuổi"},
+            {"question": "What does save money mean?", "options": ["tiêu hết tiền", "tiết kiệm tiền", "vay tiền", "đưa tiền"], "correct": "tiết kiệm tiền"},
+            {"question": "What does donkey mean?", "options": ["con ngựa", "con cừu", "con bò", "con lừa"], "correct": "con lừa"},
+            {"question": "What does a mountainous area mean?", "options": ["vùng đồi núi", "vùng bằng phẳng", "vùng thành phố", "vùng ven biển"], "correct": "vùng đồi núi"},
+            {"question": "What does a distant region mean?", "options": ["vùng xa", "vùng gần trung tâm", "vùng nghèo", "vùng giàu có"], "correct": "vùng xa"},
+            {"question": "What does a mountain range mean?", "options": ["rừng rậm", "đồng bằng", "thung lũng", "dãy núi"], "correct": "dãy núi"},
+            {"question": "What does search for ... mean?", "options": ["tìm kiếm", "nghe nhạc", "nói chuyện", "viết ra"], "correct": "tìm kiếm"},
+            {"question": "What does an ancient Muslim sect mean?", "options": ["nhóm học sinh", "đoàn du lịch", "nhà thờ mới", "giáo phái Hồi giáo cổ xưa"], "correct": "giáo phái Hồi giáo cổ xưa"},
+            {"question": "What does classic mean?", "options": ["tác phẩm kinh điển", "phim hiện đại", "đồ cổ", "bản nhạc mới"], "correct": "tác phẩm kinh điển"},
+            {"question": "What does be awarded ... mean?", "options": ["được trao tặng", "bị loại", "bị mất", "bị phạt"], "correct": "được trao tặng"},
+            {"question": "What does Gold Medal mean?", "options": ["huy chương bạc", "huy chương vàng", "huy chương sắt", "huy chương đồng"], "correct": "huy chương vàng"},
+            {"question": "What does career mean?", "options": ["kỳ nghỉ", "học phí", "gia đình", "sự nghiệp"], "correct": "sự nghiệp"},
+            {"question": "What does establish mean?", "options": ["rời khỏi", "phá hủy", "di chuyển", "thành lập"], "correct": "thành lập"},
+            {"question": "What does combine ... with ... mean?", "options": ["loại bỏ", "chia ra", "thay thế", "kết hợp ... với ..."], "correct": "kết hợp ... với ..."},
+            {"question": "What does an account of her journeys mean?", "options": ["ghi chép về hành trình", "kế hoạch du lịch", "nhật ký học tập", "tài khoản ngân hàng"], "correct": "ghi chép về hành trình"},
+            {"question": "What does personal commentary on ... mean?", "options": ["bài thơ ngắn", "câu chuyện vui", "hướng dẫn học tập", "bình luận cá nhân về ..."], "correct": "bình luận cá nhân về ..."},
+            {"question": "What does custom mean?", "options": ["phong tục", "món ăn", "thời tiết", "quần áo"], "correct": "phong tục"},
+            {"question": "What does politics mean?", "options": ["âm nhạc", "thể thao", "khoa học", "chính trị"], "correct": "chính trị"}
+        ];
+
+        const quizQuestionsContainer = document.getElementById('quiz-questions');
+        const resultsContainer = document.getElementById('results');
+        const submitButton = document.getElementById('submit-btn');
+
+        // Hàm tạo giao diện câu hỏi
+        function buildQuiz() {
+            const output = [];
+
+            quizData.forEach((currentQuestion, questionNumber) => {
+                const answers = [];
+
+                currentQuestion.options.forEach(option => {
+                    // Thêm các nút radio cho mỗi lựa chọn
+                    answers.push(
+                        `<label>
+                            <input type="radio" name="question${questionNumber}" value="${option}">
+                            ${option}
+                        </label>`
+                    );
+                });
+
+                // Thêm câu hỏi và các lựa chọn vào output
+                output.push(
+                    `<div class="question-card" id="q${questionNumber}">
+                        <div class="question-text">${questionNumber + 1}. ${currentQuestion.question}</div>
+                        <div class="options-container">${answers.join('')}</div>
+                    </div>`
+                );
+            });
+
+            quizQuestionsContainer.innerHTML = output.join('');
+        }
+
+        // Hàm chấm điểm và hiển thị kết quả
+        function submitQuiz() {
+            let score = 0;
+
+            quizData.forEach((currentQuestion, questionNumber) => {
+                const questionCard = document.getElementById(`q${questionNumber}`);
+                const selectedOption = questionCard.querySelector(`input[name="question${questionNumber}"]:checked`);
+                let userAnswer = '';
+                
+                if (selectedOption) {
+                    userAnswer = selectedOption.value;
+                }
+
+                const correctAnswerText = currentQuestion.correct;
+
+                // Xóa các lớp cũ và vô hiệu hóa các nút radio
+                const labels = questionCard.querySelectorAll('label');
+                labels.forEach(label => {
+                    label.querySelector('input').disabled = true;
+                    const optionText = label.textContent.trim();
+
+                    if (optionText === correctAnswerText) {
+                        // Đánh dấu đáp án đúng
+                        label.classList.add('correct-answer');
+                    } else if (optionText === userAnswer) {
+                        // Đánh dấu đáp án sai của người dùng
+                        label.classList.add('incorrect-answer');
+                    }
+                });
+                
+                // Chấm điểm
+                if (userAnswer === correctAnswerText) {
+                    score++;
+                }
+            });
+
+            // Hiển thị kết quả
+            const percentage = Math.round((score / quizData.length) * 100);
+
+            document.getElementById('score').textContent = score;
+            document.getElementById('percentage').textContent = percentage;
+            
+            submitButton.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            window.scrollTo(0, document.body.scrollHeight); // Cuộn xuống kết quả
+        }
+
+        // Chạy hàm tạo bài kiểm tra khi trang được tải
+        document.addEventListener('DOMContentLoaded', buildQuiz);
+    </script>
+</body>
+</html>
