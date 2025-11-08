@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Kiểm Tra Từ Vựng C1 - Đề 20</title>
+    <!-- Tải Tailwind CSS để tạo kiểu dáng nhanh chóng và đẹp mắt -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tùy chỉnh font chữ */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        /* Style cho nút đã chọn */
+        .selected-option {
+            background-color: #e0f2f7; /* Light Blue */
+            border-color: #0d9488; /* Teal */
+        }
+        /* Style cho đáp án đúng */
+        .correct-answer {
+            background-color: #d1fae5; /* Light Green */
+            border-color: #10b981; /* Green */
+            animation: pulse-correct 0.5s ease-out;
+        }
+        /* Style cho đáp án sai */
+        .wrong-answer {
+            background-color: #fee2e2; /* Light Red */
+            border-color: #ef4444; /* Red */
+        }
+        /* Animation cho đáp án đúng */
+        @keyframes pulse-correct {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        /* Ẩn thanh cuộn dọc (dành cho iframe trong Google Sites) */
+        body { overflow-y: hidden; }
+        /* Thiết lập chiều cao tối đa cho container trên màn hình lớn */
+        #quiz-container {
+             max-width: 768px;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 flex items-center justify-center min-h-screen">
+
+    <div id="quiz-container" class="w-full bg-white shadow-xl rounded-xl p-6 md:p-10 border border-gray-100">
+
+        <!-- Header -->
+        <h1 class="text-2xl md:text-3xl font-extrabold text-teal-700 mb-6 text-center">
+            <span id="quiz-title">Bài Kiểm Tra Từ Vựng C1</span>
+        </h1>
+
+        <!-- Quiz Area -->
+        <div id="quiz-area">
+            <!-- Question Counter -->
+            <div id="question-counter" class="text-sm font-medium text-gray-500 mb-4"></div>
+
+            <!-- Question Text -->
+            <p id="question-text" class="text-lg md:text-xl font-semibold text-gray-800 mb-6"></p>
+
+            <!-- Options Container -->
+            <div id="options-container" class="space-y-3">
+                <!-- Options will be rendered here -->
+            </div>
+
+            <!-- Rationale/Feedback Area -->
+            <div id="feedback-area" class="mt-6 p-4 rounded-lg hidden border-l-4">
+                <p id="feedback-text" class="text-sm font-medium"></p>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between mt-8">
+                <button id="prev-btn" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold shadow hover:bg-gray-300 transition duration-150 ease-in-out" disabled>
+                    < Back
+                </button>
+                <button id="next-btn" class="px-6 py-3 bg-teal-600 text-white rounded-lg font-semibold shadow-md hover:bg-teal-700 transition duration-150 ease-in-out" disabled>
+                    Next >
+                </button>
+            </div>
+        </div>
+
+        <!-- Result Area -->
+        <div id="result-area" class="hidden text-center py-12">
+            <h2 class="text-3xl font-bold text-teal-600 mb-4">Kết Quả Bài Kiểm Tra</h2>
+            <p id="final-score" class="text-5xl font-extrabold text-gray-800 mb-6"></p>
+            <p id="result-message" class="text-xl text-gray-600 mb-8"></p>
+            <button id="review-btn" class="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold shadow-md hover:bg-blue-700 transition duration-150 ease-in-out mr-4">
+                Xem lại đáp án
+            </button>
+            <button id="restart-btn" class="px-8 py-3 bg-red-500 text-white rounded-lg font-semibold shadow-md hover:bg-red-600 transition duration-150 ease-in-out">
+                Làm lại
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Dữ liệu câu hỏi được nhúng trực tiếp từ file JSON đã tạo trước đó
+        const quizData = [
+            {"question":"The speaker’s passionate tone managed to _______ the entire audience from start to finish.","hint":"Cần một động từ mang nghĩa 'thu hút mạnh mẽ sự chú ý của ai đó'.","options":[{"text":"bystander","isCorrect":false,"rationale":"Đây là danh từ chỉ người đứng xem, không phù hợp để điền vào vị trí động từ trong câu."},{"text":"captivate","isCorrect":true,"rationale":"Động từ 'captivate' (cuốn hút) phù hợp với ngữ cảnh 'giọng điệu nhiệt huyết của diễn giả đã cuốn hút toàn bộ khán giả'."},{"text":"anticipation","isCorrect":false,"rationale":"Đây là danh từ (sự mong chờ), không phù hợp để điền vào vị trí động từ sau 'to'."},{"text":"dispute","isCorrect":false,"rationale":"Động từ 'dispute' (tranh chấp) không phù hợp với ngữ cảnh truyền đạt cảm xúc tích cực của người nói."}]},
+            {"question":"Several _______ witnessed the accident but failed to intervene before the police arrived.","hint":"Cần một danh từ số nhiều để chỉ những người có mặt tại hiện trường nhưng không tham gia.","options":[{"text":"bystanders","isCorrect":true,"rationale":"Danh từ 'bystanders' (người đứng xem) phù hợp với ngữ cảnh những người này đã chứng kiến vụ tai nạn nhưng không can thiệp."},{"text":"captivate","isCorrect":false,"rationale":"Đây là động từ, không phù hợp để điền vào vị trí danh từ chỉ người."},{"text":"adequate","isCorrect":false,"rationale":"Đây là tính từ (đầy đủ, thích hợp), không phù hợp để chỉ người."},{"text":"reform","isCorrect":false,"rationale":"Danh từ 'reform' (cải cách) không liên quan đến việc chứng kiến một vụ tai nạn."}]},
+            {"question":"The atmosphere before the exam was filled with nervous _______ among students.","hint":"Từ cần điền là một danh từ chỉ một cảm xúc, sự chờ đợi xảy ra trước một sự kiện quan trọng.","options":[{"text":"anticipation","isCorrect":true,"rationale":"Danh từ 'anticipation' (sự mong chờ) phù hợp để mô tả cảm giác lo lắng pha lẫn chờ đợi trước kỳ thi."},{"text":"additive","isCorrect":false,"rationale":"Danh từ 'additive' (chất phụ gia) không liên quan đến cảm xúc."},{"text":"cramming","isCorrect":false,"rationale":"Danh từ 'cramming' (học nhồi nhét) là một hoạt động, không phải là trạng thái cảm xúc của không khí."},{"text":"consensus","isCorrect":false,"rationale":"Danh từ 'consensus' (sự đồng thuận) không phù hợp với trạng thái 'lo lắng' ('nervous')."}]},
+            {"question":"The data we collected is not _______ to draw any reliable conclusions.","hint":"Từ cần điền là một tính từ mang nghĩa 'đủ số lượng hoặc chất lượng cho một mục đích cụ thể'.","options":[{"text":"cramming","isCorrect":false,"rationale":"Đây là danh từ (học nhồi nhét), không phù hợp để bổ nghĩa cho 'data' với ý nghĩa 'đủ'."},{"text":"captivate","isCorrect":false,"rationale":"Đây là động từ (cuốn hút), không phù hợp để điền vào vị trí tính từ sau 'not'."},{"text":"adequate","isCorrect":true,"rationale":"Tính từ 'adequate' (đầy đủ, thích hợp) phù hợp với ngữ cảnh 'dữ liệu không đủ để đưa ra kết luận đáng tin cậy'."},{"text":"pitfall","isCorrect":false,"rationale":"Đây là danh từ (cạm bẫy), không phù hợp để bổ nghĩa cho 'data'."}]},
+            {"question":"Young entrepreneurs often fall into the same financial _______ when launching new startups.","hint":"Từ cần điền là một danh từ chỉ một nguy hiểm hoặc khó khăn bất ngờ, thường ẩn giấu.","options":[{"text":"additive","isCorrect":false,"rationale":"Danh từ 'additive' (chất phụ gia) không phù hợp với ngữ cảnh rủi ro tài chính."},{"text":"pitfall","isCorrect":true,"rationale":"Danh từ 'pitfall' (cạm bẫy) phù hợp để chỉ những khó khăn, rủi ro tiềm ẩn mà các doanh nhân thường gặp."},{"text":"dispute","isCorrect":false,"rationale":"Danh từ 'dispute' (tranh chấp) không phù hợp bằng 'pitfall' để chỉ rủi ro chung khi khởi nghiệp."},{"text":"amenities","isCorrect":false,"rationale":"Danh từ 'amenities' (tiện nghi) không liên quan đến vấn đề tài chính."}]},
+            {"question":"Instead of deep learning, he relied on last-minute _______ to pass the final exam.","hint":"Từ này mô tả một hoạt động học tập cấp tốc, thường là kém hiệu quả, ngay trước kỳ thi.","options":[{"text":"cramming","isCorrect":true,"rationale":"Danh từ 'cramming' (học nhồi nhét) phù hợp để chỉ việc học gấp rút, đối lập với việc 'deep learning' (học sâu)."},{"text":"anticipation","isCorrect":false,"rationale":"Danh từ 'anticipation' (sự mong chờ) không phải là phương pháp học."},{"text":"consensus","isCorrect":false,"rationale":"Danh từ 'consensus' (sự đồng thuận) không liên quan đến việc học tập."},{"text":"dispute","isCorrect":false,"rationale":"Danh từ 'dispute' (tranh chấp) không liên quan đến phương pháp học."}]},
+            {"question":"The education system needs urgent _______ to meet the demands of the modern world.","hint":"Từ cần điền là một danh từ chỉ sự thay đổi hoặc cải thiện lớn trong một hệ thống hoặc tổ chức.","options":[{"text":"pitfall","isCorrect":false,"rationale":"Danh từ 'pitfall' (cạm bẫy) không phải là cái mà hệ thống giáo dục cần để đáp ứng nhu cầu."},{"text":"captivate","isCorrect":false,"rationale":"Đây là động từ, không phù hợp với vị trí danh từ sau 'urgent'."},{"text":"reform","isCorrect":true,"rationale":"Danh từ 'reform' (cải cách) phù hợp với ngữ cảnh 'hệ thống giáo dục cần những thay đổi cấp thiết'."},{"text":"additive","isCorrect":false,"rationale":"Danh từ 'additive' (chất phụ gia) không liên quan đến hệ thống giáo dục."}]},
+            {"question":"Continuous _______ helps teachers identify students’ strengths and weaknesses.","hint":"Từ này đề cập đến quá trình đánh giá, kiểm tra năng lực của học sinh một cách thường xuyên.","options":[{"text":"bystander","isCorrect":false,"rationale":"Danh từ 'bystander' (người đứng xem) không liên quan đến việc xác định điểm mạnh/yếu của học sinh."},{"text":"assessment","isCorrect":true,"rationale":"Danh từ 'assessment' (sự đánh giá) phù hợp với ngữ cảnh 'giúp giáo viên nhận diện điểm mạnh và điểm yếu'."},{"text":"anticipation","isCorrect":false,"rationale":"Danh từ 'anticipation' (sự mong chờ) không phù hợp."},{"text":"dispute","isCorrect":false,"rationale":"Danh từ 'dispute' (tranh chấp) không liên quan đến việc đánh giá học sinh."}]},
+            {"question":"An _______ distribution of resources ensures fairness and social stability.","hint":"Từ cần điền là một tính từ đồng nghĩa với 'fair' (công bằng), đặc biệt trong việc phân chia.","options":[{"text":"equitable","isCorrect":true,"rationale":"Tính từ 'equitable' (công bằng) phù hợp để mô tả sự phân phối nguồn lực đảm bảo sự công bằng và ổn định xã hội."},{"text":"episodic","isCorrect":false,"rationale":"Tính từ 'episodic' (theo từng đoạn) không liên quan đến việc phân phối tài nguyên."},{"text":"semantic","isCorrect":false,"rationale":"Tính từ 'semantic' (thuộc ngữ nghĩa) không liên quan đến sự công bằng trong phân phối."},{"text":"unattended","isCorrect":false,"rationale":"Tính từ 'unattended' (không được trông coi) không phù hợp với ngữ cảnh này."}]},
+            {"question":"The color red often _______ danger or urgency in visual communication.","hint":"Cần một động từ mang ý nghĩa 'đại diện cho' hoặc 'là dấu hiệu của' một điều gì đó.","options":[{"text":"dispute","isCorrect":false,"rationale":"Động từ 'dispute' (tranh chấp) không phù hợp với việc biểu thị ý nghĩa màu sắc."},{"text":"signifies","isCorrect":true,"rationale":"Động từ 'signifies' (biểu thị, có nghĩa là) phù hợp với ngữ cảnh 'màu đỏ thường biểu thị sự nguy hiểm'."},{"text":"captivate","isCorrect":false,"rationale":"Động từ 'captivate' (cuốn hút) không mang ý nghĩa biểu tượng trong ngữ cảnh này."},{"text":"reform","isCorrect":false,"rationale":"Động từ 'reform' (cải cách) không phù hợp."}]},
+            {"question":"Modern apartments usually offer various _______ such as gyms and swimming pools.","hint":"Từ này đề cập đến các tính năng bổ sung giúp nâng cao sự thoải mái và tiện lợi cho người ở.","options":[{"text":"amenities","isCorrect":true,"rationale":"Danh từ 'amenities' (tiện nghi) phù hợp để chỉ những dịch vụ hoặc tính năng được cung cấp trong căn hộ hiện đại."},{"text":"additives","isCorrect":false,"rationale":"Danh từ 'additives' (chất phụ gia) không liên quan đến tiện ích nhà ở."},{"text":"pitfalls","isCorrect":false,"rationale":"Danh từ 'pitfalls' (cạm bẫy) không phù hợp để chỉ các tiện ích."},{"text":"cramming","isCorrect":false,"rationale":"Danh từ 'cramming' (học nhồi nhét) không phù hợp."}]},
+            {"question":"You should never leave your luggage _______ in a public area.","hint":"Từ cần điền là một tính từ mô tả trạng thái 'không có ai trông nom hoặc quan sát'.","options":[{"text":"episodic","isCorrect":false,"rationale":"Tính từ 'episodic' (theo từng đoạn) không phù hợp với ngữ cảnh hành lý."},{"text":"unattended","isCorrect":true,"rationale":"Tính từ 'unattended' (không được trông coi) phù hợp với ngữ cảnh 'không được để hành lý mà không có người trông coi'."},{"text":"equitable","isCorrect":false,"rationale":"Tính từ 'equitable' (công bằng) không liên quan đến việc giám sát hành lý."},{"text":"captivate","isCorrect":false,"rationale":"Đây là động từ, không phù hợp để làm tính từ bổ nghĩa cho 'luggage'."}]},
+            {"question":"An _______ memory allows people to recall specific moments from their lives.","hint":"Tính từ này mô tả trí nhớ về các sự kiện cụ thể đã xảy ra trong cuộc sống của một người.","options":[{"text":"episodic","isCorrect":true,"rationale":"Tính từ 'episodic' (liên quan đến ký ức sự kiện) phù hợp với ngữ cảnh 'cho phép nhớ lại những khoảnh khắc cụ thể trong cuộc đời'."},{"text":"additive","isCorrect":false,"rationale":"Tính từ 'additive' (phụ gia) không liên quan đến loại hình trí nhớ."},{"text":"dispute","isCorrect":false,"rationale":"Danh từ 'dispute' (tranh chấp) không phù hợp."},{"text":"metabolic","isCorrect":false,"rationale":"Tính từ 'metabolic' (thuộc trao đổi chất) không liên quan đến trí nhớ."}]},
+            {"question":"Children with strong _______ memory can easily understand the meaning of new words.","hint":"Tính từ này đề cập đến trí nhớ liên quan đến ý nghĩa, ngôn ngữ và các sự kiện chung chung.","options":[{"text":"episodic","isCorrect":false,"rationale":"Tính từ 'episodic' (ký ức sự kiện) không liên quan trực tiếp đến việc hiểu nghĩa từ."},{"text":"semantic","isCorrect":true,"rationale":"Tính từ 'semantic' (thuộc ngữ nghĩa) phù hợp để chỉ loại trí nhớ liên quan đến kiến thức về ngôn ngữ, từ vựng và ý nghĩa."},{"text":"adequate","isCorrect":false,"rationale":"Tính từ 'adequate' (đầy đủ) không phải là tên một loại trí nhớ."},{"text":"reform","isCorrect":false,"rationale":"Danh từ 'reform' (cải cách) không phù hợp."}]},
+            {"question":"Continuous stress can gradually _______ your ability to concentrate.","hint":"Từ cần điền là một động từ mang nghĩa 'làm giảm dần' hoặc 'làm suy yếu' hiệu quả hoặc quyền lực của cái gì đó.","options":[{"text":"undermine","isCorrect":true,"rationale":"Động từ 'undermine' (làm suy yếu) phù hợp với ngữ cảnh 'căng thẳng có thể dần dần làm suy yếu khả năng tập trung'."},{"text":"dispute","isCorrect":false,"rationale":"Động từ 'dispute' (tranh chấp) không phù hợp."},{"text":"signify","isCorrect":false,"rationale":"Động từ 'signify' (biểu thị) không phù hợp."},{"text":"preserve","isCorrect":false,"rationale":"Động từ 'preserve' (bảo quản) có nghĩa ngược lại, không phù hợp với 'stress' (căng thẳng)."}]},
+            {"question":"The labor _______ between workers and management delayed production for weeks.","hint":"Từ này đề cập đến một cuộc tranh cãi hoặc bất đồng chính thức, đặc biệt giữa hai bên trong môi trường làm việc.","options":[{"text":"additive","isCorrect":false,"rationale":"Danh từ 'additive' (chất phụ gia) không liên quan đến mâu thuẫn lao động."},{"text":"anticipation","isCorrect":false,"rationale":"Danh từ 'anticipation' (sự mong chờ) không phù hợp."},{"text":"dispute","isCorrect":true,"rationale":"Danh từ 'dispute' (tranh chấp) phù hợp để chỉ sự bất đồng chính thức giữa người lao động và ban quản lý."},{"text":"cramming","isCorrect":false,"rationale":"Danh từ 'cramming' (học nhồi nhét) không phù hợp."}]},
+            {"question":"After hours of discussion, the board finally reached a _______ on the proposal.","hint":"Từ này mô tả một sự thỏa thuận chung hoặc ý kiến thống nhất của một nhóm người.","options":[{"text":"pitfall","isCorrect":false,"rationale":"Danh từ 'pitfall' (cạm bẫy) không liên quan đến kết quả của một cuộc thảo luận."},{"text":"consensus","isCorrect":true,"rationale":"Danh từ 'consensus' (sự đồng thuận) phù hợp để chỉ việc hội đồng cuối cùng đã đạt được sự nhất trí sau nhiều giờ thảo luận."},{"text":"episodic","isCorrect":false,"rationale":"Tính từ 'episodic' (theo từng đoạn) không phù hợp."},{"text":"additive","isCorrect":false,"rationale":"Danh từ 'additive' (chất phụ gia) không phù hợp."}]},
+            {"question":"Turmeric is known for its natural _______ properties that help reduce swelling.","hint":"Tính từ này đề cập đến đặc tính y học chống lại hiện tượng sưng tấy và đau đớn.","options":[{"text":"anti-inflammatory","isCorrect":true,"rationale":"Tính từ 'anti-inflammatory' (chống viêm) phù hợp để mô tả đặc tính giúp giảm sưng của nghệ."},{"text":"metabolic","isCorrect":false,"rationale":"Tính từ 'metabolic' (thuộc trao đổi chất) không liên quan trực tiếp đến việc giảm sưng."},{"text":"captivate","isCorrect":false,"rationale":"Đây là động từ (cuốn hút), không phải tính từ chỉ đặc tính y học."},{"text":"adequate","isCorrect":false,"rationale":"Tính từ 'adequate' (đầy đủ) không phù hợp với ngữ cảnh này."}]},
+            {"question":"Proper refrigeration helps _______ food and maintain its nutritional value.","hint":"Từ cần điền là một động từ mang nghĩa 'giữ gìn' hoặc 'bảo quản' cái gì đó trong tình trạng tốt.","options":[{"text":"preserve","isCorrect":true,"rationale":"Động từ 'preserve' (bảo quản) phù hợp với ngữ cảnh 'giúp giữ cho thực phẩm không bị hư hỏng và duy trì giá trị dinh dưỡng'."},{"text":"ingest","isCorrect":false,"rationale":"Động từ 'ingest' (nuốt vào) chỉ hành động ăn uống, không phải là mục đích của việc làm lạnh."},{"text":"bleach","isCorrect":false,"rationale":"Động từ 'bleach' (tẩy trắng) không phù hợp với việc bảo quản thực phẩm."},{"text":"signify","isCorrect":false,"rationale":"Động từ 'signify' (biểu thị) không phù hợp."}]},
+            {"question":"Industrial waste can _______ into groundwater, posing serious environmental risks.","hint":"Động từ này mô tả quá trình chất lỏng hòa tan và mang theo chất khác, thấm dần vào đất hoặc nước.","options":[{"text":"leach","isCorrect":true,"rationale":"Động từ 'leach (into)' (thấm/rỉ vào) phù hợp với ngữ cảnh 'chất thải công nghiệp có thể rỉ vào nước ngầm'."},{"text":"captivate","isCorrect":false,"rationale":"Động từ 'captivate' (cuốn hút) không phù hợp."},{"text":"dispute","isCorrect":false,"rationale":"Động từ 'dispute' (tranh chấp) không phù hợp."},{"text":"cramming","isCorrect":false,"rationale":"Danh từ 'cramming' (học nhồi nhét) không phù hợp."}]},
+            {"question":"It usually takes several hours for the human body to fully _______ a heavy meal.","hint":"Động từ này đề cập đến quá trình phân hủy thức ăn trong dạ dày và ruột.","options":[{"text":"digest","isCorrect":true,"rationale":"Động từ 'digest' (tiêu hóa) phù hợp với ngữ cảnh 'cơ thể mất vài giờ để tiêu hóa hoàn toàn bữa ăn'."},{"text":"ingest","isCorrect":false,"rationale":"Động từ 'ingest' (nuốt vào) là giai đoạn đầu, không phải toàn bộ quá trình tiêu hóa."},{"text":"leach","isCorrect":false,"rationale":"Động từ 'leach' (thấm/rỉ vào) không liên quan đến quá trình tiêu hóa."},{"text":"preserve","isCorrect":false,"rationale":"Động từ 'preserve' (bảo quản) không phù hợp."}]},
+            {"question":"Some processed foods contain artificial _______ that extend shelf life but may affect health.","hint":"Từ này đề cập đến các chất được thêm vào thực phẩm với mục đích cải thiện hoặc bảo quản.","options":[{"text":"dispute","isCorrect":false,"rationale":"Danh từ 'dispute' (tranh chấp) không phù hợp để chỉ thành phần trong thực phẩm."},{"text":"additives","isCorrect":true,"rationale":"Danh từ 'additives' (chất phụ gia) phù hợp với ngữ cảnh 'những chất nhân tạo được thêm vào thực phẩm để kéo dài thời hạn sử dụng'."},{"text":"cramming","isCorrect":false,"rationale":"Danh từ 'cramming' (học nhồi nhét) không phù hợp."},{"text":"captivate","isCorrect":false,"rationale":"Đây là động từ, không phù hợp để làm danh từ chỉ thành phần."}]},
+            {"question":"Drinking contaminated water can cause the body to accidentally _______ harmful bacteria.","hint":"Cần một động từ mang nghĩa 'đưa vào cơ thể qua đường miệng' (ăn hoặc uống).","options":[{"text":"digest","isCorrect":false,"rationale":"Động từ 'digest' (tiêu hóa) chỉ quá trình phân hủy, không phải hành động nuốt vào."},{"text":"ingest","isCorrect":true,"rationale":"Động từ 'ingest' (nuốt vào, hấp thu) phù hợp với ngữ cảnh 'cơ thể vô tình nuốt phải vi khuẩn có hại'."},{"text":"deem","isCorrect":false,"rationale":"Động từ 'deem' (cho là, coi là) không phù hợp với vi khuẩn."},{"text":"preserve","isCorrect":false,"rationale":"Động từ 'preserve' (bảo quản) không phù hợp."}]},
+            {"question":"Excessive exposure to sunlight can naturally _______ fabrics and cause color fading.","hint":"Từ cần điền là một động từ mang nghĩa 'làm mất màu' hoặc 'làm trắng' bằng cách tiếp xúc với ánh sáng hoặc hóa chất.","options":[{"text":"bleach","isCorrect":true,"rationale":"Động từ 'bleach' (tẩy trắng, làm phai màu) phù hợp với ngữ cảnh 'ánh nắng có thể làm phai màu vải tự nhiên'."},{"text":"leach","isCorrect":false,"rationale":"Động từ 'leach' (thấm/rỉ vào) không phù hợp với việc làm phai màu vải."},{"text":"undermine","isCorrect":false,"rationale":"Động từ 'undermine' (làm suy yếu) không phù hợp để mô tả sự phai màu."},{"text":"signify","isCorrect":false,"rationale":"Động từ 'signify' (biểu thị) không phù hợp."}]},
+            {"question":"A balanced diet and regular exercise can help maintain a healthy _______.","hint":"Từ này đề cập đến các quá trình hóa học xảy ra bên trong cơ thể để duy trì sự sống.","options":[{"text":"additive","isCorrect":false,"rationale":"Danh từ 'additive' (chất phụ gia) không phù hợp."},{"text":"metabolism","isCorrect":true,"rationale":"Danh từ 'metabolism' (quá trình trao đổi chất) phù hợp với ngữ cảnh 'giúp duy trì một quá trình trao đổi chất khỏe mạnh'."},{"text":"anticipation","isCorrect":false,"rationale":"Danh từ 'anticipation' (sự mong chờ) không phù hợp."},{"text":"assessment","isCorrect":false,"rationale":"Danh từ 'assessment' (sự đánh giá) không phù hợp."}]},
+            {"question":"People suffering from a _______ often experience fatigue, weight gain, or hormonal imbalances.","hint":"Cụm từ này đề cập đến một tình trạng y tế liên quan đến sự bất thường trong quá trình chuyển hóa của cơ thể.","options":[{"text":"metabolic disorder","isCorrect":true,"rationale":"Cụm danh từ 'metabolic disorder' (rối loạn trao đổi chất) phù hợp để chỉ nguyên nhân gây ra các triệu chứng như mệt mỏi, tăng cân."},{"text":"dispute","isCorrect":false,"rationale":"Danh từ 'dispute' (tranh chấp) không phải là tình trạng sức khỏe."},{"text":"anticipation","isCorrect":false,"rationale":"Danh từ 'anticipation' (sự mong chờ) không phù hợp."},{"text":"episodic memory","isCorrect":false,"rationale":"Cụm danh từ 'episodic memory' (ký ức sự kiện) không phải là một loại rối loạn sức khỏe."}]},
+            {"question":"Salt intake should be controlled to prevent high blood pressure, also known as _______.","hint":"Từ cần điền là thuật ngữ y học cho bệnh tăng huyết áp.","options":[{"text":"pitfall","isCorrect":false,"rationale":"Danh từ 'pitfall' (cạm bẫy) không phải là thuật ngữ y học cho huyết áp cao."},{"text":"hypertension","isCorrect":true,"rationale":"Danh từ 'hypertension' (bệnh tăng huyết áp) là thuật ngữ y học chính xác cho 'high blood pressure'."},{"text":"adequate","isCorrect":false,"rationale":"Tính từ 'adequate' (đầy đủ) không phù hợp."},{"text":"amenity","isCorrect":false,"rationale":"Danh từ 'amenity' (tiện nghi) không phù hợp."}]},
+            {"question":"The committee will _______ the proposal unacceptable unless it meets environmental standards.","hint":"Từ cần điền là một động từ trang trọng mang nghĩa 'xem xét' hoặc 'coi' một điều gì đó theo một cách cụ thể.","options":[{"text":"additive","isCorrect":false,"rationale":"Đây là danh từ, không phù hợp để điền vào vị trí động từ."},{"text":"anticipate","isCorrect":false,"rationale":"Động từ 'anticipate' (mong chờ) không phù hợp với ngữ cảnh 'coi là không thể chấp nhận'."},{"text":"deem","isCorrect":true,"rationale":"Động từ 'deem' (cho là, coi là) phù hợp với ngữ cảnh 'ủy ban sẽ coi đề xuất là không thể chấp nhận được'."},{"text":"dispute","isCorrect":false,"rationale":"Động từ 'dispute' (tranh chấp) không phù hợp."}]},
+            {"question":"The scientists warned that toxic chemicals might slowly _______ into soil and water sources.","hint":"Động từ này mô tả quá trình chất lỏng hòa tan và mang theo chất khác, thấm dần vào đất hoặc nước.","options":[{"text":"dispute","isCorrect":false,"rationale":"Động từ 'dispute' (tranh chấp) không phù hợp."},{"text":"leach","isCorrect":true,"rationale":"Động từ 'leach (into)' (rỉ/chảy vào) phù hợp với ngữ cảnh 'hóa chất độc hại có thể từ từ rỉ vào đất và nguồn nước'."},{"text":"signify","isCorrect":false,"rationale":"Động từ 'signify' (biểu thị) không phù hợp."},{"text":"cramming","isCorrect":false,"rationale":"Danh từ 'cramming' (học nhồi nhét) không phù hợp."}]},
+            {"question":"The policy was designed to _______ natural habitats and protect endangered species.","hint":"Cần một động từ mang nghĩa 'bảo vệ' hoặc 'duy trì' cái gì đó trong tình trạng ban đầu của nó.","options":[{"text":"ingest","isCorrect":false,"rationale":"Động từ 'ingest' (nuốt vào) không phù hợp với mục đích của một chính sách bảo vệ môi trường."},{"text":"preserve","isCorrect":true,"rationale":"Động từ 'preserve' (bảo tồn, giữ gìn) phù hợp với ngữ cảnh 'chính sách được thiết kế để bảo tồn môi trường sống tự nhiên'."},{"text":"bleach","isCorrect":false,"rationale":"Động từ 'bleach' (tẩy trắng) không phù hợp."},{"text":"captivate","isCorrect":false,"rationale":"Động từ 'captivate' (cuốn hút) không phù hợp."}]}
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+        let isReviewMode = false;
+
+        const quizArea = document.getElementById('quiz-area');
+        const resultArea = document.getElementById('result-area');
+        const questionCounter = document.getElementById('question-counter');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackArea = document.getElementById('feedback-area');
+        const feedbackText = document.getElementById('feedback-text');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const reviewBtn = document.getElementById('review-btn');
+        const finalScore = document.getElementById('final-score');
+        const resultMessage = document.getElementById('result-message');
+
+        function renderQuestion() {
+            const questionData = quizData[currentQuestionIndex];
+            const currentIndex = currentQuestionIndex + 1;
+            const totalQuestions = quizData.length;
+            const selectedAnswerIndex = userAnswers[currentQuestionIndex];
+
+            // Update Counter
+            questionCounter.textContent = `Câu hỏi ${currentIndex} / ${totalQuestions}`;
+
+            // Update Question Text
+            questionText.textContent = questionData.question;
+
+            // Clear options
+            optionsContainer.innerHTML = '';
+
+            // Render Options
+            questionData.options.forEach((option, index) => {
+                const optionBtn = document.createElement('button');
+                optionBtn.className = 'w-full text-left p-4 rounded-lg border-2 border-gray-200 bg-white hover:bg-gray-50 transition duration-150 ease-in-out shadow-sm';
+                optionBtn.textContent = `${String.fromCharCode(65 + index)}. ${option.text}`;
+                optionBtn.dataset.index = index;
+
+                if (!isReviewMode) {
+                    // Quiz Mode
+                    optionBtn.onclick = () => handleOptionClick(index);
+                    if (selectedAnswerIndex === index) {
+                        optionBtn.classList.add('selected-option');
+                    }
+                } else {
+                    // Review Mode
+                    optionBtn.disabled = true;
+                    if (option.isCorrect) {
+                        optionBtn.classList.add('correct-answer');
+                    } else if (selectedAnswerIndex === index) {
+                        optionBtn.classList.add('wrong-answer');
+                    }
+                }
+
+                optionsContainer.appendChild(optionBtn);
+            });
+
+            // Handle Feedback/Rationale
+            renderFeedback(questionData, selectedAnswerIndex);
+
+            // Update Buttons
+            updateNavigationButtons(totalQuestions);
+        }
+
+        function handleOptionClick(selectedIndex) {
+            // Save answer
+            userAnswers[currentQuestionIndex] = selectedIndex;
+
+            // Mark selected option
+            document.querySelectorAll('#options-container button').forEach((btn, index) => {
+                btn.classList.remove('selected-option');
+                if (index === selectedIndex) {
+                    btn.classList.add('selected-option');
+                }
+            });
+
+            // Enable Next button (since an answer is selected)
+            updateNavigationButtons(quizData.length);
+        }
+
+        function renderFeedback(questionData, selectedAnswerIndex) {
+            if (isReviewMode && selectedAnswerIndex !== null) {
+                feedbackArea.classList.remove('hidden');
+                const selectedOption = questionData.options[selectedAnswerIndex];
+                const isCorrect = selectedOption.isCorrect;
+
+                // Find correct option for rationale display
+                const correctOption = questionData.options.find(opt => opt.isCorrect);
+
+                if (isCorrect) {
+                    feedbackArea.classList.remove('bg-red-50', 'border-red-400');
+                    feedbackArea.classList.add('bg-green-50', 'border-green-400');
+                    feedbackText.innerHTML = `<span class="text-green-600 font-bold">Đúng!</span> ${selectedOption.rationale}`;
+                } else {
+                    feedbackArea.classList.remove('bg-green-50', 'border-green-400');
+                    feedbackArea.classList.add('bg-red-50', 'border-red-400');
+                    feedbackText.innerHTML = `
+                        <span class="text-red-600 font-bold">Sai.</span> Bạn đã chọn đáp án ${String.fromCharCode(65 + selectedAnswerIndex)}.
+                        <br>
+                        <span class="text-teal-600 font-bold">Giải thích:</span> ${correctOption ? correctOption.rationale : 'Không có giải thích.'}
+                    `;
+                }
+            } else {
+                feedbackArea.classList.add('hidden');
+            }
+        }
+
+        function updateNavigationButtons(totalQuestions) {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            // Next button is disabled only if no answer is selected AND we are NOT in review mode
+            const isAnswered = userAnswers[currentQuestionIndex] !== null;
+
+            if (currentQuestionIndex < totalQuestions - 1) {
+                nextBtn.textContent = 'Next >';
+                nextBtn.disabled = !isAnswered && !isReviewMode;
+                nextBtn.onclick = () => { currentQuestionIndex++; renderQuestion(); };
+            } else {
+                nextBtn.textContent = isReviewMode ? 'Kết thúc xem lại' : 'Nộp bài';
+                nextBtn.disabled = !isAnswered && !isReviewMode;
+                if (nextBtn.textContent === 'Nộp bài') {
+                     nextBtn.onclick = showResults;
+                } else {
+                     nextBtn.onclick = showResults; // Reuse showResults to exit review mode
+                }
+            }
+        }
+
+        function showResults() {
+            if (isReviewMode) {
+                // Exit review mode, go back to results
+                isReviewMode = false;
+                quizArea.classList.add('hidden');
+                resultArea.classList.remove('hidden');
+                return;
+            }
+
+            let score = 0;
+            quizData.forEach((q, index) => {
+                const selectedIndex = userAnswers[index];
+                if (selectedIndex !== null && q.options[selectedIndex].isCorrect) {
+                    score++;
+                }
+            });
+
+            const totalQuestions = quizData.length;
+            const percentage = (score / totalQuestions) * 100;
+            let message = '';
+
+            if (percentage === 100) {
+                message = 'Xuất sắc! Bạn đã trả lời đúng tất cả các câu hỏi.';
+            } else if (percentage >= 80) {
+                message = 'Tuyệt vời! Kiến thức C1 của bạn rất vững chắc.';
+            } else if (percentage >= 50) {
+                message = 'Khá tốt. Hãy ôn tập thêm để cải thiện điểm số.';
+            } else {
+                message = 'Cần ôn tập thêm. Hãy xem lại phần giải thích chi tiết.';
+            }
+
+            finalScore.textContent = `${score}/${totalQuestions}`;
+            resultMessage.textContent = message;
+
+            quizArea.classList.add('hidden');
+            resultArea.classList.remove('hidden');
+        }
+
+        function startReview() {
+            isReviewMode = true;
+            currentQuestionIndex = 0;
+            resultArea.classList.add('hidden');
+            quizArea.classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers = new Array(quizData.length).fill(null);
+            isReviewMode = false;
+            resultArea.classList.add('hidden');
+            quizArea.classList.remove('hidden');
+            renderQuestion();
+        }
+
+        // Event Listeners for main buttons
+        reviewBtn.addEventListener('click', startReview);
+        restartBtn.addEventListener('click', restartQuiz);
+        prevBtn.addEventListener('click', () => {
+            currentQuestionIndex--;
+            renderQuestion();
+        });
+
+        // Initialize the quiz
+        window.onload = renderQuestion;
+    </script>
+
+</body>
+</html>
