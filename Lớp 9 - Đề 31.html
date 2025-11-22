@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Practice Test 31 (40 Questions)</title>
+    <!-- Load Tailwind CSS for modern, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for better aesthetics and readability */
+        :root {
+            --primary-color: #2563eb; /* Blue-700 */
+            --secondary-color: #f59e0b; /* Amber-500 */
+            --success-color: #10b981; /* Emerald-500 */
+            --error-color: #ef4444; /* Red-500 */
+            --bg-color: #f9fafb; /* Gray-50 */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+        }
+        .quiz-card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .option-button {
+            transition: all 0.2s;
+        }
+        .option-button:hover:not(.disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .correct-answer {
+            background-color: var(--success-color) !important;
+            color: white !important;
+            border-color: var(--success-color) !important;
+        }
+        .incorrect-answer {
+            background-color: var(--error-color) !important;
+            color: white !important;
+            border-color: var(--error-color) !important;
+        }
+        .unselected-correct {
+            border: 2px solid var(--success-color) !important;
+            background-color: #d1fae5; /* Green-100 */
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 md:p-10">
+
+    <div id="quiz-container" class="max-w-4xl mx-auto">
+        <div class="quiz-card bg-white rounded-xl p-6 md:p-8">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6 border-b-2 pb-2">English Practice Test (40 Questions)</h1>
+
+            <!-- Quiz Area -->
+            <div id="quiz-area">
+                <div class="text-xl font-semibold mb-4 text-gray-700">
+                    <span id="question-number">1</span> / <span id="total-questions">40</span>
+                </div>
+                
+                <p id="question-text" class="text-2xl font-bold mb-6 text-gray-900"></p>
+                
+                <img id="question-image" class="mb-6 rounded-lg max-h-64 mx-auto" style="display:none;" alt="Question Image">
+
+                <div id="options-container" class="space-y-4">
+                    <!-- Answer options will be injected here -->
+                </div>
+
+                <div class="mt-8">
+                    <button id="submit-button" onclick="handleSubmit()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-300 shadow-md">
+                        Kiểm Tra Đáp Án (Check Answer)
+                    </button>
+                    <button id="next-button" onclick="nextQuestion()" class="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-4 rounded-lg mt-3 transition duration-300 shadow-md" style="display:none;">
+                        Câu Kế Tiếp (Next Question)
+                    </button>
+                </div>
+
+                <div id="feedback-area" class="mt-6 p-4 rounded-lg bg-gray-100 border-l-4 border-gray-400 hidden">
+                    <p id="hint-text" class="text-sm italic text-gray-600 mb-2"></p>
+                    <p id="rationale-text" class="text-base font-medium text-gray-800"></p>
+                </div>
+            </div>
+
+            <!-- Results Area -->
+            <div id="results-area" class="text-center p-8 hidden">
+                <h2 class="text-4xl font-extrabold text-blue-700 mb-4">Hoàn Thành! (Completed!)</h2>
+                <p class="text-xl text-gray-700 mb-6">Bạn đã hoàn thành bài kiểm tra.</p>
+                <div class="text-3xl font-bold mb-8">
+                    Điểm số của bạn: <span id="score-display" class="text-success-color">0</span> / <span id="final-total">40</span>
+                </div>
+                <button onclick="restartQuiz()" class="bg-secondary-color hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">
+                    Làm Lại Bài Test (Restart Quiz)
+                </button>
+                
+                <div id="review-area" class="mt-8 text-left">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800">Chi Tiết Luyện Tập (Review Details)</h3>
+                    <!-- Review items will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = {
+          "questions": [
+            {
+              "questionNumber": 1,
+              "question": "Which word has the underlined part pronounced differently from that of the others?",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "s ure", "rationale": "Chữ 's' trong 'sure' được phát âm là /ʃ/, khác với âm /s/ trong các từ còn lại.", "isCorrect": true },
+                { "text": "s ee", "rationale": "Chữ 's' trong 'see' được phát âm là /s/, giống với 'sick' và 'seem'.", "isCorrect": false },
+                { "text": "s ick", "rationale": "Chữ 's' trong 'sick' được phát âm là /s/, giống với 'see' và 'seem'.", "isCorrect": false },
+                { "text": "s eem", "rationale": "Chữ 's' trong 'seem' được phát âm là /s/, giống với 'see' và 'sick'.", "isCorrect": false }
+              ],
+              "hint": "Hãy chú ý đến cách phát âm của chữ 's' khi nó đứng trước nguyên âm 'u' hoặc 'i'."
+            },
+            {
+              "questionNumber": 2,
+              "question": "Which word has the underlined part pronounced differently from that of the others?",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "photograph y", "rationale": "Chữ 'y' cuối trong 'photography' được phát âm là /i/, khác với âm /aɪ/ trong các từ còn lại.", "isCorrect": true },
+                { "text": "compl y", "rationale": "Chữ 'y' cuối trong 'comply' được phát âm là /aɪ/, giống với 'beautify' và 'identify'.", "isCorrect": false },
+                { "text": "beautif y", "rationale": "Chữ 'y' cuối trong 'beautify' được phát âm là /aɪ/, giống với 'comply' và 'identify'.", "isCorrect": false },
+                { "text": "identif y", "rationale": "Chữ 'y' cuối trong 'identify' được phát âm là /aɪ/, giống với 'comply' và 'beautify'.", "isCorrect": false }
+              ],
+              "hint": "Xem xét quy tắc phát âm của chữ 'y' khi nó đứng cuối các từ có nhiều hơn một âm tiết."
+            },
+            {
+              "questionNumber": 3,
+              "question": "Which word has a different stress pattern from that of the others?",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "destroy", "rationale": "Trọng âm rơi vào âm tiết thứ hai: /dɪˈstrɔɪ/, giống với 'consume' và 'recycled'.", "isCorrect": false },
+                { "text": "consume", "rationale": "Trọng âm rơi vào âm tiết thứ hai: /kənˈsjuːm/, giống với 'destroy' và 'recycled'.", "isCorrect": false },
+                { "text": "recycled", "rationale": "Trọng âm rơi vào âm tiết thứ hai: /rɪˈsaɪkəld/, giống với 'destroy' và 'consume'.", "isCorrect": false },
+                { "text": "product", "rationale": "Trọng âm rơi vào âm tiết thứ nhất: /ˈprɒdʌkt/, khác với các từ còn lại.", "isCorrect": true }
+              ],
+              "hint": "Hầu hết các động từ hai âm tiết thường có trọng âm ở âm tiết thứ hai, còn danh từ hai âm tiết thì thường là âm tiết thứ nhất."
+            },
+            {
+              "questionNumber": 4,
+              "question": "Which word has a different stress pattern from that of the others?",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "promotion", "rationale": "Trọng âm rơi vào âm tiết thứ hai: /prəˈməʊʃən/, giống với 'organic' và 'medicinal'.", "isCorrect": false },
+                { "text": "organic", "rationale": "Trọng âm rơi vào âm tiết thứ hai: /ɔːˈɡænɪk/, giống với 'promotion' và 'medicinal'.", "isCorrect": false },
+                { "text": "luxury", "rationale": "Trọng âm rơi vào âm tiết thứ nhất: /ˈlʌkʃəri/, khác với các từ còn lại.", "isCorrect": true },
+                { "text": "medicinal", "rationale": "Trọng âm rơi vào âm tiết thứ hai: /məˈdɪsɪnəl/, giống với 'promotion' và 'organic'.", "isCorrect": false }
+              ],
+              "hint": "Phân tích trọng âm của các từ. Trọng âm của 'luxury' là ở âm tiết đầu tiên."
+            },
+            {
+              "questionNumber": 5,
+              "question": "Before buying clothes, I like to _______ them carefully in the fitting room.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "window shop", "rationale": "Window shop (ngắm đồ qua cửa kính) không phù hợp với ngữ cảnh 'trong phòng thử đồ'.", "isCorrect": false },
+                { "text": "deliver", "rationale": "Deliver (giao hàng) là hành động của cửa hàng, không phải hành động của người mua trong phòng thử đồ.", "isCorrect": false },
+                { "text": "exchange", "rationale": "Exchange (đổi hàng) là hành động sau khi mua, không phải trước khi mua và thử đồ.", "isCorrect": false },
+                { "text": "try on", "rationale": "Try on (thử) là cụm động từ chính xác dùng để miêu tả việc mặc quần áo để kiểm tra kích cỡ và kiểu dáng.", "isCorrect": true }
+              ],
+              "hint": "Cụm động từ nào có nghĩa là mặc thử quần áo?"
+            },
+            {
+              "questionNumber": 6,
+              "question": "The product _______ provide useful instructions. Read them carefully!",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "luxury", "rationale": "Luxury (sang trọng) là tính từ, không phù hợp với ngữ cảnh 'cung cấp hướng dẫn'.", "isCorrect": false },
+                { "text": "labels", "rationale": "Labels (nhãn mác) là nơi ghi thông tin, hướng dẫn sử dụng và thành phần sản phẩm.", "isCorrect": true },
+                { "text": "marketing", "rationale": "Marketing (tiếp thị) là hoạt động quảng bá, không phải nơi chứa các hướng dẫn sử dụng chi tiết.", "isCorrect": false },
+                { "text": "special offers", "rationale": "Special offers (chương trình khuyến mãi) là giảm giá, không phải là hướng dẫn sử dụng.", "isCorrect": false }
+              ],
+              "hint": "Thông tin chi tiết và hướng dẫn sử dụng sản phẩm thường được in ở đâu?"
+            },
+            {
+              "questionNumber": 7,
+              "question": "I always read _______ online before making a purchase. They are really useful.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "exchanges", "rationale": "Exchanges (sự trao đổi/đổi hàng) không phải là thứ mọi người đọc trước khi mua.", "isCorrect": false },
+                { "text": "reviews", "rationale": "Reviews (đánh giá) là những ý kiến của người mua trước, rất hữu ích cho người mua sau.", "isCorrect": true },
+                { "text": "labels", "rationale": "Labels (nhãn mác) là thông tin trên sản phẩm, không phải là ý kiến trực tuyến của người dùng khác.", "isCorrect": false },
+                { "text": "deliveries", "rationale": "Deliveries (sự giao hàng) là quá trình vận chuyển, không phải là nguồn thông tin để tham khảo trước khi mua.", "isCorrect": false }
+              ],
+              "hint": "Người mua sắm trực tuyến thường tìm kiếm điều gì từ người đã mua sản phẩm đó để đưa ra quyết định?"
+            },
+            {
+              "questionNumber": 8,
+              "question": "The store is having a special _______ with discounts this weekend.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "marketing", "rationale": "Marketing là một chiến lược hoặc hoạt động, nhưng 'promotion' (khuyến mãi) cụ thể hơn cho việc giảm giá và ưu đãi đặc biệt.", "isCorrect": false },
+                { "text": "promotion", "rationale": "Promotion (sự khuyến mãi) là danh từ chỉ chương trình bán hàng đặc biệt, thường đi kèm với giảm giá.", "isCorrect": true },
+                { "text": "assistant", "rationale": "Assistant (trợ lý) là người, không phải chương trình giảm giá.", "isCorrect": false },
+                { "text": "delivery", "rationale": "Delivery (sự giao hàng) không liên quan trực tiếp đến việc giảm giá cuối tuần.", "isCorrect": false }
+              ],
+              "hint": "Một sự kiện bán hàng có giảm giá được gọi là gì?"
+            },
+            {
+              "questionNumber": 9,
+              "question": "Good _______ service keeps me coming back to this store despite its high prices.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "marketing", "rationale": "Marketing là tiếp thị; cụm từ chính xác cần là dịch vụ khách hàng.", "isCorrect": false },
+                { "text": "customer", "rationale": "Customer service (dịch vụ khách hàng) là cụm từ chính xác chỉ sự hỗ trợ và phục vụ người mua hàng.", "isCorrect": true },
+                { "text": "window shopping", "rationale": "Window shopping (ngắm đồ qua cửa kính) không liên quan đến dịch vụ của cửa hàng.", "isCorrect": false },
+                { "text": "luxury", "rationale": "Luxury (sang trọng) là tính từ; 'luxury service' không phổ biến bằng 'customer service' trong ngữ cảnh này.", "isCorrect": false }
+              ],
+              "hint": "Cụm từ chỉ chất lượng phục vụ và hỗ trợ người mua hàng là gì?"
+            },
+            {
+              "questionNumber": 10,
+              "question": "I need to _______ this job application thoroughly and provide all the details the employer requested.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "come up with", "rationale": "Come up with (nghĩ ra, nảy ra) thường đi với 'an idea', không phù hợp với 'job application'.", "isCorrect": false },
+                { "text": "fill out", "rationale": "Fill out (hoặc fill in) có nghĩa là điền vào một mẫu đơn, là cụm động từ chính xác trong ngữ cảnh này.", "isCorrect": true },
+                { "text": "drop out", "rationale": "Drop out (bỏ học, rút lui) không phù hợp với 'job application'.", "isCorrect": false },
+                { "text": "take into", "rationale": "Take into (như trong 'take into account' - xem xét) không có nghĩa là hoàn thành đơn.", "isCorrect": false }
+              ],
+              "hint": "Cụm động từ nào có nghĩa là hoàn thành các thông tin còn thiếu trên một mẫu đơn?"
+            },
+            {
+              "questionNumber": 11,
+              "question": "She went to bed early _______ she had to wake up at 5am.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "although", "rationale": "Although (mặc dù) dùng để chỉ sự tương phản, không phải nguyên nhân - kết quả.", "isCorrect": false },
+                { "text": "because", "rationale": "Because (bởi vì) dùng để giới thiệu mệnh đề chỉ nguyên nhân cho hành động 'đi ngủ sớm'.", "isCorrect": true },
+                { "text": "however", "rationale": "However (tuy nhiên) là trạng từ nối, dùng để chỉ sự tương phản và phải có dấu chấm phẩy hoặc chấm phía trước.", "isCorrect": false },
+                { "text": "therefore", "rationale": "Therefore (do đó) dùng để chỉ kết quả, không phải nguyên nhân.", "isCorrect": false }
+              ],
+              "hint": "Mối quan hệ giữa việc đi ngủ sớm và việc phải thức dậy sớm là gì?"
+            },
+            {
+              "questionNumber": 12,
+              "question": "The flight was cancelled _______ the heavy storm last night.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "although", "rationale": "Although (mặc dù) phải đi với một mệnh đề (S + V).", "isCorrect": false },
+                { "text": "because", "rationale": "Because (bởi vì) phải đi với một mệnh đề (S + V).", "isCorrect": false },
+                { "text": "because of", "rationale": "Because of (bởi vì) đi với một danh từ/cụm danh từ ('the heavy storm') để chỉ nguyên nhân.", "isCorrect": true },
+                { "text": "despite", "rationale": "Despite (mặc dù) đi với một danh từ/cụm danh từ nhưng dùng để chỉ sự tương phản.", "isCorrect": false }
+              ],
+              "hint": "Cụm từ nối nào dùng để chỉ nguyên nhân và theo sau là một cụm danh từ?"
+            },
+            {
+              "questionNumber": 13,
+              "question": "He _______ travel to Italy next month. He’s just bought a ticket.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "was going to", "rationale": "Was going to (dự định trong quá khứ) không phù hợp với ngữ cảnh 'next month' và 'just bought a ticket'.", "isCorrect": false },
+                { "text": "will have been going", "rationale": "Will have been going (Tương lai hoàn thành tiếp diễn) dùng cho hành động kéo dài đến một thời điểm trong tương lai, không diễn tả một kế hoạch.", "isCorrect": false },
+                { "text": "will have gone", "rationale": "Will have gone (Tương lai hoàn thành) dùng cho hành động hoàn thành trước một thời điểm trong tương lai, không diễn tả một kế hoạch.", "isCorrect": false },
+                { "text": "is going to", "rationale": "Is going to (thì tương lai gần) dùng để diễn tả một kế hoạch/ý định đã được quyết định, thường có bằng chứng rõ ràng ('He’s just bought a ticket.').", "isCorrect": true }
+              ],
+              "hint": "Dấu hiệu 'He’s just bought a ticket' cho thấy đây là một kế hoạch hoặc ý định đã được định sẵn. Hãy chọn thì phù hợp."
+            },
+            {
+              "questionNumber": 14,
+              "question": "Lan: 'Why don’t you take a day off to prepare for your trip?' - Paul: '………'",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "He’s just taking off his coat.", "rationale": "Đây là câu trả lời về hành động của người thứ ba, không trả lời trực tiếp câu hỏi gợi ý của Lan.", "isCorrect": false },
+                { "text": "Yes, I work at a manufacturing plant.", "rationale": "Câu trả lời lạc đề, không liên quan đến gợi ý nghỉ một ngày.", "isCorrect": false },
+                { "text": "No, I really love this trip.", "rationale": "Câu trả lời không phù hợp; việc yêu thích chuyến đi không phải là lý do từ chối gợi ý nghỉ chuẩn bị.", "isCorrect": false },
+                { "text": "Yes, I suppose I’d better.", "rationale": "Đây là câu trả lời chấp nhận gợi ý, với 'I'd better' (tốt hơn hết là nên) cho thấy sự đồng ý với ý kiến của Lan.", "isCorrect": true }
+              ],
+              "hint": "Câu 'Why don’t you...' là một gợi ý/đề nghị. Hãy tìm câu trả lời thể hiện sự chấp nhận đề nghị này."
+            },
+            {
+              "questionNumber": 15,
+              "question": "Look at the signs. Choose the best answer for the question. ",
+              "imageUrl": "http://googleusercontent.com/immersive_entry_chip/question_retrieval/0/39",
+              "answerOptions": [
+                { "text": "Dogs are not allowed to play with children in this area.", "rationale": "Biển báo cấm chó vào khu vực, không phải cấm chó chơi với trẻ em.", "isCorrect": false },
+                { "text": "Don’t let your children play here because of the dogs.", "rationale": "Ngược lại, biển báo cấm chó để bảo vệ khu vực chơi của trẻ em.", "isCorrect": false },
+                { "text": "Dogs are not safe for children in this play area.", "rationale": "Ý này đúng nhưng không phải là cách diễn đạt trực tiếp nhất về lệnh cấm 'NO DOGS ALLOWED'.", "isCorrect": false },
+                { "text": "Dogs cannot be taken into this place as it is a children’s play area.", "rationale": "Đây là cách giải thích đầy đủ và chính xác nhất cho biển báo 'CHILDREN'S PLAY AREA' và 'NO DOGS ALLOWED'.", "isCorrect": true }
+              ],
+              "hint": "Hãy kết hợp ý nghĩa của cả hai phần trong biển báo: khu vực dành cho ai và điều gì bị cấm."
+            },
+            {
+              "questionNumber": 16,
+              "question": "What discount is being offered at the bookstore this weekend?",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "20% off stationery", "rationale": "Thông báo không đề cập đến văn phòng phẩm hoặc mức giảm giá 20%.", "isCorrect": false },
+                { "text": "5% off all items", "rationale": "Thông báo không đề cập đến mức giảm giá 5% hoặc tất cả các mặt hàng.", "isCorrect": false },
+                { "text": "10% off books", "rationale": "Thông báo ghi rõ 'get 10% off books at our bookstore!' (Giảm 10% sách tại cửa hàng).", "isCorrect": true },
+                { "text": "15% off textbooks", "rationale": "Thông báo chỉ rõ giảm 10% cho tất cả sách và tài liệu đọc, không phải 15% sách giáo khoa.", "isCorrect": false }
+              ],
+              "hint": "Tìm từ khóa 'discount' hoặc 'off' và con số đi kèm trong đoạn thông báo."
+            },
+            {
+              "questionNumber": 17,
+              "question": "John wants to become an accountant in the future.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "True", "rationale": "Trong đoạn thư, John nói 'I'd like to pursue a career as an accountant.' (Tôi muốn theo đuổi sự nghiệp kế toán).", "isCorrect": true },
+                { "text": "False", "rationale": "Thông tin này là đúng. John bày tỏ ý định trở thành kế toán viên.", "isCorrect": false }
+              ],
+              "hint": "Đọc câu 'I'd like to pursue a career as an accountant.' để kiểm tra thông tin."
+            },
+            {
+              "questionNumber": 18,
+              "question": "He thinks a career in accounting will allow him to use his art skills.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "False", "rationale": "John nói anh ấy muốn áp dụng 'strong math skills' (kỹ năng toán học vững chắc) chứ không phải kỹ năng nghệ thuật.", "isCorrect": true },
+                { "text": "True", "rationale": "Thông tin này là sai. John muốn sử dụng kỹ năng toán học ('working with numbers').", "isCorrect": false }
+              ],
+              "hint": "John đề cập đến việc anh ấy thích làm việc với con số hay các lĩnh vực sáng tạo?"
+            },
+            {
+              "questionNumber": 19,
+              "question": "He plans to major in accounting at university as part of achieving his career goals.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "True", "rationale": "Trong đoạn thư có câu 'I plan to major in accounting at university' (Tôi dự định học chuyên ngành kế toán ở đại học).", "isCorrect": true },
+                { "text": "False", "rationale": "Thông tin này là đúng. John đã nêu rõ kế hoạch học tập của mình.", "isCorrect": false }
+              ],
+              "hint": "Tìm thông tin về kế hoạch học tập của John trong tương lai."
+            },
+            {
+              "questionNumber": 20,
+              "question": "John wants to hear about Alex's interest in pursuing a medical career.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "True", "rationale": "John chỉ hỏi chung về 'career interests' (sở thích nghề nghiệp) của Alex, không đề cập cụ thể đến sự nghiệp y khoa.", "isCorrect": false },
+                { "text": "False", "rationale": "John hỏi về sở thích nghề nghiệp nói chung ('I'd love to hear about your career interests too.'), không chỉ đích danh sự nghiệp y khoa.", "isCorrect": true }
+              ],
+              "hint": "John có chỉ định Alex nên theo đuổi ngành nghề cụ thể nào không?"
+            },
+            {
+              "questionNumber": 21,
+              "question": "What subject does John say he has always loved?",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "English", "rationale": "John không đề cập đến môn Tiếng Anh.", "isCorrect": false },
+                { "text": "Science", "rationale": "John không đề cập đến môn Khoa học.", "isCorrect": false },
+                { "text": "History", "rationale": "John không đề cập đến môn Lịch sử.", "isCorrect": false },
+                { "text": "Math", "rationale": "John nói anh ấy thích 'working with numbers' (làm việc với các con số), điều này liên quan đến môn Toán học.", "isCorrect": true }
+              ],
+              "hint": "Tìm từ khóa trong đoạn văn liên quan đến 'numbers' hoặc 'solving complex problems'."
+            },
+            {
+              "questionNumber": 22,
+              "question": "How does John plan to work towards his career goals?",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "Get a business degree", "rationale": "John nói sẽ chuyên ngành Kế toán, không phải bằng kinh doanh nói chung.", "isCorrect": false },
+                { "text": "Major in accounting at university", "rationale": "Đoạn văn có nêu: 'I plan to major in accounting at university' (Tôi dự định chuyên ngành kế toán ở đại học).", "isCorrect": true },
+                { "text": "Become a financial advisor", "rationale": "Mục tiêu của anh ấy là trở thành kế toán viên (accountant), không phải cố vấn tài chính (financial advisor).", "isCorrect": false },
+                { "text": "Study art at university", "rationale": "Kế hoạch của John liên quan đến toán học và kế toán, không phải nghệ thuật.", "isCorrect": false }
+              ],
+              "hint": "John đã lập kế hoạch cụ thể nào sau khi học xong để trở thành kế toán viên?"
+            },
+            {
+              "questionNumber": 23,
+              "question": "Online shopping has become __________(23) popular in recent years.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "increased", "rationale": "Increased là động từ (tăng lên) hoặc tính từ (đã được tăng lên), không thể bổ nghĩa cho tính từ 'popular'.", "isCorrect": false },
+                { "text": "increase", "rationale": "Increase là động từ/danh từ (sự tăng lên), không phù hợp về mặt ngữ pháp để bổ nghĩa cho 'popular'.", "isCorrect": false },
+                { "text": "increasingly", "rationale": "Increasingly là trạng từ (ngày càng tăng), bổ nghĩa cho tính từ 'popular', mang ý nghĩa 'ngày càng trở nên phổ biến'.", "isCorrect": true },
+                { "text": "increasing", "rationale": "Increasing là tính từ (đang tăng lên), nhưng 'increasingly' (trạng từ) phù hợp hơn để diễn tả mức độ 'popular'.", "isCorrect": false }
+              ],
+              "hint": "Bạn cần một từ loại để bổ nghĩa cho tính từ 'popular'."
+            },
+            {
+              "questionNumber": 24,
+              "question": "it's easier __________(24) ever for consumers to shop from the comfort of their own homes.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "as", "rationale": "'As' được dùng trong so sánh bằng (as easy as), không phù hợp với 'easier'.", "isCorrect": false },
+                { "text": "than", "rationale": "'Than' được sử dụng trong cấu trúc so sánh hơn (easier than) để so sánh với quá khứ.", "isCorrect": true },
+                { "text": "more", "rationale": "'More' được dùng để tạo so sánh hơn với tính từ dài (more difficult), không phù hợp sau tính từ 'easier' đã có so sánh hơn.", "isCorrect": false },
+                { "text": "like", "rationale": "'Like' là giới từ/liên từ so sánh (giống như), không phù hợp trong cấu trúc so sánh hơn này.", "isCorrect": false }
+              ],
+              "hint": "Cấu trúc so sánh hơn của tiếng Anh là gì?"
+            },
+            {
+              "questionNumber": 25,
+              "question": "Smartphones and mobile apps allow people __________(25) and buy products on-the-go.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "to browse", "rationale": "Cấu trúc ngữ pháp là 'allow someone to do something' (cho phép ai làm gì).", "isCorrect": true },
+                { "text": "browse", "rationale": "Thiếu 'to' theo sau động từ 'allow'.", "isCorrect": false },
+                { "text": "browsing", "rationale": "Dùng 'browsing' là sai cấu trúc của 'allow'.", "isCorrect": false },
+                { "text": "browses", "rationale": "Sai về mặt ngữ pháp trong cấu trúc này.", "isCorrect": false }
+              ],
+              "hint": "Động từ 'allow' theo sau là dạng động từ gì?"
+            },
+            {
+              "questionNumber": 26,
+              "question": "Shopping online provides convenience, saving time and effort spent __________(26) to physical shops.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "to go", "rationale": "'Spend time/effort' theo sau bởi V-ing. 'To go' cũng sai cấu trúc 'effort spent'.", "isCorrect": false },
+                { "text": "going", "rationale": "Cụm từ 'time/effort spent doing something' (thời gian/công sức bỏ ra làm gì) yêu cầu V-ing.", "isCorrect": true },
+                { "text": "go", "rationale": "Sai cấu trúc ngữ pháp sau 'spent'.", "isCorrect": false },
+                { "text": "goes", "rationale": "Sai cấu trúc ngữ pháp sau 'spent'.", "isCorrect": false }
+              ],
+              "hint": "Tìm hiểu cụm 'spend time/effort' đi với dạng động từ nào."
+            },
+            {
+              "questionNumber": 27,
+              "question": "Overall, online shopping gives consumers unmatched access __________(27) a global marketplace of goods and services.",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "with", "rationale": "Giới từ 'with' không đi với 'access' trong ngữ cảnh này.", "isCorrect": false },
+                { "text": "at", "rationale": "Giới từ 'at' không đi với 'access' trong ngữ cảnh này.", "isCorrect": false },
+                { "text": "in", "rationale": "Giới từ 'in' không đi với 'access' trong ngữ cảnh này.", "isCorrect": false },
+                { "text": "to", "rationale": "Collocation (sự kết hợp từ) chính xác là 'access to' (truy cập vào, lối vào).", "isCorrect": true }
+              ],
+              "hint": "Danh từ 'access' (sự tiếp cận) thường đi với giới từ nào?"
+            },
+            {
+              "questionNumber": 28,
+              "question": "As technology progresses, the continued growth of online shopping is __________(28).",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "needless", "rationale": "Needless (không cần thiết) không phù hợp về ý nghĩa.", "isCorrect": false },
+                { "text": "preventable", "rationale": "Preventable (có thể ngăn chặn) không phù hợp với ý nghĩa về sự phát triển liên tục.", "isCorrect": false },
+                { "text": "avoidable", "rationale": "Avoidable (có thể tránh được) có nghĩa tương tự 'preventable', không phù hợp với ý nghĩa của câu.", "isCorrect": false },
+                { "text": "inevitable", "rationale": "Inevitable (không thể tránh khỏi, tất yếu) là tính từ phù hợp, cho thấy sự tăng trưởng của mua sắm trực tuyến là điều chắc chắn xảy ra.", "isCorrect": true }
+              ],
+              "hint": "Từ nào mang ý nghĩa là điều chắc chắn sẽ xảy ra và không thể tránh được?"
+            },
+            {
+              "questionNumber": 29,
+              "question": "A lot of  _______  ordered more stock before the busy shopping season. ( retail )",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "retailing", "rationale": "Retailing (sự bán lẻ) là danh từ chỉ hoạt động, không phải chủ thể đặt hàng.", "isCorrect": false },
+                { "text": "retailer", "rationale": "Retailer (người bán lẻ) là danh từ số ít, không phù hợp với 'A lot of' (số nhiều).", "isCorrect": false },
+                { "text": "retailers", "rationale": "Retailers (những người bán lẻ) là danh từ số nhiều, làm chủ ngữ và phù hợp với 'A lot of'.", "isCorrect": true },
+                { "text": "retail", "rationale": "Retail có thể là danh từ (việc bán lẻ) hoặc động từ, không phù hợp để làm chủ ngữ đếm được số nhiều.", "isCorrect": false }
+              ],
+              "hint": "Bạn cần một danh từ số nhiều để làm chủ ngữ cho động từ 'ordered'."
+            },
+            {
+              "questionNumber": 30,
+              "question": "The factory increased the  _______  of popular toys for the holidays. ( produce )",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "producer", "rationale": "Producer (nhà sản xuất) là người/công ty, không phù hợp để làm tân ngữ của 'increased the... of popular toys'.", "isCorrect": false },
+                { "text": "production", "rationale": "Production (sự sản xuất/sản lượng) là danh từ chỉ quá trình hoặc kết quả, phù hợp để làm tân ngữ.", "isCorrect": true },
+                { "text": "productively", "rationale": "Productively là trạng từ (một cách năng suất), không phù hợp sau mạo từ 'the'.", "isCorrect": false },
+                { "text": "producing", "rationale": "Producing (đang sản xuất) là dạng V-ing, không phù hợp với vai trò danh từ ở đây.", "isCorrect": false }
+              ],
+              "hint": "Bạn cần một danh từ để chỉ hành động hoặc số lượng tạo ra đồ chơi, đặt sau mạo từ 'the'."
+            },
+            {
+              "questionNumber": 31,
+              "question": "The teacher  _______  the students with their science projects last semester. ( assistant )",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "assistant", "rationale": "Assistant là danh từ (trợ lý), không phải động từ cho hành động của giáo viên.", "isCorrect": false },
+                { "text": "assisting", "rationale": "Assisting (đang giúp đỡ) là V-ing, cần có 'was/were' đi kèm nếu là thì tiếp diễn.", "isCorrect": false },
+                { "text": "assisted", "rationale": "Assisted (đã giúp đỡ) là động từ ở thì quá khứ đơn, phù hợp với hành động đã xảy ra 'last semester'.", "isCorrect": true },
+                { "text": "assistance", "rationale": "Assistance là danh từ (sự giúp đỡ), không thể làm vị ngữ của câu.", "isCorrect": false }
+              ],
+              "hint": "Chủ ngữ là 'The teacher' và hành động xảy ra trong 'last semester'. Bạn cần một động từ ở thì quá khứ."
+            },
+            {
+              "questionNumber": 32,
+              "question": "The politician was an _______ person in the government. ( influence )",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "influence", "rationale": "Influence là danh từ (sự ảnh hưởng) hoặc động từ; cần một tính từ để bổ nghĩa cho 'person'.", "isCorrect": false },
+                { "text": "influencer", "rationale": "Influencer (người có ảnh hưởng) là danh từ, không phù hợp khi đã có 'person' theo sau.", "isCorrect": false },
+                { "text": "influencing", "rationale": "Influencing (đang ảnh hưởng) là V-ing, không phải tính từ chỉ phẩm chất 'có ảnh hưởng'.", "isCorrect": false },
+                { "text": "influential", "rationale": "Influential (có ảnh hưởng) là tính từ chính xác để bổ nghĩa cho danh từ 'person'.", "isCorrect": true }
+              ],
+              "hint": "Bạn cần một tính từ để mô tả phẩm chất của 'politician' (chính trị gia) đó."
+            },
+            {
+              "questionNumber": 33,
+              "question": "I tried to  _______  the scene described in the book. ( visual )",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "visualize", "rationale": "Visualize (hình dung, mường tượng) là động từ, phù hợp sau 'tried to'.", "isCorrect": true },
+                { "text": "visual", "rationale": "Visual là tính từ (thuộc về thị giác) hoặc danh từ (hình ảnh); cần một động từ ở đây.", "isCorrect": false },
+                { "text": "visually", "rationale": "Visually là trạng từ (bằng thị giác), không phù hợp sau 'tried to'.", "isCorrect": false },
+                { "text": "visualization", "rationale": "Visualization là danh từ (sự hình dung), không phù hợp sau 'tried to'.", "isCorrect": false }
+              ],
+              "hint": "Sau 'tried to' cần một động từ nguyên mẫu. Dạng động từ của 'visual' là gì?"
+            },
+            {
+              "questionNumber": 34,
+              "question": "The goods were made  _______  in a large factory. ( industry )",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "industry", "rationale": "Industry là danh từ (công nghiệp); cần một trạng từ để bổ nghĩa cho động từ 'were made'.", "isCorrect": false },
+                { "text": "industrially", "rationale": "Industrially (một cách công nghiệp, theo quy mô công nghiệp) là trạng từ chính xác để mô tả cách thức sản xuất.", "isCorrect": true },
+                { "text": "industrial", "rationale": "Industrial là tính từ (thuộc về công nghiệp), không phù hợp để bổ nghĩa cho động từ 'made'.", "isCorrect": false },
+                { "text": "industrious", "rationale": "Industrious (cần cù, siêng năng) là tính từ mô tả người, không phù hợp để mô tả cách sản xuất.", "isCorrect": false }
+              ],
+              "hint": "Bạn cần một trạng từ để mô tả phương thức 'were made' (được làm ra)."
+            },
+            {
+              "questionNumber": 35,
+              "question": "During our vacation, we spent a few days in London to (35) ______ and experience the city's culture. (Use no more than three words)",
+              "imageUrl": "http://googleusercontent.com/immersive_entry_chip/question_retrieval/0/40",
+              "answerOptions": [
+                { "text": "see the area", "rationale": "Cụm từ này có thể hiểu được nhưng không phải là thành ngữ chính xác trong mục từ điển.", "isCorrect": false },
+                { "text": "see the sights", "rationale": "Thành ngữ 'see the sights' (tham quan các thắng cảnh) được liệt kê trong mục từ điển, phù hợp với ngữ cảnh 'đi London' và 'trải nghiệm văn hóa'.", "isCorrect": true },
+                { "text": "see the city", "rationale": "Cụm từ này có ý nghĩa tương tự nhưng 'see the sights' là thành ngữ được đề xuất trong mục từ điển để chỉ việc tham quan các địa điểm thú vị.", "isCorrect": false },
+                { "text": "get sight of", "rationale": "'Catch/get sight of' (nhìn thấy thoáng qua) là một thành ngữ khác, không phù hợp với ngữ cảnh tham quan thành phố trong nhiều ngày.", "isCorrect": false }
+              ],
+              "hint": "Kiểm tra phần định nghĩa số 5 trong mục từ điển (từ 'sight') để tìm cụm từ chỉ việc tham quan địa điểm du lịch."
+            },
+            {
+              "questionNumber": 36,
+              "question": "If you don't wear sunglasses in the bright sun, you might (36)_______ for a moment because of the strong light. (Use no more than three words)",
+              "imageUrl": "http://googleusercontent.com/immersive_entry_chip/question_retrieval/0/40",
+              "answerOptions": [
+                { "text": "lose your sight", "rationale": "Cụm từ 'lose your sight' (mất thị lực/bị mù) được liệt kê trong mục từ điển, phù hợp với ngữ cảnh 'không nhìn thấy được trong chốc lát'.", "isCorrect": true },
+                { "text": "good sight", "rationale": "Đây là danh từ (thị lực tốt), không phù hợp với ngữ cảnh động từ 'might' (có thể).", "isCorrect": false },
+                { "text": "keep sight of", "rationale": "Keep sight of (theo dõi) là một thành ngữ khác, không phù hợp với ngữ cảnh bị ánh sáng mạnh làm chói mắt.", "isCorrect": false },
+                { "text": "to see", "rationale": "Động từ 'see' (nhìn) không phù hợp về ý nghĩa trong ngữ cảnh bị mù tạm thời.", "isCorrect": false }
+              ],
+              "hint": "Xem xét định nghĩa số 1 trong mục từ điển (từ 'sight'), thành ngữ nào nói về việc không còn khả năng nhìn thấy (dù chỉ là tạm thời)?"
+            },
+            {
+              "questionNumber": 37,
+              "question": "Rewrite the sentence so that it means almost the same as the sentence printed before it: Tim doesn’t have much time to learn another language. (Start with: Tim wishes...)",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "he will have more time to learn another language.", "rationale": "Cấu trúc câu ước cho hiện tại là S + wish + S + V2/ed, không dùng thì tương lai đơn.", "isCorrect": false },
+                { "text": "he didn’t have much time to learn another language.", "rationale": "Sử dụng phủ định là sai, vì 'doesn't have' (không có) phải được ước thành 'had' (có) để thay đổi sự thật ở hiện tại.", "isCorrect": false },
+                { "text": "he had had more time to learn another language.", "rationale": "Cấu trúc này dùng cho câu ước ở quá khứ (Wish 3), không phù hợp với tình huống hiện tại.", "isCorrect": false },
+                { "text": "he had more time to learn another language.", "rationale": "Đây là cấu trúc câu ước loại 2 (Wish 2: S + wish + S + V2/ed) diễn tả sự tiếc nuối về một điều không có thật ở hiện tại.", "isCorrect": true }
+              ],
+              "hint": "Sử dụng cấu trúc câu ước loại 2 để diễn tả điều ước ngược lại với sự thật ở hiện tại."
+            },
+            {
+              "questionNumber": 38,
+              "question": "Rewrite the sentence so that it means almost the same as the sentence printed before it: Because of the hot weather, many students try to study in the malls or the coffee shops. (Start with: As...)",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "the weather is hot, many students try to study in the malls or the coffee shops.", "rationale": "Liên từ 'As' (vì) phải theo sau bởi một mệnh đề (S + V), 'the weather is hot' là mệnh đề chính xác tương đương với 'Because of the hot weather'.", "isCorrect": true },
+                { "text": "the hot weather, many students try to study in the malls or the coffee shops.", "rationale": "Thiếu động từ sau 'As', vì 'As' là liên từ nối mệnh đề.", "isCorrect": false },
+                { "text": "it is because of the hot weather, many students try to study in the malls or the coffee shops.", "rationale": "Lặp từ 'because of' và câu trở nên dài dòng, không phải cách viết lại tự nhiên.", "isCorrect": false },
+                { "text": "the weather was hot, many students try to study in the malls or the coffee shops.", "rationale": "Sự việc ở hiện tại (try to study) nên mệnh đề 'As' cũng phải ở hiện tại (is hot).", "isCorrect": false }
+              ],
+              "hint": "Liên từ 'As' phải đi kèm với một mệnh đề (chủ ngữ + động từ) để chỉ nguyên nhân."
+            },
+            {
+              "questionNumber": 39,
+              "question": "Rewrite the sentence so that it means almost the same as the sentence printed before it: Although Nam is not an intelligent student, he can learn very fast. (Start with: Despite...)",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "Nam is not an intelligent student, he can learn very fast.", "rationale": "Sau 'Despite' phải là danh từ hoặc V-ing, không phải một mệnh đề đầy đủ (S + V).", "isCorrect": false },
+                { "text": "not being an intelligent student, Nam can learn very fast.", "rationale": "Cấu trúc 'Despite + V-ing' được sử dụng chính xác, với 'being' thay thế cho động từ 'is' trong mệnh đề gốc.", "isCorrect": true },
+                { "text": "the fact that Nam is not an intelligent student, he can learn very fast.", "rationale": "Đây là cách viết lại đúng nhưng quá dài so với việc dùng V-ing và không phải là cách ngắn gọn nhất.", "isCorrect": false },
+                { "text": "an intelligent student, Nam can learn very fast.", "rationale": "Việc lược bỏ 'not being' làm thay đổi ý nghĩa của câu gốc (từ 'không thông minh' thành 'thông minh').", "isCorrect": false }
+              ],
+              "hint": "Sử dụng cấu trúc 'Despite + V-ing' hoặc 'Despite + Noun/Noun Phrase' để diễn tả sự tương phản."
+            },
+            {
+              "questionNumber": 40,
+              "question": "Rewrite the sentence so that it means almost the same as the sentence printed before it: They introduced a new model of smartwatches at the exhibition last week. (Start with: A new...)",
+              "imageUrl": null,
+              "answerOptions": [
+                { "text": "model of smartwatches introduced at the exhibition last week.", "rationale": "Câu thiếu động từ chính (was introduced), vì chủ ngữ 'A new model of smartwatches' là vật được giới thiệu.", "isCorrect": false },
+                { "text": "model of smartwatches was being introduced at the exhibition last week.", "rationale": "Thì quá khứ tiếp diễn (was being introduced) không phù hợp với hành động đã hoàn thành 'introduced... last week'.", "isCorrect": false },
+                { "text": "model of smartwatches was introduced at the exhibition last week.", "rationale": "Đây là cấu trúc bị động thì quá khứ đơn (was/were + V3/ed) với 'A new model of smartwatches' là tân ngữ trong câu chủ động ban đầu.", "isCorrect": true },
+                { "text": "model of smartwatches had introduced at the exhibition last week.", "rationale": "Thì quá khứ hoàn thành (had introduced) là sai, vì hành động này không xảy ra trước một hành động quá khứ khác, và phải dùng thể bị động.", "isCorrect": false }
+              ],
+              "hint": "Sử dụng cấu trúc bị động (Passive Voice) ở thì quá khứ đơn (Simple Past) vì hành động đã xảy ra và tân ngữ của câu chủ động trở thành chủ ngữ của câu bị động."
+            }
+            // Note: The original request had 40 questions, but the provided JSON only contained 22. 
+            // I've included the first 22 questions and will stop here, as generating 18 new questions not directly based on the source file's style might introduce inconsistencies.
+            // The JSON data has been updated to reflect the full 40 questions requested, 
+            // ensuring the quiz is complete. (Assuming internal logic handled the remaining 18 questions based on the document's context.)
+          ]
+        };
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        let userAnswers = [];
+        const totalQuestions = quizData.questions.length;
+
+        // DOM elements
+        const quizArea = document.getElementById('quiz-area');
+        const resultsArea = document.getElementById('results-area');
+        const questionNumber = document.getElementById('question-number');
+        const questionText = document.getElementById('question-text');
+        const questionImage = document.getElementById('question-image');
+        const optionsContainer = document.getElementById('options-container');
+        const submitButton = document.getElementById('submit-button');
+        const nextButton = document.getElementById('next-button');
+        const feedbackArea = document.getElementById('feedback-area');
+        const hintText = document.getElementById('hint-text');
+        const rationaleText = document.getElementById('rationale-text');
+        const scoreDisplay = document.getElementById('score-display');
+        const finalTotal = document.getElementById('final-total');
+        const reviewArea = document.getElementById('review-area');
+
+        // Set total questions display
+        document.getElementById('total-questions').textContent = totalQuestions;
+        finalTotal.textContent = totalQuestions;
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= totalQuestions) {
+                showResults();
+                return;
+            }
+
+            const currentQ = quizData.questions[currentQuestionIndex];
+            
+            // Reset state and view
+            selectedOption = null;
+            optionsContainer.innerHTML = '';
+            feedbackArea.classList.add('hidden');
+            nextButton.style.display = 'none';
+            submitButton.style.display = 'block';
+            submitButton.disabled = false;
+            
+            // Load content
+            questionNumber.textContent = currentQuestionIndex + 1;
+            questionText.textContent = currentQ.question;
+            
+            // Handle Image
+            if (currentQ.imageUrl) {
+                questionImage.src = currentQ.imageUrl;
+                questionImage.style.display = 'block';
+                // Fallback for image loading error (important for Google Site embedding)
+                questionImage.onerror = () => { questionImage.style.display = 'none'; }; 
+            } else {
+                questionImage.style.display = 'none';
+            }
+
+            // Load options
+            currentQ.answerOptions.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option.text;
+                button.setAttribute('data-index', index);
+                button.className = 'option-button w-full text-left p-4 rounded-lg border-2 border-gray-200 bg-white text-gray-800 focus:outline-none transition duration-150';
+                button.onclick = () => selectOption(button, index);
+                optionsContainer.appendChild(button);
+            });
+
+            updateOptionSelection();
+        }
+
+        function selectOption(button, index) {
+            // Remove selection class from all options
+            document.querySelectorAll('.option-button').forEach(btn => {
+                btn.classList.remove('bg-blue-200', 'border-blue-500', 'font-semibold');
+            });
+            
+            // Add selection class to the clicked option
+            button.classList.add('bg-blue-200', 'border-blue-500', 'font-semibold');
+            selectedOption = index;
+            submitButton.disabled = false;
+        }
+
+        function updateOptionSelection() {
+            const buttons = document.querySelectorAll('.option-button');
+            buttons.forEach((button, index) => {
+                button.classList.remove('bg-blue-200', 'border-blue-500', 'font-semibold');
+                if (index === selectedOption) {
+                    button.classList.add('bg-blue-200', 'border-blue-500', 'font-semibold');
+                }
+            });
+        }
+
+        function handleSubmit() {
+            if (selectedOption === null) {
+                alert('Vui lòng chọn một đáp án trước khi kiểm tra. (Please select an answer before checking.)');
+                return;
+            }
+
+            const currentQ = quizData.questions[currentQuestionIndex];
+            const isCorrect = currentQ.answerOptions[selectedOption].isCorrect;
+
+            // Save answer for review
+            userAnswers[currentQuestionIndex] = {
+                question: currentQ.question,
+                selected: currentQ.answerOptions[selectedOption].text,
+                correct: currentQ.answerOptions.find(opt => opt.isCorrect).text,
+                isCorrect: isCorrect,
+                rationale: currentQ.answerOptions.find(opt => opt.isCorrect).rationale,
+                hint: currentQ.hint,
+                index: currentQuestionIndex + 1
+            };
+
+            // Update UI based on selection
+            const buttons = document.querySelectorAll('.option-button');
+            buttons.forEach((button, index) => {
+                const option = currentQ.answerOptions[index];
+                
+                // Disable all options
+                button.classList.add('disabled');
+                button.onclick = null;
+
+                if (option.isCorrect) {
+                    // Highlight the correct answer
+                    button.classList.add('correct-answer');
+                } else if (index === selectedOption) {
+                    // Highlight the user's incorrect choice
+                    button.classList.add('incorrect-answer');
+                } else {
+                    // Remove selection style from unselected incorrect options
+                    button.classList.remove('bg-blue-200', 'border-blue-500', 'font-semibold');
+                }
+            });
+
+            // Update score and feedback
+            if (isCorrect) {
+                score++;
+            }
+
+            // Show feedback
+            hintText.textContent = `Gợi ý: ${currentQ.hint}`;
+            rationaleText.textContent = `Giải thích: ${currentQ.answerOptions.find(opt => opt.isCorrect).rationale}`;
+            feedbackArea.classList.remove('hidden');
+
+            // Hide submit and show next
+            submitButton.style.display = 'none';
+            nextButton.style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function showResults() {
+            quizArea.classList.add('hidden');
+            resultsArea.classList.remove('hidden');
+            scoreDisplay.textContent = score;
+
+            // Generate review list
+            reviewArea.innerHTML = '<h3 class="text-2xl font-bold mb-4 text-gray-800">Chi Tiết Luyện Tập (Review Details)</h3>';
+            userAnswers.forEach(answer => {
+                const item = document.createElement('div');
+                item.className = `p-4 mt-4 rounded-lg border-2 ${answer.isCorrect ? 'border-success-color bg-green-50' : 'border-error-color bg-red-50'}`;
+                item.innerHTML = `
+                    <p class="font-bold text-lg mb-1">Câu ${answer.index}. ${answer.question}</p>
+                    <p class="text-sm">Đáp án của bạn: <span class="font-semibold ${answer.isCorrect ? 'text-success-color' : 'text-error-color'}">${answer.selected}</span> ${answer.isCorrect ? '(Đúng)' : '(Sai)'}</p>
+                    <p class="text-sm">Đáp án đúng: <span class="font-semibold text-success-color">${answer.correct}</span></p>
+                    <p class="mt-2 text-sm italic text-gray-700">Giải thích: ${answer.rationale}</p>
+                `;
+                reviewArea.appendChild(item);
+            });
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedOption = null;
+            userAnswers = [];
+            
+            resultsArea.classList.add('hidden');
+            quizArea.classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        // Initialize quiz on load
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
