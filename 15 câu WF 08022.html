@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WORD FORM PRACTICE - ANH NGỮ HOÀNG TRƯỜNG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #fbbf24;
+            --accent: #b91c1c;
+            --bg: #f1f5f9;
+            --text: #1e293b;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg);
+            font-family: 'Lato', sans-serif;
+            overflow: hidden; 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #presentation {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .slide {
+            background-color: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            width: 95vw;
+            max-width: 1200px;
+            height: 80vh;
+            display: none; 
+            flex-direction: column;
+            padding: 40px 60px;
+            position: relative;
+            animation: fadeIn 0.4s ease-out;
+            border-bottom: 12px solid var(--primary);
+        }
+
+        .slide.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-family: 'Poppins', sans-serif; font-size: 52px; color: var(--primary); line-height: 1.2; margin-bottom: 20px; }
+        
+        .slide-header {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            border-left: 6px solid var(--secondary);
+            padding-left: 15px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .question-box {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            font-size: 28px;
+            line-height: 1.5;
+            color: var(--text);
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .root-word {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 5px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 22px;
+            margin-top: 15px;
+        }
+
+        .reveal-btn {
+            background: var(--secondary);
+            color: #000;
+            border: none;
+            padding: 12px 35px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            align-self: flex-start;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+            text-transform: lowercase;
+        }
+
+        .reveal-btn:hover { transform: scale(1.05); background: #f59e0b; }
+
+        .answer-area {
+            display: none; 
+            background: #fffbeb;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px dashed var(--secondary);
+            animation: slideIn 0.3s ease-out;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-15px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .answer-top { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+
+        .answer-key {
+            font-family: 'Poppins', sans-serif;
+            font-size: 38px;
+            font-weight: 700;
+            color: var(--accent);
+            border-right: 3px solid #fde68a;
+            padding-right: 20px;
+        }
+
+        .explanation { font-size: 20px; color: #475569; flex: 1; }
+        
+        .translation-box {
+            font-size: 22px;
+            color: var(--primary);
+            font-style: italic;
+            border-top: 1px solid #fde68a;
+            padding-top: 10px;
+            font-weight: 500;
+        }
+
+        .controls {
+            padding: 15px;
+            background: var(--primary);
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .nav-btn:hover:not(:disabled) { background: white; color: var(--primary); }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .slide-counter { color: white; font-weight: 700; font-size: 18px; min-width: 100px; text-align: center; }
+
+        .title-slide { text-align: center; justify-content: center; }
+        .title-badge { background: var(--secondary); padding: 8px 25px; border-radius: 50px; font-weight: 800; display: inline-block; margin-bottom: 20px; }
+        
+        .footer-info { position: absolute; bottom: 25px; left: 60px; font-size: 14px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div id="presentation">
+    <!-- SLIDE 0: Title -->
+    <div class="slide active title-slide" id="slide0">
+        <div class="title-badge">ANH NGỮ HOÀNG TRƯỜNG</div>
+        <h1>WORD FORM PRACTICE<br><span style="color: var(--secondary);">15 ADVANCED QUESTIONS</span></h1>
+        <p style="font-size: 24px; margin-top: 20px; color: #64748b;">(Tài liệu học tập tương tác - Dịch nghĩa chi tiết)</p>
+        <div style="margin-top: 30px;"><i class="fa-solid fa-language" style="font-size: 100px; color: var(--primary); opacity: 0.2;"></i></div>
+        <div class="footer-info">Anh Ngữ Hoàng Trường</div>
+    </div>
+</div>
+
+<div class="controls">
+    <button class="nav-btn" id="prevBtn" onclick="window.prevSlide()"><i class="fa-solid fa-chevron-left"></i> TRƯỚC</button>
+    <div class="slide-counter"><span id="current">1</span> / <span id="total">17</span></div>
+    <button class="nav-btn" id="nextBtn" onclick="window.nextSlide()">SAU <i class="fa-solid fa-chevron-right"></i></button>
+</div>
+
+<script>
+    // Dữ liệu 15 câu hỏi dựa trên hình ảnh của bạn
+    const questions = [
+        { 
+            q: "Foreign language learning is ________ an issue that has attracted a lot of attention.", 
+            root: "ARGUE", 
+            ans: "unarguably", 
+            exp: "<strong>(adv):</strong> rõ ràng, không thể bàn cãi.", 
+            trans: "Việc học ngoại ngữ rõ ràng là một vấn đề đã thu hút rất nhiều sự chú ý." 
+        },
+        { 
+            q: "Expenditure on wildlife protection has been cut to an ________ minimum due to the economic crisis.", 
+            root: "REDUCE", 
+            ans: "irreducible", 
+            exp: "<strong>(adj):</strong> không thể cắt giảm thêm được nữa.", 
+            trans: "Chi phí cho việc bảo vệ động vật hoang dã đã bị cắt giảm xuống mức tối thiểu không thể giảm thêm được nữa do cuộc khủng hoảng kinh tế." 
+        },
+        { 
+            q: "Besides traditional courses and discussions, our teachers may sometimes conduct online ________.", 
+            root: "TUTOR", 
+            ans: "tutorials", 
+            exp: "<strong>(noun):</strong> các buổi hướng dẫn/phụ đạo.", 
+            trans: "Bên cạnh các khóa học và thảo luận truyền thống, giáo viên của chúng tôi đôi khi có thể thực hiện các buổi hướng dẫn trực tuyến." 
+        },
+        { 
+            q: "The destruction caused by Alzheimer's disease has been likened to the ________ of a hard drive, beginning with the most recent files and working backward.", 
+            root: "ERASE", 
+            ans: "erasure", 
+            exp: "<strong>(noun):</strong> sự xóa bỏ, sự xóa sạch.", 
+            trans: "Sự hủy hoại do bệnh Alzheimer gây ra được ví như việc xóa sạch một ổ cứng, bắt đầu từ những tập tin gần đây nhất và lùi dần về trước." 
+        },
+        { 
+            q: "The strikers of our home team played ________ well during the last match. We scored four goals.", 
+            root: "STAND", 
+            ans: "outstandingly", 
+            exp: "<strong>(adv):</strong> cực kỳ xuất sắc, nổi bật.", 
+            trans: "Các tiền đạo của đội nhà chúng ta đã chơi cực kỳ xuất sắc trong trận đấu vừa qua. Chúng ta đã ghi được bốn bàn thắng." 
+        },
+        { 
+            q: "The ________ of the Roman fortifications was one of their prides during the war.", 
+            root: "VULNERABLE", 
+            ans: "invulnerability", 
+            exp: "<strong>(noun):</strong> sự bất khả xâm phạm, tính không thể bị tổn thương.", 
+            trans: "Sự bất khả xâm phạm của các công sự La Mã là một trong những niềm tự hào của họ trong suốt cuộc chiến." 
+        },
+        { 
+            q: "He insisted that his project be ________ by the Council though it was costly and impractical.", 
+            root: "PRIOR", 
+            ans: "prioritized", 
+            exp: "<strong>(verb):</strong> được ưu tiên (cấu trúc giả định).", 
+            trans: "Anh ấy khăng khăng yêu cầu dự án của mình phải được Hội đồng ưu tiên mặc dù nó tốn kém và không thực tế." 
+        },
+        { 
+            q: "Though she tried to keep calm, I noticed some ________ in her voice.", 
+            root: "URGE", 
+            ans: "urgency", 
+            exp: "<strong>(noun):</strong> sự khẩn thiết, sự gấp gáp.", 
+            trans: "Mặc dù cô ấy cố gắng giữ bình tĩnh, tôi vẫn nhận thấy sự khẩn thiết trong giọng nói của cô ấy." 
+        },
+        { 
+            q: "Compared to foreign universities, Vietnamese universities are still ________ to meet a great number of students.", 
+            root: "EQUIP", 
+            ans: "ill-equipped", 
+            exp: "<strong>(adj):</strong> không được trang bị đầy đủ/kém trang bị.", 
+            trans: "So với các trường đại học nước ngoài, các trường đại học Việt Nam vẫn chưa được trang bị đầy đủ để đáp ứng số lượng lớn sinh viên." 
+        },
+        { 
+            q: "Michael Jackson's first two music videos were ________ effort with the Hollywood director John Landis.", 
+            root: "JOIN", 
+            ans: "joint", 
+            exp: "<strong>(adj):</strong> chung, có sự hợp tác.", 
+            trans: "Hai video âm nhạc đầu tiên của Michael Jackson là nỗ lực hợp tác chung với đạo diễn Hollywood John Landis." 
+        },
+        { 
+            q: "I am afraid that you have been ________ about the schedule. The key speech will be on Friday, not today.", 
+            root: "INFORM", 
+            ans: "misinformed", 
+            exp: "<strong>(verb/adj):</strong> bị thông tin sai, nhầm lẫn thông tin.", 
+            trans: "Tôi e rằng bạn đã bị cung cấp thông tin sai về lịch trình. Bài phát biểu chính sẽ diễn ra vào thứ Sáu, không phải hôm nay." 
+        },
+        { 
+            q: "________ as Joe is, he is quite reliable and trustworthy.", 
+            root: "EXPERIENCE", 
+            ans: "inexperienced", 
+            exp: "<strong>(adj):</strong> thiếu kinh nghiệm.", 
+            trans: "Dù Joe thiếu kinh nghiệm, anh ấy khá đáng tin cậy và có thể tin tưởng được." 
+        },
+        { 
+            q: "Unicorns and dragons are just Asian ________ and legendary animals.", 
+            root: "IMAGINE", 
+            ans: "imaginary", 
+            exp: "<strong>(adj):</strong> tưởng tượng, không có thực.", 
+            trans: "Kỳ lân và rồng chỉ là những loài động vật trong tưởng tượng và truyền thuyết của châu Á." 
+        },
+        { 
+            q: "A popular type of vaccine contains living ________ that have been caused harmless.", 
+            root: "ORGANIC", 
+            ans: "organisms", 
+            exp: "<strong>(noun):</strong> sinh vật, vi sinh vật.", 
+            trans: "Một loại vắc-xin phổ biến có chứa các vi sinh vật sống đã được làm cho trở nên vô hại." 
+        },
+        { 
+            q: "The suspect was questioned why there was no ________ in his diary that day.", 
+            root: "ENTER", 
+            ans: "entry", 
+            exp: "<strong>(noun):</strong> mục ghi chép, sự ghi vào nhật ký.", 
+            trans: "Nghi phạm bị thẩm vấn tại sao không có mục ghi chép nào trong nhật ký của mình vào ngày hôm đó." 
+        }
+    ];
+
+    const presentation = document.getElementById('presentation');
+    let currentSlide = 0;
+    const totalSlides = questions.length + 2;
+
+    // Khởi tạo các slide câu hỏi
+    questions.forEach((item, index) => {
+        const slideDiv = document.createElement('div');
+        slideDiv.className = 'slide';
+        slideDiv.id = `slide${index + 1}`;
+        slideDiv.innerHTML = `
+            <div class="slide-header">Câu hỏi ${index + 1}</div>
+            <div class="content-area">
+                <div class="question-box">
+                    ${item.q}
+                    <br><span class="root-word">${item.root}</span>
+                </div>
+                <button class="reveal-btn" onclick="window.revealAnswer(${index + 1}, this)">
+                    <i class="fa-solid fa-eye"></i> show me
+                </button>
+                <div class="answer-area" id="ans${index + 1}">
+                    <div class="answer-top">
+                        <div class="answer-key">${item.ans}</div>
+                        <div class="explanation"><strong>Giải thích:</strong> ${item.exp}</div>
+                    </div>
+                    <div class="translation-box">
+                        <strong>Dịch nghĩa:</strong> ${item.trans}
+                    </div>
+                </div>
+            </div>
+            <div class="footer-info">Anh Ngữ Hoàng Trường</div>
+        `;
+        presentation.appendChild(slideDiv);
+    });
+
+    // Thêm slide kết thúc
+    const endSlide = document.createElement('div');
+    endSlide.className = 'slide title-slide';
+    endSlide.id = `slide${questions.length + 1}`;
+    endSlide.innerHTML = `
+        <h1>CHÚC CÁC BẠN THI TỐT!</h1>
+        <p style="font-size: 28px; color: var(--primary);">Practice Makes Perfect</p>
+        <div style="margin-top: 40px;"><i class="fa-solid fa-star" style="font-size: 100px; color: var(--secondary);"></i></div>
+        <div class="footer-info">Anh Ngữ Hoàng Trường</div>
+    `;
+    presentation.appendChild(endSlide);
+
+    // Định nghĩa các hàm điều khiển toàn cục
+    window.updateCounter = function() {
+        const cur = document.getElementById('current');
+        const tot = document.getElementById('total');
+        if (cur) cur.innerText = currentSlide + 1;
+        if (tot) tot.innerText = totalSlides;
+        
+        document.getElementById('prevBtn').disabled = (currentSlide === 0);
+        document.getElementById('nextBtn').disabled = (currentSlide === totalSlides - 1);
+    };
+
+    window.showSlide = function(n) {
+        const slides = document.querySelectorAll('.slide');
+        if (slides.length === 0) return;
+        
+        slides.forEach(s => s.classList.remove('active'));
+        slides[n].classList.add('active');
+        currentSlide = n;
+        window.updateCounter();
+    };
+
+    window.nextSlide = function() {
+        if (currentSlide < totalSlides - 1) {
+            window.showSlide(currentSlide + 1);
+        }
+    };
+
+    window.prevSlide = function() {
+        if (currentSlide > 0) {
+            window.showSlide(currentSlide - 1);
+        }
+    };
+
+    window.revealAnswer = function(n, btn) {
+        const ansArea = document.getElementById(`ans${n}`);
+        if (ansArea) {
+            ansArea.style.display = 'flex';
+            if (btn) btn.style.display = 'none';
+        }
+    };
+
+    // Điều khiển bằng bàn phím
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') window.nextSlide();
+        if (e.key === 'ArrowLeft') window.prevSlide();
+        if (e.key === 'Enter') {
+            const activeSlide = document.querySelector('.slide.active');
+            if (activeSlide) {
+                const btn = activeSlide.querySelector('.reveal-btn');
+                if (btn && btn.style.display !== 'none') btn.click();
+            }
+        }
+    });
+
+    // Khởi tạo trạng thái ban đầu ngay lập tức
+    window.showSlide(0);
+</script>
+</body>
+</html>
