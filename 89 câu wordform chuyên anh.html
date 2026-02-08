@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>89 CÂU WORD FORM TƯƠNG TÁC - ANH NGỮ HOÀNG TRƯỜNG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #fbbf24;
+            --accent: #b91c1c;
+            --bg: #f1f5f9;
+            --text: #1e293b;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: var(--bg);
+            font-family: 'Lato', sans-serif;
+            overflow: hidden; 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #presentation {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .slide {
+            background-color: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            width: 95vw;
+            max-width: 1200px;
+            height: 80vh;
+            display: none; 
+            flex-direction: column;
+            padding: 40px 60px;
+            position: relative;
+            animation: fadeIn 0.4s ease-out;
+            border-bottom: 12px solid var(--primary);
+        }
+
+        .slide.active { display: flex; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-family: 'Poppins', sans-serif; font-size: 52px; color: var(--primary); line-height: 1.2; margin-bottom: 20px; }
+        
+        .slide-header {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            border-left: 6px solid var(--secondary);
+            padding-left: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question-box {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 12px;
+            font-size: 28px;
+            line-height: 1.5;
+            color: var(--text);
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .root-word {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 5px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 22px;
+            margin-top: 15px;
+        }
+
+        .reveal-btn {
+            background: var(--secondary);
+            color: #000;
+            border: none;
+            padding: 12px 35px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            align-self: flex-start;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+            text-transform: lowercase;
+        }
+
+        .reveal-btn:hover { transform: scale(1.05); background: #f59e0b; }
+
+        .answer-area {
+            display: none; 
+            background: #fffbeb;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px dashed var(--secondary);
+            animation: slideIn 0.3s ease-out;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-15px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .answer-top { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+
+        .answer-key {
+            font-family: 'Poppins', sans-serif;
+            font-size: 38px;
+            font-weight: 700;
+            color: var(--accent);
+            border-right: 3px solid #fde68a;
+            padding-right: 20px;
+        }
+
+        .explanation { font-size: 20px; color: #475569; flex: 1; }
+        
+        .translation-box {
+            font-size: 22px;
+            color: var(--primary);
+            font-style: italic;
+            border-top: 1px solid #fde68a;
+            padding-top: 10px;
+            font-weight: 500;
+        }
+
+        .controls {
+            padding: 15px;
+            background: var(--primary);
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .nav-btn:hover:not(:disabled) { background: white; color: var(--primary); }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .slide-counter { color: white; font-weight: 700; font-size: 18px; min-width: 100px; text-align: center; }
+
+        .title-slide { text-align: center; justify-content: center; }
+        .title-badge { background: var(--secondary); padding: 8px 25px; border-radius: 50px; font-weight: 800; display: inline-block; margin-bottom: 20px; }
+        
+        .footer-info { position: absolute; bottom: 25px; left: 60px; font-size: 14px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div id="presentation">
+    <!-- SLIDE 0: Title -->
+    <div class="slide active title-slide" id="slide0">
+        <div class="title-badge">ANH NGỮ HOÀNG TRƯỜNG</div>
+        <h1>89 CÂU WORD FORM<br><span style="color: var(--secondary);">CHUYÊN ANH TPHCM</span></h1>
+        <p style="font-size: 24px; margin-top: 20px; color: #64748b;">(Tài liệu học tập tương tác - Sửa lỗi tương tác)</p>
+        <div style="margin-top: 30px;"><i class="fa-solid fa-graduation-cap" style="font-size: 100px; color: var(--primary); opacity: 0.2;"></i></div>
+        <div class="footer-info">Anh Ngữ Hoàng Trường</div>
+    </div>
+</div>
+
+<div class="controls">
+    <button class="nav-btn" id="prevBtn" onclick="window.prevSlide()"><i class="fa-solid fa-chevron-left"></i> TRƯỚC</button>
+    <div class="slide-counter"><span id="current">1</span> / <span id="total">91</span></div>
+    <button class="nav-btn" id="nextBtn" onclick="window.nextSlide()">SAU <i class="fa-solid fa-chevron-right"></i></button>
+</div>
+
+<script>
+    const questions = [
+        { q: "The scandal made headlines in all the major ________ across the country.", root: "DAY", ans: "dailies", exp: "(noun): nhật báo, báo thường ngày.", trans: "Vụ bê bối đã lên trang nhất của tất cả các tờ nhật báo lớn trên cả nước." },
+        { q: "Educational attainment is often discussed alongside employment opportunities, as both are key ________ of long-term socioeconomic stability.", root: "RELATION", ans: "correlates", exp: "(noun): yếu tố liên quan, đóng góp cho 1 kết quả nào đó.", trans: "Thành tựu giáo dục thường được thảo luận cùng với các cơ hội việc làm, vì cả hai đều là những yếu tố liên quan chính đến sự ổn định kinh tế xã hội lâu dài." },
+        { q: "Hundreds of Olympic ________ gathered at the national training center.", root: "HOPE", ans: "hopefuls", exp: "(noun): người nuôi hi vọng trở thành 1 điều gì đó.", trans: "Hàng trăm người nuôi hy vọng tham dự Olympic đã tập trung tại trung tâm huấn luyện quốc gia." },
+        { q: "A(n) ________ hero chased down a thief who tried to snatch an elderly woman's handbag in broad daylight.", root: "GO", ans: "have-a-go", exp: "have-a-go hero (noun): anh hùng bất đắc dĩ / người bình thường làm việc nghĩa.", trans: "Một anh hùng bất đắc dĩ đã đuổi theo một tên trộm đang cố giật túi xách của một cụ bà giữa ban ngày." },
+        { q: "His storytelling talent is a(n) ________ in the world of contemporary fiction.", root: "PAR", ans: "nonpareil", exp: "(noun): 1 người/vật không thể sánh được (vì quá giỏi).", trans: "Tài năng kể chuyện của ông ấy là vô song trong thế giới tiểu thuyết đương đại." },
+        { q: "It's important to follow proper ________ when joining online forums, like being respectful and not using all caps.", root: "ETIQUETTE", ans: "netiquette", exp: "(noun): nguyên tắc ứng xử trên mạng (net + etiquette).", trans: "Việc tuân thủ phép lịch sự trên mạng khi tham gia các diễn đàn trực tuyến là rất quan trọng, ví dụ như tôn trọng người khác và không viết hoa toàn bộ." },
+        { q: "I attended a(n) ________ on Zoom about digital marketing strategies hosted by industry experts last Friday.", root: "SEMINAR", ans: "webinar", exp: "(noun): hội thảo trực tuyến.", trans: "Tôi đã tham gia một buổi hội thảo trực tuyến trên Zoom về các chiến lược tiếp thị kỹ thuật số do các chuyên gia trong ngành tổ chức vào thứ Sáu tuần trước." },
+        { q: "Since traveling abroad wasn't possible this year, we decided to have a relaxing ________ at home and explore local attractions instead.", root: "STAY", ans: "staycation", exp: "(noun): kì nghỉ lễ tại nhà (stay + vacation).", trans: "Vì năm nay không thể đi du lịch nước ngoài, chúng tôi quyết định có một kỳ nghỉ tại nhà và khám phá các điểm tham quan địa phương thay thế." },
+        { q: "Without exact data, we had to ________ the total cost of the project based on previous similar jobs.", root: "GUESS", ans: "guesstimate", exp: "(verb): ước chừng, dự đoán chừng.", trans: "Nếu không có dữ liệu chính xác, chúng tôi phải ước tính tổng chi phí của dự án dựa trên các công việc tương tự trước đó." },
+        { q: "As a(n) ________, the 15-year-old girl spends most of her free time scrolling through social media.", root: "SCREEN", ans: "screenager", exp: "(noun): thiếu niên nghiện xem màn hình.", trans: "Là một thiếu niên nghiện xem màn hình, cô bé 15 tuổi dành phần lớn thời gian rảnh để lướt mạng xã hội." },
+        { q: "The magazine featured a(n) ________ that looked like a regular article but was actually promoting a product.", root: "ADVERTISE", ans: "advertorial", exp: "(noun): bài báo quảng cáo (ad + editorial).", trans: "Tạp chí đã đăng một bài báo quảng cáo trông giống như một bài viết bình thường nhưng thực chất là để quảng bá sản phẩm." },
+        { q: "She rolled her eyes and said, 'Enough of the ________, OK? I already understand the topic.'", root: "EXPLAIN", ans: "mansplaining", exp: "(noun): cách giải thích thiếu tôn trọng của đàn ông với phụ nữ.", trans: "Cô ấy đảo mắt và nói thẳng mặt: 'Đủ rồi cái kiểu giải thích trịch thượng đó đi nhé? Tôi hiểu vấn đề rồi.'" },
+        { q: "The museum's new exhibit features ________ art pieces from the 18th century.", root: "TEMPORARY", ans: "non-contemporary", exp: "(adj): lỗi thời / không thuộc về hiện đại.", trans: "Triển lãm mới của bảo tàng trưng bày các tác phẩm nghệ thuật không thuộc thời đương đại từ thế kỷ 18 và 19." },
+        { q: "She felt ________ grateful for the support her friends gave her.", root: "EXPRESS", ans: "inexpressibly", exp: "(adv): vô cùng, không thể tả nổi.", trans: "Cô cảm thấy biết ơn vô cùng trước sự ủng hộ mà bạn bè dành cho mình trong những lúc khó khăn." },
+        { q: "The ________ environmental activist spoke passionately at the conference.", root: "DESCRIBE", ans: "self-described", exp: "(adj): tự xưng, tự phong.", trans: "Nhà hoạt động môi trường tự phong đã phát biểu đầy nhiệt huyết tại hội nghị về biến đổi khí hậu." },
+        { q: "The manager organized several ________ activities to improve teamwork.", root: "TRUST", ans: "trust-building", exp: "(adj): hoạt động xây dựng niềm tin.", trans: "Quản lý đã tổ chức một số hoạt động xây dựng niềm tin để cải thiện sự giao tiếp và tinh thần đồng đội." },
+        { q: "The ________ young writer dreamed of fame and fortune.", root: "STAR", ans: "starry-eyed", exp: "(adj): mơ mộng, viễn vông.", trans: "Nữ nhà văn trẻ mơ mộng luôn mơ về sự nổi tiếng và giàu sang, nhưng cô không biết cần phải nỗ lực thế nào." },
+        { q: "His ________ enthusiasm for the product came across as a bit over-the-top.", root: "BOOST", ans: "boosterish", exp: "(adj): tâng bốc quá mức.", trans: "Sự nhiệt tình tâng bốc quá mức của anh ấy đối với sản phẩm mới đôi khi khiến các thành viên thận trọng thấy hơi quá đà." },
+        { q: "The community garden project has a strong ________ factor.", root: "FEEL", ans: "feel-good", exp: "(noun phrase): yếu tố mang lại cảm giác dễ chịu.", trans: "Dự án vườn cộng đồng, nơi kết nối những người hàng xóm, có một yếu tố tích cực mang lại cảm giác dễ chịu rất mạnh mẽ." },
+        { q: "The postcard showed a(n) ________ view of the countryside.", root: "CHOCOLATE", ans: "chocolate-box", exp: "(adj): vẻ đẹp sến súa, hơi giả.", trans: "Tấm bưu thiếp cho thấy một khung cảnh làng quê đẹp như tranh vẽ (nhưng hơi sến), với những ngọn đồi thoai thoải hoàn hảo." },
+        { q: "The meeting was so boring that everyone felt like they were in ________.", root: "DULL", ans: "dullsville", exp: "(noun): một nơi chán ngắt.", trans: "Cuộc họp tẻ nhạt đến mức mọi người cảm thấy như bị đưa thẳng tới một nơi chán ngắt." },
+        { q: "The film is directed so ________ that the ideas aren't explored properly.", root: "FLAT", ans: "flat-footedly", exp: "(adv): chán chường, thiếu sáng tạo.", trans: "Có một số ý tưởng thú vị ẩn giấu trong bộ phim này, nhưng nó được đạo diễn một cách quá thiếu sáng tạo." },
+        { q: "Her latest novel is a(n) ________ drama about family and forgiveness.", root: "SOFT", ans: "soft-centered", exp: "(adj): ủy mị, mềm lòng.", trans: "Cuốn tiểu thuyết mới nhất của cô là một bộ phim tâm lý ủy mị khám phá các chủ đề về gia đình và sự tha thứ." },
+        { q: "________ after the argument, he called his friend to apologize.", root: "CONSCIENCE", ans: "conscience-stricken", exp: "(adj): cắn rứt lương tâm.", trans: "Cắn rứt lương tâm sau cuộc tranh cãi, anh đã gọi điện cho bạn mình để xin lỗi và làm hòa." },
+        { q: "She tried to ________ me into attending the party.", root: "GUILT", ans: "guilt-trip", exp: "(verb): làm cho ai đó thấy tội lỗi.", trans: "Cô ấy đã cố làm tôi thấy tội lỗi để ép tôi đi dự tiệc bằng cách nói rằng mọi người sẽ thất vọng thế nào." },
+        { q: "By sheer ________, they ended up sitting next to each other on the flight.", root: "HAPPEN", ans: "happenstance", exp: "(noun): sự tình cờ, ngẫu nhiên.", trans: "Chỉ nhờ sự tình cờ thuần túy, họ đã ngồi cạnh nhau trên chuyến bay và bắt đầu một tình bạn trọn đời." },
+        { q: "The little girl declared, 'I'm not being a(n) ________!'", root: "BOSS", ans: "bossyboots", exp: "(noun): người hay sai khiến.", trans: "Cô bé giậm chân và tuyên bố: 'Con không phải là người hay ra lệnh đâu! Con chỉ biết cách tốt nhất thôi!'" },
+        { q: "The once-grand hotel had become a(n) ________ building.", root: "HEEL", ans: "down-at-heel", exp: "(adj): tồi tàn, xuống cấp.", trans: "Khách sạn từng lộng lẫy một thời giờ đã trở thành một tòa nhà tồi tàn với lớp sơn bong tróc." },
+        { q: "After earning my degree, I'm at a(n) ________.", root: "ROAD", ans: "crossroads", exp: "(idiom): bước ngoặt cuộc đời.", trans: "Sau khi tốt nghiệp, tôi đang đứng trước một ngã rẽ cuộc đời. Tôi cần xác định hướng đi tiếp theo." },
+        { q: "They held a meeting to discuss ________ strategies.", root: "ENGAGE", ans: "re-engagement", exp: "(noun): sự tái kết nối.", trans: "Sau khi dự án bị đình trệ, cả nhóm đã tổ chức họp để thảo luận về các chiến lược tái kết nối." },
+        { q: "The giant decided to ________ the startup to bring in talent.", root: "HIRE", ans: "acqui-hire", exp: "(verb): mua lại công ty để lấy nhân tài.", trans: "Gã khổng lồ công nghệ quyết định mua lại công ty khởi nghiệp để thuê đội ngũ lập trình viên tài năng của họ." },
+        { q: "The panel ________ six authors for the Book Award.", root: "LIST", ans: "short-listed", exp: "(verb): đưa vào danh sách rút gọn.", trans: "Vừa mới hôm qua, hội đồng đã đưa vào danh sách rút gọn sáu tác giả đầu tay cho Giải thưởng Sách Quốc gia." },
+        { q: "His ________ behavior at the dinner embarrassed everyone.", root: "BREED", ans: "ill-bred", exp: "(adj): vô giáo dục, thô lỗ.", trans: "Hành vi vô giáo dục của anh ấy tại bữa tiệc tối trang trọng đã làm tất cả mọi người xấu hổ." },
+        { q: "The ________ car was towed away after the accident.", root: "SMASH", ans: "smashed-up", exp: "(adj): tan nát, hư hỏng nặng.", trans: "Chiếc xe bị nát bấy đã được kéo đi sau vụ tai nạn." },
+        { q: "The movie's final scene was a real ________.", root: "TEAR", ans: "tearjerker", exp: "(noun): phim/cảnh phim cảm động rơi lệ.", trans: "Cảnh đoàn tụ cuối phim khi người cha già ôm đứa con gái thất lạc là một cảnh lấy đi nước mắt của khán giả." },
+        { q: "His laugh couldn't shake her ________ that the trip would end badly.", root: "SENSE", ans: "presentiment", exp: "(noun): linh cảm chẳng lành.", trans: "Tiếng cười vui vẻ của anh không thể xua đi linh cảm chẳng lành trong cô rằng chuyến đi sẽ kết thúc trong nước mắt." },
+        { q: "The company invested in ________ technology.", root: "COUNTERFEIT", ans: "anti-counterfeiting", exp: "(adj): chống hàng giả.", trans: "Công ty đã đầu tư mạnh vào công nghệ chống hàng giả để bảo vệ thương hiệu của mình." },
+        { q: "Using strong passwords is a basic ________ habit.", root: "SECURE", ans: "cybersecurity", exp: "(noun): an ninh mạng.", trans: "Sử dụng mật khẩu mạnh và xác thực hai yếu tố là những thói quen an ninh mạng cơ bản." },
+        { q: "Critics argue the certification is just ________ by corporations.", root: "GATE", ans: "gatekeeping", exp: "(noun): sự kiểm soát quyền truy cập/thông tin.", trans: "Các nhà phê bình cho rằng chứng chỉ trả phí chỉ là một hình thức độc quyền quyền lực của các tập đoàn." },
+        { q: "The vendor sold ________ concert tees with blurry logos.", root: "BOOT", ans: "bootleg", exp: "(adj/noun): hàng lậu.", trans: "Người bán hàng rong bán những chiếc áo phông buổi hòa nhạc hàng lậu với logo bị nhòe." },
+        { q: "He answered none of her questions, but stated ________, 'Go now.'", root: "DICTATE", ans: "dictatorially", exp: "(adv): một cách độc đoán.", trans: "Anh ta không trả lời câu hỏi nào của cô mà chỉ tuyên bố một cách độc đoán: 'Bạn là người tốt nhất để làm việc này.'" },
+        { q: "The giant's ________ on cloud computing forced others to pivot.", root: "LOCK", ans: "hammerlock", exp: "(noun): sự kiểm soát hoàn toàn.", trans: "Sự kiểm soát hoàn toàn của gã khổng lồ công nghệ đối với điện toán đám mây đã buộc các đối thủ nhỏ hơn phải thay đổi." },
+        { q: "Most doctors would be ________ supportive of refusal of treatment.", root: "QUALITY", ans: "qualifiedly", exp: "(adv): một cách có điều kiện/dè dặt.", trans: "Tôi cho rằng hầu hết các bác sĩ sẽ ủng hộ một cách dè dặt việc từ chối điều trị trong trường hợp này." },
+        { q: "His analysis felt too ________, ignoring local factors.", root: "COARSE", ans: "coarse-grained", exp: "(adj): thô, thiếu chi tiết.", trans: "Phân tích của ông, do bỏ qua các yếu tố quan trọng của địa phương, mang lại cảm giác quá thô và thiếu chi tiết." },
+        { q: "The factory became ________ after automation was installed.", root: "MAN", ans: "undermanned", exp: "(adj): thiếu nhân lực.", trans: "Nhà máy trở nên thiếu nhân lực sau khi hệ thống tự động hóa mới được lắp đặt." },
+        { q: "The horror novel delivered a true ________.", root: "SPINE", ans: "spine-chiller", exp: "(noun): truyện rùng rợn, lạnh sống lưng.", trans: "Cuốn tiểu thuyết kinh dị đã mang đến một câu chuyện rùng rợn thực sự khiến tôi phải kiểm tra ổ khóa hai lần." },
+        { q: "The rigid policies acted like a ________ for creativity.", root: "JACKET", ans: "straitjacket", exp: "(noun): sự gò bó, kiềm kẹp.", trans: "Các chính sách cứng nhắc của công ty đóng vai trò như một sự kìm kẹp, vì chúng bóp nghẹt sự sáng tạo." },
+        { q: "The mayor unveiled an ambitious ________ for housing.", root: "PRINT", ans: "blueprint", exp: "(noun): bản thiết kế/kế hoạch chi tiết.", trans: "Thị trưởng đã công bố một kế hoạch chi tiết đầy tham vọng cho nhà ở giá rẻ." },
+        { q: "Industry blames illegal ________ for drops in sales.", root: "FILE", ans: "file-sharing", exp: "(noun): chia sẻ tập tin.", trans: "Ngành công nghiệp âm nhạc chủ yếu đổ lỗi cho việc chia sẻ tập tin bất hợp pháp dẫn đến sụt giảm doanh thu." },
+        { q: "The movie felt like a ________ version of old comedies.", root: "WARM", ans: "warmed-over", exp: "(adj): lặp lại nhàm chán.", trans: "Bộ phim mang lại cảm giác giống như một phiên bản 'nhai lại' của vô số phim hài lãng mạn trước đây." },
+        { q: "The quiet gardens serve as a peaceful ________ for visitors.", root: "ATTRACT", ans: "counter-attraction", exp: "(noun): điểm thu hút thay thế.", trans: "Trong khi công viên có các trò chơi cảm giác mạnh, những khu vườn yên tĩnh lại là điểm đến thay thế yên bình." },
+        { q: "Her ________ approach to budgeting kept the business profitable.", root: "SENSE", ans: "commonsensical", exp: "(adj): thực tế, hợp lẽ thường.", trans: "Cách tiếp cận ngân sách hợp lý của cô ấy đã giúp doanh nghiệp nhỏ có lãi trong nhiều thập kỷ." },
+        { q: "My sister dropped a ________ by announcing she was quitting.", root: "BOMB", ans: "bombshell", exp: "(idiom): tin chấn động.", trans: "Em gái tôi đã tung ra một tin chấn động khi thông báo rằng cô ấy sẽ nghỉ việc." },
+        { q: "She stated ________ that the project would be on time.", root: "DECLARE", ans: "declaratively", exp: "(adv): một cách dứt khoát.", trans: "Cô ấy tuyên bố một cách dứt khoát rằng dự án sẽ được hoàn thành đúng hạn." },
+        { q: "The ________ message from the report was act now.", root: "HOME", ans: "take-home", exp: "take-home message: thông điệp cốt lõi.", trans: "Thông điệp cốt lõi từ báo cáo khí hậu là rất rõ ràng: hành động ngay bây giờ hoặc đối mặt với hậu quả." },
+        { q: "The boss gave us a ________ on the project status.", root: "HEAD", ans: "heads-up", exp: "(noun): lời cảnh báo/thông báo trước.", trans: "Sếp đã gọi một cuộc họp để đưa ra cho chúng tôi một thông báo nhanh về tiến độ của dự án." },
+        { q: "The company planned a nationwide ________ of the new phone.", root: "ROLL", ans: "rollout", exp: "(noun): sự ra mắt sản phẩm.", trans: "Công ty đã lên kế hoạch ra mắt toàn quốc mẫu điện thoại thông minh mới của mình vào tháng tới." },
+        { q: "Despite constant ________ from groups, officials did nothing.", root: "BELL", ans: "bell-ringing", exp: "(noun): sự cảnh báo liên tục.", trans: "Bất chấp những hồi chuông cảnh báo liên tục từ các nhóm môi trường, các quan chức vẫn trì hoãn hành động." },
+        { q: "The software was ________ to prevent piracy.", root: "COPY", ans: "copy-protected", exp: "(adj): được bảo vệ bản quyền.", trans: "Phần mềm này đã được bảo vệ chống sao chép để ngăn chặn việc phân phối trái phép và vi phạm bản quyền." },
+        { q: "Passion for justice was the ________ behind her work.", root: "SPRING", ans: "mainspring", exp: "(noun): động lực chính.", trans: "Niềm đam mê công lý là động lực chính đằng sau công việc không mệt mỏi của bà với tư cách là một luật sư nhân quyền." },
+        { q: "The politician was accused of ________ after negotiating secretly.", root: "DEAL", ans: "double-dealing", exp: "(noun): chơi hai mặt.", trans: "Chính trị gia bị buộc tội chơi hai mặt sau khi bí mật đàm phán với cả hai bên để trục lợi." },
+        { q: "The entire team was ________ by the last-minute change.", root: "FOOT", ans: "wrong-footed", exp: "(verb): làm cho lúng túng/trở tay không kịp.", trans: "Toàn bộ đội ngũ đã bị bất ngờ và không kịp trở tay bởi sự thay đổi phút chót trong hướng dẫn dự án." },
+        { q: "The ________ competency assessment involves five assessors.", root: "SOURCE", ans: "multisource", exp: "(adj): từ nhiều nguồn.", trans: "Việc đánh giá năng lực từ nhiều nguồn bao gồm năm người đánh giá khác nhau." },
+        { q: "Some felt that their ________ was stifled during marriage.", root: "PERSON", ans: "personhood", exp: "(noun): tư cách làm người.", trans: "Một số người cảm thấy rằng tư cách cá nhân của họ bị kìm hãm trong cuộc hôn nhân." },
+        { q: "Dried foods are ________, meaning they store well at room temp.", root: "SHELF", ans: "shelf-stable", exp: "(adj): ổn định trên kệ, bảo quản lâu.", trans: "Nhiều loại đồ đóng hộp và thực phẩm khô có thể bảo quản lâu trên kệ ở nhiệt độ phòng." },
+        { q: "The ________ principal enforced strict dress codes.", root: "STRAIT", ans: "strait-laced", exp: "(adj): khắt khe, nghiêm túc quá mức.", trans: "Hiệu trưởng khắt khe đã thực thi các quy định nghiêm ngặt về trang phục và phản đối mọi hình thức tự thể hiện cá nhân." },
+        { q: "The ________ executives refused to adapt to technology.", root: "HIDE", ans: "hidebound", exp: "(adj): cổ hủ, cố chấp.", trans: "Công ty không thể đổi mới vì các giám đốc điều hành cổ hủ đã từ chối thích nghi với công nghệ mới." },
+        { q: "Litter was left all over by ________ festival goers.", root: "THINK", ans: "nonthinking", exp: "(adj): vô tâm, thiếu suy nghĩ.", trans: "Rác và chai lọ vỡ đã bị những người đi dự lễ hội thiếu suy nghĩ vứt lại khắp công viên." },
+        { q: "The breach was a ________ for the company's security.", root: "WAKE", ans: "wake-up call", exp: "(noun): hồi chuông cảnh tỉnh.", trans: "Việc vi phạm dữ liệu gần đây là một hồi chuông cảnh tỉnh cho công ty để tăng cường các biện pháp an ninh mạng." },
+        { q: "The company's ________ approach puts profits first.", root: "MONEY", ans: "money-minded", exp: "(adj): chỉ nghĩ đến tiền.", trans: "Cách tiếp cận coi trọng tiền bạc của công ty thường đặt lợi nhuận lên trên các mối quan tâm về môi trường." },
+        { q: "Her confidence was only ________, easily shaken.", root: "SKIN", ans: "skin-deep", exp: "(adj): hời hợt, ngoài da.", trans: "Sự tự tin của cô ấy có vẻ mạnh mẽ, nhưng nó chỉ là hời hợt bên ngoài, dễ dàng bị lung lay bởi những lời chỉ trích nhỏ nhất." },
+        { q: "She had to ________ on her support for the bill.", root: "TRACK", ans: "backtrack", exp: "(verb): rút lại ý kiến.", trans: "Dưới áp lực từ đảng của mình, bà đã phải rút lại sự ủng hộ trước đó đối với dự luật gây tranh cãi." },
+        { q: "He was branded a ________ after switching sides.", root: "COAT", ans: "turncoat", exp: "(noun): kẻ phản bội.", trans: "Anh ta bị các đồng minh cũ gán mác là kẻ phản bội sau khi đổi phe ngay trước cuộc bầu cử." },
+        { q: "The shop was filled with ________ donated by people.", root: "CAST", ans: "cast-offs", exp: "(noun): đồ cũ bỏ đi.", trans: "Cửa hàng từ thiện đầy rẫy những món đồ cũ do mọi người quyên góp khi dọn dẹp tủ đồ." },
+        { q: "She always tries to ________ celebrities she supposedly met.", root: "NAME", ans: "name-drop", exp: "(verb): khoe tên người nổi tiếng.", trans: "Cô ấy luôn cố gắng khoe tên những người nổi tiếng mà cô ấy cho là đã gặp, nhưng không ai tin." },
+        { q: "The community worked together to ________ a mural.", root: "CREATE", ans: "co-create", exp: "(verb): cùng tạo ra.", trans: "Nghệ sĩ và cộng đồng đã làm việc cùng nhau để đồng kiến tạo một bức tranh tường phản ánh lịch sử khu phố." },
+        { q: "The economy relies on ________ industries.", root: "GOOD", ans: "goods-producing", exp: "(adj): sản xuất hàng hoá.", trans: "Nền kinh tế của khu vực phụ thuộc nặng nề vào các ngành sản xuất hàng hóa như sản xuất và xây dựng." },
+        { q: "The factory increased its ________ by optimizing the line.", root: "THROUGH", ans: "throughput", exp: "(noun): lưu lượng/năng suất.", trans: "Nhà máy đã tăng năng suất sản xuất bằng cách tối ưu hóa dây chuyền lắp ráp." },
+        { q: "The engineer believed the design was ________.", root: "PERFECT", ans: "perfectible", exp: "(adj): có thể hoàn thiện.", trans: "Kỹ sư tin rằng thiết kế này có thể hoàn thiện hơn, vì vậy cô tiếp tục tinh chỉnh nguyên mẫu." },
+        { q: "This is a renowned ________ website for urban myths.", root: "MYTH", ans: "myth-busting", exp: "(adj): đập tan những lầm tưởng.", trans: "Đây là một trang web đập tan những câu chuyện lầm tưởng nổi tiếng, nơi bạn có thể tìm thấy sự thật về các truyền thuyết đô thị." },
+        { q: "If a man gets a clear ________, that should be the end.", root: "KNOCK", ans: "knockback", exp: "get a knockback: bị từ chối.", trans: "Nếu một người đàn ông tiếp cận một phụ nữ và bị từ chối rõ ràng, thì đó nên là điểm dừng." },
+        { q: "The store experienced a ________ of the new smartphone.", root: "STOCK", ans: "stockout", exp: "(noun): sự hết hàng.", trans: "Cửa hàng đã xảy ra tình trạng hết hàng mẫu điện thoại mới do nhu cầu vượt quá nguồn cung." },
+        { q: "The ________ entrepreneur pitched his idea to investors.", root: "WOULD", ans: "would-be", exp: "(adj): mong muốn trở thành.", trans: "Doanh nhân đầy triển vọng đã trình bày ý tưởng của mình với các nhà đầu tư, nhưng sự thiếu chuẩn bị đã sớm bộc lộ." },
+        { q: "The front page was full of ________ and no useful info.", root: "NEWS", ans: "non-news", exp: "(noun): tin rác.", trans: "Trang nhất đầy rẫy những tin rác và không có thông tin hữu ích nào." },
+        { q: "The product launch dominated ________ cycles for weeks.", root: "HEADLINE", ans: "headline-grabbing", exp: "(adj): thu hút sự chú ý lớn.", trans: "Sự kiện ra mắt sản phẩm thu hút sự chú ý lớn của công ty công nghệ đã thống trị các mặt báo trong nhiều tuần." },
+        { q: "It might be ________ for him to strike out on his own.", root: "CHARACTER", ans: "character-building", exp: "(adj): rèn luyện tính cách.", trans: "Có lẽ việc khám phá thế giới và tự lập nghiệp sẽ giúp anh ấy rèn luyện được bản lĩnh và tính cách." },
+        { q: "Everyone will take their turn; there will be no ________.", root: "QUEUE", ans: "queue-jumping", exp: "(noun): sự chen hàng.", trans: "Mọi người sẽ lần lượt theo thứ tự; sẽ không có chuyện chen lấn nhảy hàng." },
+        { q: "Graduating from a good college is a great ________.", root: "DESIRE", ans: "desideratum", exp: "(noun): điều hằng khao khát.", trans: "Niềm khao khát lớn lao của hàng triệu gia đình Mỹ là con cái được nhận và tốt nghiệp từ một trường đại học tốt." },
+        { q: "Life isn't some ________ fantasy.", root: "STORY", ans: "storybook", exp: "(adj): đẹp như trong truyện.", trans: "Cuộc đời không phải là một giấc mơ ảo mộng đẹp như trong truyện; các mối quan hệ cần nỗ lực chứ không chỉ có phép màu." }
+    ];
+
+    const presentation = document.getElementById('presentation');
+    let currentSlide = 0;
+    const totalSlides = questions.length + 2;
+
+    // Build the dynamic question slides
+    questions.forEach((item, index) => {
+        const slideDiv = document.createElement('div');
+        slideDiv.className = 'slide';
+        slideDiv.id = `slide${index + 1}`;
+        slideDiv.innerHTML = `
+            <div class="slide-header">Câu hỏi ${index + 1}</div>
+            <div class="content-area">
+                <div class="question-box">
+                    ${item.q}
+                    <br><span class="root-word">${item.root}</span>
+                </div>
+                <button class="reveal-btn" onclick="window.revealAnswer(${index + 1}, this)">
+                    <i class="fa-solid fa-eye"></i> show me
+                </button>
+                <div class="answer-area" id="ans${index + 1}">
+                    <div class="answer-top">
+                        <div class="answer-key">${item.ans}</div>
+                        <div class="explanation"><strong>Giải thích:</strong> ${item.exp}</div>
+                    </div>
+                    <div class="translation-box">
+                        <strong>Dịch nghĩa:</strong> ${item.trans}
+                    </div>
+                </div>
+            </div>
+            <div class="footer-info">Anh Ngữ Hoàng Trường</div>
+        `;
+        presentation.appendChild(slideDiv);
+    });
+
+    // Add the final slide
+    const endSlide = document.createElement('div');
+    endSlide.className = 'slide title-slide';
+    endSlide.id = `slide${questions.length + 1}`;
+    endSlide.innerHTML = `
+        <h1>CHÚC CÁC BẠN THI TỐT!</h1>
+        <p style="font-size: 28px; color: var(--primary);">Practice Makes Perfect</p>
+        <div style="margin-top: 40px;"><i class="fa-solid fa-graduation-cap" style="font-size: 100px; color: var(--secondary);"></i></div>
+        <div class="footer-info">Anh Ngữ Hoàng Trường</div>
+    `;
+    presentation.appendChild(endSlide);
+
+    // Global Functions for buttons
+    window.updateCounter = function() {
+        const cur = document.getElementById('current');
+        const tot = document.getElementById('total');
+        if (cur) cur.innerText = currentSlide + 1;
+        if (tot) tot.innerText = totalSlides;
+    };
+
+    window.showSlide = function(n) {
+        const slides = document.querySelectorAll('.slide');
+        if (slides.length === 0) return;
+        
+        slides.forEach(s => s.classList.remove('active'));
+        slides[n].classList.add('active');
+        currentSlide = n;
+        window.updateCounter();
+        
+        // Update button states
+        document.getElementById('prevBtn').disabled = (currentSlide === 0);
+        document.getElementById('nextBtn').disabled = (currentSlide === totalSlides - 1);
+    };
+
+    window.nextSlide = function() {
+        if (currentSlide < totalSlides - 1) {
+            window.showSlide(currentSlide + 1);
+        }
+    };
+
+    window.prevSlide = function() {
+        if (currentSlide > 0) {
+            window.showSlide(currentSlide - 1);
+        }
+    };
+
+    window.revealAnswer = function(n, btn) {
+        const ansArea = document.getElementById(`ans${n}`);
+        if (ansArea) {
+            ansArea.style.display = 'flex';
+            if (btn) btn.style.display = 'none';
+        }
+    };
+
+    // Keyboard controls
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') window.nextSlide();
+        if (e.key === 'ArrowLeft') window.prevSlide();
+        if (e.key === 'Enter') {
+            const activeSlide = document.querySelector('.slide.active');
+            if (activeSlide) {
+                const btn = activeSlide.querySelector('.reveal-btn');
+                if (btn && btn.style.display !== 'none') btn.click();
+            }
+        }
+    });
+
+    // Run initialization on load
+    window.onload = function() {
+        window.showSlide(0);
+    };
+</script>
+</body>
+</html>
