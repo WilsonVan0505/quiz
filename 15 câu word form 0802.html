@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WORD FORM PRACTICE - 15 QUESTIONS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #003366;
+            --secondary: #fbbf24;
+            --accent: #b91c1c;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: #cbd5e1;
+            font-family: 'Lato', sans-serif;
+            overflow: hidden; 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #presentation {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .slide {
+            background-color: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            width: 1280px;
+            height: 750px;
+            display: none; 
+            flex-direction: column;
+            padding: 40px 60px;
+            position: relative;
+            animation: slideFade 0.5s ease-out;
+            border-top: 15px solid var(--primary);
+        }
+
+        .slide.active { display: flex; }
+
+        @keyframes slideFade {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        h1 { font-family: 'Poppins', sans-serif; font-size: 64px; color: var(--primary); line-height: 1.1; margin-bottom: 20px; }
+        
+        .slide-header {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            border-left: 10px solid var(--secondary);
+            padding-left: 20px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .question-box {
+            background: #f1f5f9;
+            padding: 40px;
+            border-radius: 15px;
+            font-size: 32px;
+            line-height: 1.5;
+            color: var(--text);
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .root-word {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 6px 25px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 24px;
+            margin-top: 20px;
+            letter-spacing: 1px;
+        }
+
+        .reveal-btn {
+            background: var(--secondary);
+            color: #000;
+            border: none;
+            padding: 12px 40px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            align-self: flex-start;
+            margin-bottom: 15px;
+            box-shadow: 0 6px 15px rgba(251, 191, 36, 0.4);
+            text-transform: lowercase;
+        }
+
+        .reveal-btn:hover {
+            transform: translateY(-3px);
+            background: #f59e0b;
+        }
+
+        .answer-area {
+            display: none; 
+            flex-direction: column;
+            gap: 15px;
+            background: #fffbeb;
+            padding: 25px;
+            border-radius: 15px;
+            border: 3px dashed var(--secondary);
+            animation: revealEffect 0.4s ease-out;
+        }
+
+        @keyframes revealEffect {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .answer-row { display: flex; align-items: center; gap: 20px; }
+
+        .answer-key {
+            font-family: 'Poppins', sans-serif;
+            font-size: 44px;
+            font-weight: 700;
+            color: var(--accent);
+            border-right: 4px solid var(--secondary);
+            padding-right: 20px;
+        }
+
+        .word-info { font-size: 22px; color: #475569; }
+        .word-info strong { color: var(--primary); }
+
+        .translation-row {
+            font-size: 24px;
+            color: var(--text);
+            font-style: italic;
+            border-top: 1px solid #fde68a;
+            padding-top: 10px;
+        }
+
+        .controls {
+            padding: 20px;
+            background: var(--primary);
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+
+        .nav-btn:hover:not(:disabled) { background: white; color: var(--primary); }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .counter { color: white; font-weight: 700; font-size: 22px; min-width: 120px; text-align: center; }
+
+        .title-slide { text-align: center; justify-content: center; }
+        .badge { background: var(--secondary); padding: 10px 35px; border-radius: 50px; font-weight: 800; display: inline-block; margin-bottom: 30px; font-size: 20px; }
+        .footer-tag { position: absolute; bottom: 30px; left: 80px; font-size: 16px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+<div id="presentation">
+    <!-- Slide 0: Title -->
+    <div class="slide active title-slide" id="slide0">
+        <div class="badge">WORD FORM EXERCISES</div>
+        <h1>WORD FORM PRACTICE<br><span style="color:var(--secondary)">WITH TRANSLATION</span></h1>
+        <p style="font-size: 32px; color: #475569; margin-top: 20px;">15 Questions • Dịch Nghĩa Chi Tiết</p>
+        <div style="margin-top: 40px;"><i class="fa-solid fa-language" style="font-size: 100px; color: var(--primary); opacity: 0.2;"></i></div>
+        <div class="footer-tag">Anh Ngữ Hoàng Trường</div>
+    </div>
+</div>
+
+<div class="controls">
+    <button class="nav-btn" id="prevBtn" onclick="window.prevSlide()"><i class="fa-solid fa-chevron-left"></i> TRƯỚC</button>
+    <div class="counter"><span id="current">1</span> / <span id="total">17</span></div>
+    <button class="nav-btn" id="nextBtn" onclick="window.nextSlide()">KẾ TIẾP <i class="fa-solid fa-chevron-right"></i></button>
+</div>
+
+<script>
+    const data = [
+        { 
+            q: "We all take pride in our ________ friendship.", 
+            root: "DESTROY", 
+            ans: "indestructible", 
+            type: "Tính từ", 
+            meaning: "không thể bị phá hủy", 
+            trans: "Tất cả chúng tôi đều tự hào về tình bạn bền chặt không thể phá hủy của mình." 
+        },
+        { 
+            q: "He arrived, as if in answer to her ________.", 
+            root: "PRAY", 
+            ans: "prayer(s)", 
+            type: "Danh từ", 
+            meaning: "lời cầu nguyện", 
+            trans: "Anh ấy đã đến, cứ như thể để đáp lại lời cầu nguyện của cô ấy." 
+        },
+        { 
+            q: "She travels to different parts of the world as part of her job in that ________ company.", 
+            root: "NATION", 
+            ans: "multinational", 
+            type: "Tính từ", 
+            meaning: "đa quốc gia", 
+            trans: "Cô ấy đi du lịch đến nhiều nơi trên thế giới như một phần công việc tại công ty đa quốc gia đó." 
+        },
+        { 
+            q: "The little boy dreams of being a sports ________ for the TV station.", 
+            root: "COMMENT", 
+            ans: "commentator", 
+            type: "Danh từ (Chỉ người)", 
+            meaning: "bình luận viên", 
+            trans: "Cậu bé mơ ước trở thành một bình luận viên thể thao cho đài truyền hình." 
+        },
+        { 
+            q: "He proposes closing down all the ________ factories in the area.", 
+            root: "ECONOMY", 
+            ans: "uneconomic", 
+            type: "Tính từ", 
+            meaning: "không mang lại lợi nhuận kinh tế", 
+            trans: "Ông ấy đề xuất đóng cửa tất cả các nhà máy không có lãi/không hiệu quả về kinh tế trong khu vực." 
+        },
+        { 
+            q: "Managers should be more ________ to the needs of their staff.", 
+            root: "RESPOND", 
+            ans: "responsive", 
+            type: "Tính từ", 
+            meaning: "nhạy bén, phản hồi tốt", 
+            trans: "Các quản lý nên nhạy bén và quan tâm hơn đến những nhu cầu của nhân viên." 
+        },
+        { 
+            q: "She felt ________ by her classmate's arrogant behaviors.", 
+            root: "LITTLE", 
+            ans: "belittled", 
+            type: "Động từ (Bị động)", 
+            meaning: "bị coi thường, bị hạ thấp", 
+            trans: "Cô ấy cảm thấy bị coi thường bởi những hành vi ngạo mạn của người bạn cùng lớp." 
+        },
+        { 
+            q: "Let's join us for a ________ drink at the pub!", 
+            root: "CELEBRATE", 
+            ans: "celebratory", 
+            type: "Tính từ", 
+            meaning: "mang tính ăn mừng", 
+            trans: "Hãy cùng chúng tôi uống một ly chúc mừng tại quán rượu nhé!" 
+        },
+        { 
+            q: "The winners of the two ________ are to compete for the trophy at the end of the month.", 
+            root: "FINAL", 
+            ans: "semi-finals", 
+            type: "Danh từ", 
+            meaning: "các trận bán kết", 
+            trans: "Những đội chiến thắng ở hai trận bán kết sẽ tranh cúp vô địch vào cuối tháng." 
+        },
+        { 
+            q: "The song always brings back her lovely ________ memories.", 
+            root: "CHILDREN", 
+            ans: "childhood", 
+            type: "Danh từ", 
+            meaning: "thời thơ ấu", 
+            trans: "Bài hát luôn gợi lại những kỷ niệm thời thơ ấu đáng yêu của cô ấy." 
+        },
+        { 
+            q: "To my surprise, they treated me ________ enough.", 
+            root: "PLEASE", 
+            ans: "pleasantly", 
+            type: "Trạng từ", 
+            meaning: "một cách dễ chịu, lịch thiệp", 
+            trans: "Thật ngạc nhiên, họ đã đối xử với tôi khá dễ chịu/lịch sự." 
+        },
+        { 
+            q: "The Red Cross is sending emergency aid to the ________ country.", 
+            root: "FAMINE", 
+            ans: "famine-stricken", 
+            type: "Tính từ ghép", 
+            meaning: "bị nạn đói hoành hành", 
+            trans: "Hội Chữ thập đỏ đang gửi viện trợ khẩn cấp cho quốc gia đang bị nạn đói hoành hành." 
+        },
+        { 
+            q: "Since the ________, we have had all the locks changed.", 
+            root: "BREAK", 
+            ans: "break-in", 
+            type: "Danh từ", 
+            meaning: "vụ đột nhập", 
+            trans: "Kể từ sau vụ đột nhập, chúng tôi đã thay tất cả các ổ khóa." 
+        },
+        { 
+            q: "The article failed to ________ the unemployment issue.", 
+            root: "PUBLIC", 
+            ans: "publicise", 
+            type: "Động từ", 
+            meaning: "công khai, quảng bá", 
+            trans: "Bài báo đã không công khai/làm rõ được vấn đề thất nghiệp." 
+        },
+        { 
+            q: "The volcanic lava ________ as it cools.", 
+            root: "SOLID", 
+            ans: "solidifies", 
+            type: "Động từ (Số ít)", 
+            meaning: "đông đặc lại, hóa rắn", 
+            trans: "Dung nham núi lửa đông đặc lại khi nó nguội đi." 
+        }
+    ];
+
+    const presentation = document.getElementById('presentation');
+    window.currentSlide = 0;
+    window.totalSlides = data.length + 2;
+
+    data.forEach((item, index) => {
+        const slideDiv = document.createElement('div');
+        slideDiv.className = 'slide';
+        slideDiv.id = `slide${index + 1}`;
+        slideDiv.innerHTML = `
+            <div class="slide-header">Câu hỏi ${index + 1}</div>
+            <div class="question-box">
+                ${item.q}
+                <br><span class="root-word">${item.root}</span>
+            </div>
+            <button class="reveal-btn" onclick="window.revealAnswer(${index + 1}, this)">
+                <i class="fa-solid fa-eye"></i> show me
+            </button>
+            <div class="answer-area" id="ans${index + 1}">
+                <div class="answer-row">
+                    <div class="answer-key">${item.ans}</div>
+                    <div class="word-info">
+                        <strong>${item.type}</strong>: ${item.meaning}
+                    </div>
+                </div>
+                <div class="translation-row">
+                    <strong>Dịch câu:</strong> ${item.trans}
+                </div>
+            </div>
+            <div class="footer-tag">Anh Ngữ Hoàng Trường</div>
+        `;
+        presentation.appendChild(slideDiv);
+    });
+
+    const lastSlide = document.createElement('div');
+    lastSlide.className = 'slide title-slide';
+    lastSlide.id = `slide${data.length + 1}`;
+    lastSlide.innerHTML = `
+        <h1>HOÀN THÀNH!</h1>
+        <p style="font-size: 32px; color: var(--primary);">Bạn đã hoàn thành bài luyện tập.</p>
+        <div style="margin-top: 50px;"><i class="fa-solid fa-check-double" style="font-size: 100px; color: var(--secondary);"></i></div>
+        <div class="footer-tag">Anh Ngữ Hoàng Trường</div>
+    `;
+    presentation.appendChild(lastSlide);
+
+    window.updateCounter = function() {
+        const currentLabel = document.getElementById('current');
+        const totalLabel = document.getElementById('total');
+        if (currentLabel) currentLabel.innerText = window.currentSlide + 1;
+        if (totalLabel) totalLabel.innerText = window.totalSlides;
+        
+        document.getElementById('prevBtn').disabled = (window.currentSlide === 0);
+        document.getElementById('nextBtn').disabled = (window.currentSlide === window.totalSlides - 1);
+    }
+
+    window.showSlide = function(n) {
+        const slides = document.querySelectorAll('.slide');
+        if (slides.length === 0) return;
+        slides.forEach(s => s.classList.remove('active'));
+        slides[n].classList.add('active');
+        window.currentSlide = n;
+        window.updateCounter();
+    }
+
+    window.nextSlide = function() { 
+        if (window.currentSlide < window.totalSlides - 1) {
+            window.showSlide(window.currentSlide + 1); 
+        }
+    }
+    
+    window.prevSlide = function() { 
+        if (window.currentSlide > 0) {
+            window.showSlide(window.currentSlide - 1); 
+        }
+    }
+    
+    window.revealAnswer = function(n, btn) {
+        const ans = document.getElementById(`ans${n}`);
+        if (ans) {
+            ans.style.display = 'flex';
+            if (btn) btn.style.display = 'none';
+        }
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') window.nextSlide();
+        if (e.key === 'ArrowLeft') window.prevSlide();
+        if (e.key === 'Enter') {
+            const activeSlide = document.querySelector('.slide.active');
+            if (activeSlide) {
+                const btn = activeSlide.querySelector('.reveal-btn');
+                if (btn && btn.style.display !== 'none') btn.click();
+            }
+        }
+    });
+
+    window.onload = function() {
+        window.showSlide(0);
+    };
+</script>
+</body>
+</html>
