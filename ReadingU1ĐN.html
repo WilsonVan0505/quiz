@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocab Quiz - Unit 1 (B2 Level)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .option-btn:hover { transform: translateY(-2px); transition: all 0.2s; }
+        .correct { background-color: #dcfce7 !important; border-color: #22c55e !important; color: #166534 !important; }
+        .incorrect { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+
+    <div id="quiz-container" class="max-w-2xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+        <!-- Progress Bar -->
+        <div class="h-2 bg-slate-100 w-full">
+            <div id="progress" class="h-full bg-blue-600 transition-all duration-500" style="width: 0%"></div>
+        </div>
+
+        <div class="p-8">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-xl font-bold text-slate-800">Trắc nghiệm Từ vựng Unit 1</h1>
+                <span id="question-count" class="text-sm font-medium text-slate-500">Câu 1/20</span>
+            </div>
+
+            <!-- Question -->
+            <div id="question-box" class="mb-8">
+                <p id="question-text" class="text-lg text-slate-700 leading-relaxed font-medium">
+                    Loading question...
+                </p>
+            </div>
+
+            <!-- Options -->
+            <div id="options-container" class="space-y-3">
+                <!-- Options will be injected here -->
+            </div>
+
+            <!-- Feedback -->
+            <div id="feedback" class="mt-6 hidden p-4 rounded-xl border">
+                <p id="feedback-text" class="text-sm leading-relaxed"></p>
+                <button id="next-btn" class="mt-4 w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                    Tiếp theo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="hidden max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+        <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-800 mb-2">Hoàn thành!</h2>
+        <p class="text-slate-500 mb-6">Bạn đã kết thúc bài ôn tập từ vựng Unit 1.</p>
+        <div class="text-4xl font-black text-blue-600 mb-8" id="final-score">0/20</div>
+        <button onclick="location.reload()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+            Làm lại quiz
+        </button>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                q: "The young musician was hailed as a ________ after delivering a flawless performance of the complex concerto.",
+                options: ["virtuoso", "ironmonger", "alumni", "composer"],
+                correct: 0,
+                rationale: "Từ này chỉ một người có kỹ năng cực kỳ cao trong âm nhạc hoặc nghệ thuật."
+            },
+            {
+                q: "Starting your own business without any market research is a real ________.",
+                options: ["unifying ambition", "leap into the dark", "synthesis", "corridor"],
+                correct: 1,
+                rationale: "Làm điều mạo hiểm mà không biết kết quả."
+            },
+            {
+                q: "We often ________ our health ________ until we actually fall ill.",
+                options: ["interpret - as", "take - for granted", "channel - into", "forge - with"],
+                correct: 1,
+                rationale: "Coi điều gì đó là hiển nhiên và không trân trọng."
+            },
+            {
+                q: "The university's ________ consists of world-class researchers and experienced professors.",
+                options: ["anvil", "faculty", "electromagnet", "discipline"],
+                correct: 1,
+                rationale: "Đội ngũ giảng viên trong đại học."
+            },
+            {
+                q: "Despite his enormous wealth, he remains very ________ and easy to talk to.",
+                options: ["precious", "unconquered", "down-to-earth", "premium"],
+                correct: 2,
+                rationale: "Thực tế, giản dị, không tự cao."
+            },
+            {
+                q: "The heavy rain helped to ________ a new energy in the parched garden.",
+                options: ["suffuse", "unleash", "enshrine", "augment"],
+                correct: 1,
+                rationale: "Giải phóng một sức mạnh hoặc năng lượng mạnh mẽ."
+            },
+            {
+                q: "The project was developed in an ________, where each version was an improvement on the last.",
+                options: ["iterative way", "vast range", "geothermal source", "unifying ambition"],
+                correct: 0,
+                rationale: "Phương pháp lặp đi lặp lại để cải tiến dần dần."
+            },
+            {
+                q: "Modern smartphones ________ our ability to communicate by adding features like instant video calls.",
+                options: ["interpret", "augment", "tour", "delight"],
+                correct: 1,
+                rationale: "Tăng cường hoặc cải thiện bằng cách thêm vào."
+            },
+            {
+                q: "The ________ of the human genome has opened up new possibilities for personalized medicine.",
+                options: ["synthesis", "decoding", "hands-on experimentation", "symbiosis"],
+                correct: 1,
+                rationale: "Sự giải mã (khám phá thông tin ẩn giấu)."
+            },
+            {
+                q: "It's a small world! I managed to ________ an old school friend at the airport yesterday.",
+                options: ["unleash", "channel", "bump into", "forge"],
+                correct: 2,
+                rationale: "Tình cờ gặp ai đó."
+            },
+            {
+                q: "Physics is a demanding scientific ________ that requires both mathematical skills and logical thinking.",
+                options: ["discipline", "corridor", "anvil", "alumni"],
+                correct: 0,
+                rationale: "Một lĩnh vực nghiên cứu hoặc ngành học chuyên biệt."
+            },
+            {
+                q: "The team was driven by a ________ to create a sustainable future through renewable energy.",
+                options: ["geothermal", "unifying ambition", "vast range", "synthesis"],
+                correct: 1,
+                rationale: "Tham vọng chung mãnh liệt kết nối mọi người."
+            },
+            {
+                q: "The right to free speech is ________ in the country's constitution to ensure it is never taken away.",
+                options: ["suffused", "enshrined", "interpreted", "delighted"],
+                correct: 1,
+                rationale: "Lưu giữ hoặc bảo vệ một cách trân trọng (thường trong luật pháp)."
+            },
+            {
+                q: "The success of the MIT Media Lab comes from the ________, where theory meets practical skill.",
+                options: ["symbiosis of intellect and craftsmanship", "high-speed photography", "vast range of disciplines", "iterative way"],
+                correct: 0,
+                rationale: "Sự kết hợp hỗ trợ lẫn nhau giữa trí tuệ và tay nghề thủ công."
+            },
+            {
+                q: "Tod Machover is famous for inventing the ________, a musical instrument that uses technology to expand expression.",
+                options: ["electromagnet", "cello", "hyperinstrument", "ironmonger"],
+                correct: 2,
+                rationale: "Nhạc cụ công nghệ cao hỗ trợ bởi công nghệ."
+            },
+            {
+                q: "The company offers ________ products at a higher price because of their superior quality.",
+                options: ["down-to-earth", "unconquered", "premium", "visible"],
+                correct: 2,
+                rationale: "Sản phẩm chất lượng cao, cao cấp."
+            },
+            {
+                q: "In a rapidly changing job market, ________ is the most important skill for survival.",
+                options: ["adaptability", "discipline", "synthesis", "craftsmanship"],
+                correct: 0,
+                rationale: "Khả năng thích nghi với hoàn cảnh mới."
+            },
+            {
+                q: "Iceland uses ________ energy from its volcanoes to provide heating and electricity.",
+                options: ["geothermal", "electromagnetic", "premium", "iterative"],
+                correct: 0,
+                rationale: "Năng lượng lấy từ sức nóng trong lòng đất."
+            },
+            {
+                q: "The university's seminars are designed to ________ the students and encourage new ideas.",
+                options: ["keep intellectually alive", "take for granted", "bump into", "leap into the dark"],
+                correct: 0,
+                rationale: "Giữ cho trí tuệ luôn tò mò, năng động và đầy cảm hứng."
+            },
+            {
+                q: "Diplomats work hard to ________ strong links between the two nations after years of conflict.",
+                options: ["forge", "unleash", "suffuse", "channel"],
+                correct: 0,
+                rationale: "Nỗ lực tạo dựng nên mối liên kết hoặc quan hệ bền vững."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback');
+        const feedbackText = document.getElementById('feedback-text');
+        const nextBtn = document.getElementById('next-btn');
+        const progress = document.getElementById('progress');
+        const questionCount = document.getElementById('question-count');
+
+        function loadQuestion() {
+            answered = false;
+            const data = quizData[currentQuestion];
+            questionText.innerText = data.q;
+            questionCount.innerText = `Câu ${currentQuestion + 1}/${quizData.length}`;
+            progress.style.width = `${((currentQuestion) / quizData.length) * 100}%`;
+            
+            optionsContainer.innerHTML = '';
+            data.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full text-left p-4 rounded-xl border-2 border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all text-slate-700 font-medium";
+                btn.innerText = opt;
+                btn.onclick = () => selectOption(index);
+                optionsContainer.appendChild(btn);
+            });
+
+            feedback.classList.add('hidden');
+        }
+
+        function selectOption(index) {
+            if (answered) return;
+            answered = true;
+
+            const data = quizData[currentQuestion];
+            const buttons = optionsContainer.getElementsByTagName('button');
+
+            if (index === data.correct) {
+                score++;
+                buttons[index].classList.add('correct');
+                feedbackText.innerHTML = `<strong>Chính xác!</strong> ${data.rationale}`;
+                feedback.classList.remove('hidden');
+                feedback.className = "mt-6 p-4 rounded-xl border border-green-200 bg-green-50 text-green-800";
+            } else {
+                buttons[index].classList.add('incorrect');
+                buttons[data.correct].classList.add('correct');
+                feedbackText.innerHTML = `<strong>Chưa đúng.</strong> ${data.rationale}`;
+                feedback.classList.remove('hidden');
+                feedback.className = "mt-6 p-4 rounded-xl border border-red-200 bg-red-50 text-red-800";
+            }
+
+            if (currentQuestion === quizData.length - 1) {
+                nextBtn.innerText = "Xem kết quả";
+            }
+        }
+
+        nextBtn.onclick = () => {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        function showResults() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            const resultScreen = document.getElementById('result-screen');
+            resultScreen.classList.remove('hidden');
+            resultScreen.classList.add('flex', 'flex-col');
+            document.getElementById('final-score').innerText = `${score}/${quizData.length}`;
+            progress.style.width = "100%";
+        }
+
+        // Initialize
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
