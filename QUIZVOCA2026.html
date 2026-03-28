@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards Tổng Hợp Từ Vựng B1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0fdf4;
+        }
+        
+        .flip-card {
+            perspective: 1000px;
+            width: 100%;
+            height: 480px; /* Tăng chút chiều cao để chứa nút phát âm */
+        }
+        
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        input:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            outline: none;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+        
+        .input-error {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+            color: #b91c1c !important;
+        }
+
+        #topic-toast {
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+    </style>
+</head>
+<body class="text-gray-800 p-4 md:p-8 min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+
+    <!-- Toast Notification -->
+    <div id="topic-toast" class="absolute top-8 left-1/2 transform -translate-x-1/2 translate-y-[-250%] bg-white border-2 border-green-500 text-green-700 px-6 py-3 rounded-full shadow-2xl font-bold text-lg z-50 flex items-center gap-3">
+        <span class="text-2xl">✨</span> 
+        <span id="toast-message">Chủ đề mới: Education</span> 
+        <span class="text-2xl">✨</span>
+    </div>
+
+    <div class="max-w-xl w-full mx-auto relative">
+        <!-- Nút quay lại từ trước đó (ẩn ở thẻ đầu tiên) -->
+        <button id="top-prev-btn" onclick="prevCard()" class="absolute left-0 top-0 mt-1 flex items-center justify-center p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors hidden" title="Quay lại từ trước">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </button>
+
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 id="main-topic-title" class="text-3xl font-bold text-green-700 tracking-tight uppercase">CHỦ ĐỀ: TOURISM</h1>
+            <p class="text-green-600 mt-2 font-medium">Level: B1 | <span id="progress-text">1 / X</span></p>
+            
+            <div class="w-full bg-green-200 rounded-full h-2.5 mt-4">
+                <div id="progress-bar" class="bg-green-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Vùng chứa Flashcard -->
+        <div class="flip-card" id="flashcard">
+            <div class="flip-card-inner">
+                
+                <!-- Mặt trước: Câu hỏi -->
+                <div class="flip-card-front p-6 md:p-8">
+                    <div class="flex-grow flex flex-col justify-center items-center text-center">
+                        
+                        <!-- Loại từ, Phiên âm & Nút loa -->
+                        <div class="flex items-center gap-3 mb-2 bg-gray-50 px-4 py-2 rounded-full border border-gray-100">
+                            <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded font-semibold text-xs uppercase" id="word-type"></span>
+                            <span class="text-blue-600 font-medium tracking-wide font-mono text-sm" id="front-phonetic"></span>
+                            <button onclick="speakCurrentWord()" class="flex items-center justify-center w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400" title="Nghe phát âm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
+
+                        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2" id="word-mean"></h2>
+                        <div class="w-16 h-1 bg-gray-200 my-4 mx-auto rounded"></div>
+                        <p class="text-gray-500 italic text-base md:text-lg mb-4" id="word-exVi"></p>
+                        <p class="text-xl md:text-2xl text-gray-700 font-medium mb-6 leading-relaxed" id="word-ex"></p>
+
+                        <div class="w-full flex flex-col items-center gap-3">
+                            <div id="letter-inputs-container" class="flex flex-wrap justify-center gap-x-1 gap-y-3"></div>
+                            <button onclick="giveHint()" class="text-sm px-4 py-1.5 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 font-medium rounded-full transition-colors flex items-center gap-1 shadow-sm border border-yellow-200">
+                                Hint
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button onclick="checkAnswer()" class="mt-4 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors duration-200 flex items-center justify-center gap-2">
+                        Check Answer
+                    </button>
+                </div>
+                
+                <!-- Mặt sau: Kết quả -->
+                <div class="flip-card-back p-6 md:p-8 flex flex-col">
+                    <div id="result-header" class="text-center py-2 rounded-lg font-bold text-lg mb-4"></div>
+                    
+                    <div class="flex-grow flex flex-col justify-center items-center text-center">
+                        <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2" id="back-word"></h2>
+                        
+                        <div class="flex items-center gap-2 mb-4 bg-blue-50 px-3 py-1.5 rounded-full">
+                            <p class="text-xl text-blue-600 font-mono font-medium" id="back-phonetic"></p>
+                            <button onclick="speakCurrentWord()" class="flex items-center justify-center w-8 h-8 bg-blue-200 hover:bg-blue-300 text-blue-800 rounded-full transition-colors focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
+                        
+                        <p class="text-lg text-gray-600 font-medium" id="back-mean"></p>
+                    </div>
+                    
+                    <div class="flex gap-3 mt-4">
+                        <button onclick="prevCard()" class="flex-1 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-colors">Quay lại</button>
+                        <button onclick="nextCard()" id="next-btn" class="flex-1 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition-colors">Tiếp theo</button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- Điểm số (hiện khi kết thúc) -->
+        <div id="final-screen" class="hidden bg-white rounded-2xl shadow-xl p-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Hoàn thành bài tập!</h2>
+            <p class="text-lg text-gray-600 mb-6">Bạn đã ôn tập xong toàn bộ danh sách từ vựng.</p>
+            <div class="text-6xl mb-6">🏆</div>
+            <button onclick="resetQuiz()" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors">Học lại từ đầu</button>
+        </div>
+
+    </div>
+
+    <script>
+        // BỘ DỮ LIỆU TỪ VỰNG FULL (Từ tất cả 10 ảnh)
+        const flashcards = [
+            // 1. TOURISM
+            { topic: "Tourism", word: "itinerary", phonetic: "/aɪˈtɪn.ər.ər.i/", type: "n", mean: "lịch trình", ex: "Let me check my _______ to see what we are doing tomorrow.", exVi: "Để tôi kiểm tra lịch trình của mình xem ngày mai chúng ta làm gì." },
+            { topic: "Tourism", word: "passport", phonetic: "/ˈpɑːs.pɔːt/", type: "n", mean: "hộ chiếu", ex: "You must show your _______ at the airport.", exVi: "Bạn phải xuất trình hộ chiếu tại sân bay." },
+            { topic: "Tourism", word: "local cuisine", phonetic: "/ˌləʊ.kəl kwɪˈziːn/", type: "n.p", mean: "ẩm thực địa phương", ex: "I love trying _______ when I travel.", exVi: "Tôi thích thử ẩm thực địa phương khi đi du lịch." },
+            { topic: "Tourism", word: "souvenir", phonetic: "/ˌsuː.vəˈnɪər/", type: "n", mean: "đồ lưu niệm", ex: "She bought a small key chain as a _______.", exVi: "Cô ấy đã mua một chiếc móc khóa nhỏ làm đồ lưu niệm." },
+            { topic: "Tourism", word: "accommodation", phonetic: "/əˌkɒm.əˈdeɪ.ʃən/", type: "n", mean: "chỗ ở", ex: "The price includes flights and hotel _______.", exVi: "Giá đã bao gồm vé máy bay và chỗ ở khách sạn." },
+            { topic: "Tourism", word: "tourist attraction", phonetic: "/ˈtʊə.rɪst əˈtræk.ʃən/", type: "n.p", mean: "điểm thu hút khách du lịch", ex: "The museum is a popular _______.", exVi: "Bảo tàng là một điểm thu hút khách du lịch nổi tiếng." },
+            { topic: "Tourism", word: "visa", phonetic: "/ˈviː.zə/", type: "n", mean: "thị thực", ex: "You need to apply for a _______ to enter.", exVi: "Bạn cần nộp đơn xin thị thực để nhập cảnh." },
+            { topic: "Tourism", word: "backpacker", phonetic: "/ˈbækˌpæk.ər/", type: "n", mean: "người du lịch bụi", ex: "He traveled around Asia cheaply as a _______.", exVi: "Anh ấy đi du lịch vòng quanh châu Á giá rẻ như một người du lịch bụi." },
+            { topic: "Tourism", word: "travel agency", phonetic: "/ˈtræv.əl ˈeɪ.dʒən.si/", type: "n.p", mean: "đại lý du lịch", ex: "We booked our trip through a local _______.", exVi: "Chúng tôi đã đặt chuyến đi thông qua một đại lý du lịch địa phương." },
+            { topic: "Tourism", word: "reservation", phonetic: "/ˌrez.əˈveɪ.ʃən/", type: "n", mean: "sự đặt chỗ", ex: "I made a _______ at the restaurant.", exVi: "Tôi đã đặt chỗ tại nhà hàng." },
+            { topic: "Tourism", word: "sightseeing", phonetic: "/ˈsaɪtˌsiː.ɪŋ/", type: "n", mean: "hoạt động tham quan", ex: "We went _______ in the afternoon.", exVi: "Chúng tôi đã đi tham quan vào buổi chiều." },
+            { topic: "Tourism", word: "destination", phonetic: "/ˌdes.tɪˈneɪ.ʃən/", type: "n", mean: "điểm đến", ex: "Da Lat is a popular holiday _______.", exVi: "Đà Lạt là một điểm đến nghỉ lễ phổ biến." },
+            { topic: "Tourism", word: "cultural exchange", phonetic: "/ˈkʌl.tʃər.əl ɪksˈtʃeɪndʒ/", type: "n.p", mean: "trao đổi văn hóa", ex: "The program promotes _______.", exVi: "Chương trình thúc đẩy trao đổi văn hóa." },
+            { topic: "Tourism", word: "travel insurance", phonetic: "/ˈtræv.əl ɪnˈʃʊə.rəns/", type: "n.p", mean: "bảo hiểm du lịch", ex: "It's recommended to buy _______.", exVi: "Việc mua bảo hiểm du lịch được khuyên dùng." },
+            { topic: "Tourism", word: "excursion", phonetic: "/ɪkˈskɜː.ʃən/", type: "n", mean: "chuyến tham quan ngắn", ex: "We went on a full-day _______.", exVi: "Chúng tôi đã tham gia một chuyến tham quan ngắn cả ngày." },
+
+            // 2. WORK & CAREER
+            { topic: "Work & Career", word: "promotion", phonetic: "/prəˈməʊ.ʃən/", type: "n", mean: "sự thăng chức", ex: "He worked hard to get a _______.", exVi: "Anh ấy đã làm việc chăm chỉ để được thăng chức." },
+            { topic: "Work & Career", word: "job interview", phonetic: "/ˈdʒɒb ˌɪn.tə.vjuː/", type: "n.p", mean: "buổi phỏng vấn xin việc", ex: "I am nervous about my _______ tomorrow.", exVi: "Tôi lo lắng về buổi phỏng vấn xin việc ngày mai." },
+            { topic: "Work & Career", word: "employee", phonetic: "/ɪmˈplɔɪ.iː/", type: "n", mean: "nhân viên", ex: "The company has over 500 _______s.", exVi: "Công ty có hơn 500 nhân viên." },
+            { topic: "Work & Career", word: "career path", phonetic: "/kəˈrɪə pɑːθ/", type: "n.p", mean: "con đường sự nghiệp", ex: "She is planning her future _______.", exVi: "Cô ấy đang lên kế hoạch cho con đường sự nghiệp tương lai." },
+            { topic: "Work & Career", word: "wage", phonetic: "/weɪdʒ/", type: "n", mean: "tiền công", ex: "They are asking for a higher hourly _______.", exVi: "Họ đang yêu cầu mức tiền công theo giờ cao hơn." },
+            { topic: "Work & Career", word: "full-time job", phonetic: "/ˌfʊl.taɪm ˈdʒɒb/", type: "n.p", mean: "công việc toàn thời gian", ex: "He is looking for a _______.", exVi: "Anh ấy đang tìm kiếm một công việc toàn thời gian." },
+            { topic: "Work & Career", word: "employer", phonetic: "/ɪmˈplɔɪ.ər/", type: "n", mean: "người sử dụng lao động", ex: "The _______ provides health insurance.", exVi: "Người sử dụng lao động cung cấp bảo hiểm y tế." },
+            { topic: "Work & Career", word: "deadline", phonetic: "/ˈded.laɪn/", type: "n", mean: "thời hạn cuối", ex: "We must finish before the _______.", exVi: "Chúng ta phải hoàn thành trước thời hạn cuối." },
+            { topic: "Work & Career", word: "job vacancy", phonetic: "/ˈdʒɒb ˈveɪ.kən.si/", type: "n.p", mean: "vị trí tuyển dụng", ex: "There is a new _______ in the sales team.", exVi: "Có một vị trí tuyển dụng mới trong đội ngũ bán hàng." },
+            { topic: "Work & Career", word: "job satisfaction", phonetic: "/ˈdʒɒb sæt.ɪsˈfæk.ʃən/", type: "n.p", mean: "sự hài lòng trong công việc", ex: "Money is not the only factor for _______.", exVi: "Tiền không phải yếu tố duy nhất cho sự hài lòng trong công việc." },
+            { topic: "Work & Career", word: "working conditions", phonetic: "/ˈwɜː.kɪŋ kənˈdɪʃ.ənz/", type: "n.p", mean: "điều kiện làm việc", ex: "They protested against poor _______.", exVi: "Họ phản đối các điều kiện làm việc tồi tệ." },
+            { topic: "Work & Career", word: "salary", phonetic: "/ˈsæl.ər.i/", type: "n", mean: "tiền lương", ex: "She receives a high monthly _______.", exVi: "Cô ấy nhận được mức tiền lương hàng tháng cao." },
+            { topic: "Work & Career", word: "part-time job", phonetic: "/ˌpɑːt.taɪm ˈdʒɒb/", type: "n.p", mean: "công việc bán thời gian", ex: "Students often do a _______.", exVi: "Sinh viên thường làm công việc bán thời gian." },
+            { topic: "Work & Career", word: "work experience", phonetic: "/ˈwɜːk ɪkˌspɪə.ri.əns/", type: "n.p", mean: "kinh nghiệm làm việc", ex: "You need 2 years of _______.", exVi: "Bạn cần 2 năm kinh nghiệm làm việc." },
+            { topic: "Work & Career", word: "unemployment rate", phonetic: "/ʌn.ɪmˈplɔɪ.mənt reɪt/", type: "n.p", mean: "tỉ lệ thất nghiệp", ex: "The _______ is decreasing this year.", exVi: "Tỉ lệ thất nghiệp đang giảm trong năm nay." },
+
+            // 3. EDUCATION
+            { topic: "Education", word: "curriculum", phonetic: "/kəˈrɪk.jʊ.ləm/", type: "n", mean: "chương trình học", ex: "Coding is added to the new _______.", exVi: "Lập trình được thêm vào chương trình học mới." },
+            { topic: "Education", word: "lifelong learning", phonetic: "/ˈlaɪf.lɒŋ ˈlɜː.nɪŋ/", type: "n.p", mean: "học tập suốt đời", ex: "We encourage the spirit of _______.", exVi: "Chúng tôi khuyến khích tinh thần học tập suốt đời." },
+            { topic: "Education", word: "scholarship", phonetic: "/ˈskɒl.ə.ʃɪp/", type: "n", mean: "học bổng", ex: "She won a full _______ to Harvard.", exVi: "Cô ấy giành được học bổng toàn phần đến Harvard." },
+            { topic: "Education", word: "critical thinking", phonetic: "/ˈkrɪt.ɪ.kəl ˈθɪŋ.kɪŋ/", type: "n.p", mean: "tư duy phản biện", ex: "Education should develop _______ skills.", exVi: "Giáo dục nên phát triển các kỹ năng tư duy phản biện." },
+            { topic: "Education", word: "academic achievement", phonetic: "/ˌæk.əˈdem.ɪk əˈtʃiːv.mənt/", type: "n.p", mean: "thành tích học tập", ex: "He was praised for his outstanding _______.", exVi: "Anh ấy được khen ngợi vì thành tích học tập xuất sắc." },
+            { topic: "Education", word: "tuition fees", phonetic: "/tjuːˈɪʃ.ən fiːz/", type: "n.p", mean: "học phí", ex: "University _______ are very high.", exVi: "Học phí đại học rất cao." },
+            { topic: "Education", word: "discipline", phonetic: "/ˈdɪs.ə.plɪn/", type: "n", mean: "kỷ luật", ex: "Teachers must maintain _______ in class.", exVi: "Giáo viên phải duy trì kỷ luật trong lớp." },
+            { topic: "Education", word: "extracurricular activity", phonetic: "/ˌek.strə.kəˈrɪk.jʊ.lər ækˈtɪv.ə.ti/", type: "n.p", mean: "hoạt động ngoại khóa", ex: "Sports are a popular _______.", exVi: "Thể thao là một hoạt động ngoại khóa phổ biến." },
+            { topic: "Education", word: "vocational training", phonetic: "/vəʊˈkeɪ.ʃən.əl ˈtreɪ.nɪŋ/", type: "n.p", mean: "đào tạo nghề", ex: "Many choose _______ instead of university.", exVi: "Nhiều người chọn đào tạo nghề thay vì đại học." },
+            { topic: "Education", word: "higher education", phonetic: "/ˈhaɪ.ər ˌedʒ.ʊˈkeɪ.ʃən/", type: "n.p", mean: "giáo dục bậc cao", ex: "Access to _______ should be equal.", exVi: "Cơ hội tiếp cận giáo dục bậc cao nên bình đẳng." },
+            { topic: "Education", word: "enrolment", phonetic: "/ɪnˈrəʊl.mənt/", type: "n", mean: "sự ghi danh", ex: "School _______ drops in rural areas.", exVi: "Sự ghi danh vào trường học giảm ở các khu vực nông thôn." },
+            { topic: "Education", word: "intellectual development", phonetic: "/ˌɪn.təlˈek.tʃu.əl dɪˈvel.əp.mənt/", type: "n.p", mean: "sự phát triển trí tuệ", ex: "Reading supports early _______.", exVi: "Việc đọc sách hỗ trợ sự phát triển trí tuệ sớm." },
+            { topic: "Education", word: "literacy rate", phonetic: "/ˈlɪt.ər.ə.si reɪt/", type: "n.p", mean: "tỉ lệ biết đọc biết viết", ex: "The country has a high _______.", exVi: "Quốc gia này có tỉ lệ biết đọc biết viết cao." },
+            { topic: "Education", word: "standardized test", phonetic: "/ˈstæn.də.daɪzd test/", type: "n.p", mean: "bài kiểm tra chuẩn hóa", ex: "Students worry about the national _______.", exVi: "Học sinh lo lắng về bài kiểm tra chuẩn hóa quốc gia." },
+            { topic: "Education", word: "academic pressure", phonetic: "/ˌæk.əˈdem.ɪk ˈpreʃ.ər/", type: "n.p", mean: "áp lực học tập", ex: "High _______ causes stress for teens.", exVi: "Áp lực học tập cao gây căng thẳng cho thanh thiếu niên." },
+
+            // 4. TRANSPORT
+            { topic: "Transport", word: "traffic congestion", phonetic: "/ˈtræf.ɪk kənˈdʒes.tʃən/", type: "n.p", mean: "sự tắc nghẽn giao thông", ex: "We were late because of _______.", exVi: "Chúng tôi đã đến trễ vì tắc nghẽn giao thông." },
+            { topic: "Transport", word: "public transport", phonetic: "/ˌpʌb.lɪk ˈtræn.spɔːt/", type: "n.p", mean: "giao thông công cộng", ex: "Using _______ is better for the environment.", exVi: "Sử dụng giao thông công cộng thì tốt hơn cho môi trường." },
+            { topic: "Transport", word: "license plate", phonetic: "/ˈlaɪ.səns pleɪt/", type: "n.p", mean: "biển số xe", ex: "I couldn't read the car's _______.", exVi: "Tôi không thể đọc được biển số xe của chiếc xe đó." },
+            { topic: "Transport", word: "fuel-efficient car", phonetic: "/ˈfjuː.əl ɪˈfɪʃ.ənt kɑːr/", type: "n.p", mean: "xe tiết kiệm nhiên liệu", ex: "He bought a new _______.", exVi: "Anh ấy đã mua một chiếc xe tiết kiệm nhiên liệu mới." },
+            { topic: "Transport", word: "rush hour", phonetic: "/ˈrʌʃ ˌaʊər/", type: "n", mean: "giờ cao điểm", ex: "Avoid driving during _______.", exVi: "Tránh lái xe trong giờ cao điểm." },
+            { topic: "Transport", word: "ride-hailing service", phonetic: "/ˈraɪd ˌheɪ.lɪŋ ˈsɜː.vɪs/", type: "n.p", mean: "dịch vụ gọi xe", ex: "Grab is a popular _______.", exVi: "Grab là một dịch vụ gọi xe phổ biến." },
+            { topic: "Transport", word: "carbon emissions", phonetic: "/ˈkɑː.bən ɪˈmɪʃ.ənz/", type: "n.p", mean: "lượng khí thải carbon", ex: "Electric cars reduce _______.", exVi: "Xe điện giúp giảm lượng khí thải carbon." },
+            { topic: "Transport", word: "road safety", phonetic: "/rəʊd ˈseɪf.ti/", type: "n.p", mean: "an toàn giao thông", ex: "Wearing a helmet improves _______.", exVi: "Đội mũ bảo hiểm cải thiện an toàn giao thông." },
+            { topic: "Transport", word: "autonomous vehicle", phonetic: "/ɔːˈtɒn.ə.məs ˈvɪə.kəl/", type: "n.p", mean: "xe tự lái", ex: "An _______ can drive itself.", exVi: "Một chiếc xe tự lái có thể tự điều khiển." },
+            { topic: "Transport", word: "traffic violation", phonetic: "/ˈtræf.ɪk ˌvaɪ.əˈleɪ.ʃən/", type: "n.p", mean: "vi phạm giao thông", ex: "Speeding is a serious _______.", exVi: "Chạy quá tốc độ là một vi phạm giao thông nghiêm trọng." },
+            { topic: "Transport", word: "means of transportation", phonetic: "/miːnz əv ˌtræn.spɔːˈteɪ.ʃən/", type: "n.p", mean: "phương tiện giao thông", ex: "The bicycle is my main _______.", exVi: "Xe đạp là phương tiện giao thông chính của tôi." },
+            { topic: "Transport", word: "eco-friendly vehicle", phonetic: "/ˈiː.kəʊ ˈfrend.li ˈvɪə.kəl/", type: "n.p", mean: "phương tiện thân thiện môi trường", ex: "Electric buses are a type of _______.", exVi: "Xe buýt điện là một loại phương tiện thân thiện với môi trường." },
+            { topic: "Transport", word: "air pollution", phonetic: "/ˈeə pəˌluː.ʃən/", type: "n.p", mean: "ô nhiễm không khí", ex: "Cars contribute to city _______.", exVi: "Ô tô góp phần gây ô nhiễm không khí ở thành phố." },
+            { topic: "Transport", word: "traffic infrastructure", phonetic: "/ˈtræf.ɪk ˌɪn.frəˈstrʌk.tʃər/", type: "n.p", mean: "cơ sở hạ tầng giao thông", ex: "The city needs better _______.", exVi: "Thành phố cần cơ sở hạ tầng giao thông tốt hơn." },
+            { topic: "Transport", word: "high-speed railway", phonetic: "/ˌhaɪ.spiːd ˈreɪl.weɪ/", type: "n.p", mean: "đường sắt cao tốc", ex: "Japan is famous for its _______.", exVi: "Nhật Bản nổi tiếng với đường sắt cao tốc." },
+
+            // 5. HEALTH
+            { topic: "Health", word: "balanced diet", phonetic: "/ˈbælənst ˈdaɪət/", type: "n.p", mean: "chế độ ăn uống cân bằng", ex: "A _______ keeps you healthy.", exVi: "Một chế độ ăn uống cân bằng giữ cho bạn khỏe mạnh." },
+            { topic: "Health", word: "physical exercise", phonetic: "/ˈfɪzɪkəl ˈɛksəsaɪz/", type: "n.p", mean: "tập thể dục", ex: "Daily _______ is important for your heart.", exVi: "Tập thể dục hàng ngày rất quan trọng cho tim của bạn." },
+            { topic: "Health", word: "healthy lifestyle", phonetic: "/ˈhɛlθi ˈlaɪfstaɪl/", type: "n.p", mean: "lối sống lành mạnh", ex: "Quitting smoking is part of a _______.", exVi: "Bỏ thuốc lá là một phần của lối sống lành mạnh." },
+            { topic: "Health", word: "medical treatment", phonetic: "/ˈmɛdɪkəl ˈtriːtmənt/", type: "n.p", mean: "phương pháp điều trị y tế", ex: "The patient needs immediate _______.", exVi: "Bệnh nhân cần phương pháp điều trị y tế ngay lập tức." },
+            { topic: "Health", word: "health insurance", phonetic: "/hɛlθ ɪnˈʃʊərəns/", type: "n.p", mean: "bảo hiểm y tế", ex: "Having _______ covers hospital bills.", exVi: "Có bảo hiểm y tế sẽ chi trả hóa đơn bệnh viện." },
+            { topic: "Health", word: "mental health", phonetic: "/ˈmɛntl hɛlθ/", type: "n.p", mean: "sức khỏe tinh thần", ex: "Stress can affect your _______.", exVi: "Căng thẳng có thể ảnh hưởng đến sức khỏe tinh thần của bạn." },
+            { topic: "Health", word: "regular check-up", phonetic: "/ˈrɛgjʊlər ˈtʃɛk ʌp/", type: "n.p", mean: "kiểm tra sức khỏe định kỳ", ex: "You should have a _______ every year.", exVi: "Bạn nên có đợt kiểm tra sức khỏe định kỳ mỗi năm." },
+            { topic: "Health", word: "infectious disease", phonetic: "/ɪnˈfɛkʃəs dɪˈziːz/", type: "n.p", mean: "bệnh truyền nhiễm", ex: "Covid-19 is a dangerous _______.", exVi: "Covid-19 là một căn bệnh truyền nhiễm nguy hiểm." },
+            { topic: "Health", word: "public health", phonetic: "/ˈpʌblɪk hɛlθ/", type: "n.p", mean: "y tế cộng đồng", ex: "Clean water improves _______.", exVi: "Nước sạch cải thiện y tế cộng đồng." },
+            { topic: "Health", word: "life expectancy", phonetic: "/laɪf ɪkˈspɛktənsi/", type: "n.p", mean: "tuổi thọ trung bình", ex: "The _______ is increasing in many countries.", exVi: "Tuổi thọ trung bình đang tăng lên ở nhiều quốc gia." },
+
+            // 6. SOCIAL ISSUES
+            { topic: "Social issues", word: "poverty", phonetic: "/ˈpɒvəti/", type: "n", mean: "nghèo đói", ex: "Many families live in extreme _______.", exVi: "Nhiều gia đình sống trong cảnh nghèo đói cùng cực." },
+            { topic: "Social issues", word: "unemployment", phonetic: "/ˌʌnɪmˈplɔɪmənt/", type: "n", mean: "thất nghiệp", ex: "High _______ causes social problems.", exVi: "Tỷ lệ thất nghiệp cao gây ra các vấn đề xã hội." },
+            { topic: "Social issues", word: "social inequality", phonetic: "/ˈsəʊʃəl ˌɪnɪˈkwɒləti/", type: "n.p", mean: "bất bình đẳng xã hội", ex: "We must fight against _______.", exVi: "Chúng ta phải chiến đấu chống lại bất bình đẳng xã hội." },
+            { topic: "Social issues", word: "crime rate", phonetic: "/kraɪm reɪt/", type: "n.p", mean: "tỷ lệ tội phạm", ex: "The _______ has dropped significantly.", exVi: "Tỷ lệ tội phạm đã giảm đáng kể." },
+            { topic: "Social issues", word: "domestic violence", phonetic: "/dəˈmɛstɪk ˈvaɪələns/", type: "n.p", mean: "bạo lực gia đình", ex: "Victims of _______ need protection.", exVi: "Nạn nhân của bạo lực gia đình cần được bảo vệ." },
+            { topic: "Social issues", word: "drug abuse", phonetic: "/drʌg əˈbjuːs/", type: "n.p", mean: "lạm dụng ma túy", ex: "_______ is a huge problem for youth.", exVi: "Lạm dụng ma túy là một vấn đề lớn đối với thanh niên." },
+            { topic: "Social issues", word: "gender equality", phonetic: "/ˈdʒɛndə ɪˈkwɒləti/", type: "n.p", mean: "bình đẳng giới", ex: "Promoting _______ is necessary in modern society.", exVi: "Thúc đẩy bình đẳng giới là điều cần thiết trong xã hội hiện đại." },
+            { topic: "Social issues", word: "human rights", phonetic: "/ˈhjuːmən raɪts/", type: "n.p", mean: "quyền con người", ex: "Everyone deserves basic _______.", exVi: "Mọi người đều xứng đáng có những quyền con người cơ bản." },
+            { topic: "Social issues", word: "homelessness", phonetic: "/ˈhəʊmləsnəs/", type: "n", mean: "tình trạng vô gia cư", ex: "The city wants to solve the issue of _______.", exVi: "Thành phố muốn giải quyết vấn đề tình trạng vô gia cư." },
+            { topic: "Social issues", word: "population growth", phonetic: "/ˌpɒpjʊˈleɪʃən grəʊθ/", type: "n.p", mean: "sự gia tăng dân số", ex: "Rapid _______ puts pressure on resources.", exVi: "Sự gia tăng dân số nhanh chóng gây áp lực lên các nguồn tài nguyên." },
+
+            // 7. FAMILY
+            { topic: "Family", word: "extended family", phonetic: "/ɪksˈtɛndɪd ˈfæm.ɪ.li/", type: "n.p", mean: "gia đình mở rộng", ex: "I live with my _______ including my uncle.", exVi: "Tôi sống với gia đình mở rộng bao gồm cả chú tôi." },
+            { topic: "Family", word: "caregiver", phonetic: "/ˈkeəgɪvər/", type: "n", mean: "người chăm sóc", ex: "She is the main _______ for her grandmother.", exVi: "Cô ấy là người chăm sóc chính cho bà của mình." },
+            { topic: "Family", word: "family reunion", phonetic: "/ˈfæmɪli riˈjuːniən/", type: "n.p", mean: "buổi họp mặt gia đình", ex: "We have an annual _______ in summer.", exVi: "Chúng tôi có buổi họp mặt gia đình hàng năm vào mùa hè." },
+            { topic: "Family", word: "nuclear family", phonetic: "/ˈnjuː.klɪə ˈfæm.ɪ.li/", type: "n.p", mean: "gia đình hạt nhân", ex: "A _______ consists of parents and children.", exVi: "Một gia đình hạt nhân bao gồm cha mẹ và con cái." },
+            { topic: "Family", word: "sibling rivalry", phonetic: "/ˈsɪblɪŋ ˈraɪvəlri/", type: "n.p", mean: "sự ganh đua giữa anh chị em", ex: "_______ is common when kids are young.", exVi: "Sự ganh đua giữa anh chị em rất phổ biến khi trẻ còn nhỏ." },
+            { topic: "Family", word: "generational gap", phonetic: "/ˌdʒɛnəˈreɪʃənl gæp/", type: "n.p", mean: "khoảng cách thế hệ", ex: "The _______ causes misunderstanding.", exVi: "Khoảng cách thế hệ gây ra sự hiểu lầm." },
+            { topic: "Family", word: "family bond", phonetic: "/ˈfæmɪli bɒnd/", type: "n.p", mean: "mối liên kết gia đình", ex: "Eating together strengthens the _______.", exVi: "Việc ăn cùng nhau củng cố mối liên kết gia đình." },
+            { topic: "Family", word: "parental responsibilities", phonetic: "/pəˈrɛntəl rɪˌspɒnsɪˈbɪlɪtiz/", type: "n.p", mean: "trách nhiệm của cha mẹ", ex: "Feeding and teaching kids are _______.", exVi: "Cho ăn và dạy dỗ trẻ là những trách nhiệm của cha mẹ." },
+            { topic: "Family", word: "marital status", phonetic: "/ˈmærɪtl ˈsteɪtəs/", type: "n.p", mean: "tình trạng hôn nhân", ex: "Please indicate your _______ on the form.", exVi: "Vui lòng cho biết tình trạng hôn nhân của bạn trên biểu mẫu." },
+            { topic: "Family", word: "maternal love", phonetic: "/məˈtɜːnəl lʌv/", type: "n.p", mean: "tình yêu của mẹ", ex: "_______ is unconditional.", exVi: "Tình yêu của mẹ là vô điều kiện." },
+            { topic: "Family", word: "paternal instinct", phonetic: "/pəˈtɜːnəl ˈɪnstɪŋkt/", type: "n.p", mean: "bản năng làm cha", ex: "His _______ told him to protect the child.", exVi: "Bản năng làm cha mách bảo anh ấy phải bảo vệ đứa trẻ." },
+            { topic: "Family", word: "blood relative", phonetic: "/blʌd ˈrɛlətɪv/", type: "n.p", mean: "người họ hàng cùng huyết thống", ex: "She is my closest _______.", exVi: "Cô ấy là người họ hàng cùng huyết thống gần nhất của tôi." },
+            { topic: "Family", word: "single-parent family", phonetic: "/ˈsɪŋgəl ˈpeərənt ˈfæmɪli/", type: "n.p", mean: "gia đình đơn thân", ex: "He grew up in a _______.", exVi: "Anh ấy lớn lên trong một gia đình đơn thân." },
+            { topic: "Family", word: "family dynamics", phonetic: "/ˈfæmɪli daɪˈnæmɪks/", type: "n.p", mean: "mối quan hệ trong gia đình", ex: "Therapy helps improve _______.", exVi: "Trị liệu giúp cải thiện mối quan hệ trong gia đình." },
+            { topic: "Family", word: "foster care", phonetic: "/ˈfɒstər keər/", type: "n.p", mean: "việc chăm sóc con nuôi", ex: "The child was placed in _______.", exVi: "Đứa trẻ được đưa vào cơ sở chăm sóc con nuôi." },
+
+            // 8. SCIENCE AND TECHNOLOGY
+            { topic: "Science and Technology", word: "artificial intelligence", phonetic: "/ˌɑːtɪˈfɪʃəl ɪnˈtɛlɪdʒəns/", type: "n.p", mean: "trí tuệ nhân tạo", ex: "_______ is changing the way we work.", exVi: "Trí tuệ nhân tạo đang thay đổi cách chúng ta làm việc." },
+            { topic: "Science and Technology", word: "automation", phonetic: "/ˌɔːtəˈmeɪʃən/", type: "n", mean: "tự động hóa", ex: "Factory _______ replaces human labor.", exVi: "Tự động hóa nhà máy thay thế lao động của con người." },
+            { topic: "Science and Technology", word: "computer science", phonetic: "/kəmˈpjuːtə ˈsaɪəns/", type: "n.p", mean: "khoa học máy tính", ex: "He has a degree in _______.", exVi: "Anh ấy có bằng về khoa học máy tính." },
+            { topic: "Science and Technology", word: "space exploration", phonetic: "/speɪs ˌɛksplɔːˈreɪʃən/", type: "n.p", mean: "khám phá vũ trụ", ex: "Mars is the next goal of _______.", exVi: "Sao Hỏa là mục tiêu tiếp theo của khám phá vũ trụ." },
+            { topic: "Science and Technology", word: "nanotechnology", phonetic: "/ˌnænəʊtɛkˈnɒlədʒi/", type: "n", mean: "công nghệ nano", ex: "_______ allows us to build tiny machines.", exVi: "Công nghệ nano cho phép chúng ta chế tạo những cỗ máy siêu nhỏ." },
+            { topic: "Science and Technology", word: "renewable energy", phonetic: "/rɪˈnjuːəbl ˈɛnədʒi/", type: "n.p", mean: "năng lượng tái tạo", ex: "Solar power is a form of _______.", exVi: "Năng lượng mặt trời là một dạng năng lượng tái tạo." },
+            { topic: "Science and Technology", word: "cyber security", phonetic: "/ˈsaɪbər sɪˈkjʊərɪti/", type: "n.p", mean: "an ninh mạng", ex: "Banks invest heavily in _______.", exVi: "Các ngân hàng đầu tư rất nhiều vào an ninh mạng." },
+            { topic: "Science and Technology", word: "breakthrough", phonetic: "/ˈbreɪkˌθruː/", type: "n", mean: "bước đột phá", ex: "Scientists made a major _______ in medicine.", exVi: "Các nhà khoa học đã tạo ra một bước đột phá lớn trong y học." },
+            { topic: "Science and Technology", word: "digital transformation", phonetic: "/ˈdɪdʒɪtl ˌtrænsfɔːˈmeɪʃən/", type: "n.p", mean: "chuyển đổi số", ex: "Many businesses apply _______ to survive.", exVi: "Nhiều doanh nghiệp áp dụng chuyển đổi số để tồn tại." },
+            { topic: "Science and Technology", word: "virtual reality", phonetic: "/ˈvɜːtʃʊəl riˈæləti/", type: "n.p", mean: "thực tế ảo", ex: "Gamers love playing with _______ headsets.", exVi: "Các game thủ thích chơi với kính thực tế ảo." },
+            { topic: "Science and Technology", word: "technological advancement", phonetic: "/ˌtɛk.nəˈlɒdʒɪ.kəl ədˈvɑːns.mənt/", type: "n.p", mean: "sự tiến bộ công nghệ", ex: "Smartphones are a huge _______.", exVi: "Điện thoại thông minh là một sự tiến bộ công nghệ to lớn." },
+            { topic: "Science and Technology", word: "cutting-edge technology", phonetic: "/ˌkʌtɪŋ ˈɛdʒ tɛkˈnɒlədʒi/", type: "n.p", mean: "công nghệ tiên tiến", ex: "The new car uses _______.", exVi: "Chiếc xe hơi mới sử dụng công nghệ tiên tiến." },
+            { topic: "Science and Technology", word: "gene editing", phonetic: "/dʒiːn ˈɛdɪtɪŋ/", type: "n.p", mean: "chỉnh sửa gen", ex: "_______ might cure some inherited diseases.", exVi: "Chỉnh sửa gen có thể chữa khỏi một số bệnh di truyền." },
+            { topic: "Science and Technology", word: "data privacy", phonetic: "/ˈdeɪtə ˈpraɪvəsi/", type: "n.p", mean: "quyền riêng tư dữ liệu", ex: "Social media apps must protect user _______.", exVi: "Các ứng dụng mạng xã hội phải bảo vệ quyền riêng tư dữ liệu của người dùng." },
+
+            // 9. ENVIRONMENT
+            { topic: "Environment", word: "climate change", phonetic: "/ˈklaɪmət tʃeɪndʒ/", type: "n.p", mean: "biến đổi khí hậu", ex: "Extreme weather is caused by _______.", exVi: "Thời tiết khắc nghiệt được gây ra bởi biến đổi khí hậu." },
+            { topic: "Environment", word: "global warming", phonetic: "/ˈgləʊbəl ˈwɔːmɪŋ/", type: "n.p", mean: "hiện tượng nóng lên toàn cầu", ex: "Melting ice is a sign of _______.", exVi: "Băng tan là một dấu hiệu của hiện tượng nóng lên toàn cầu." },
+            { topic: "Environment", word: "greenhouse effect", phonetic: "/ˈgriːnˌhaʊs ɪˈfɛkt/", type: "n.p", mean: "hiệu ứng nhà kính", ex: "The _______ traps heat in the atmosphere.", exVi: "Hiệu ứng nhà kính giữ nhiệt lại trong khí quyển." },
+            { topic: "Environment", word: "environmental degradation", phonetic: "/ɪnˌvaɪrənˈmɛntəl dɪgrəˈdeɪʃən/", type: "n.p", mean: "sự suy thoái môi trường", ex: "Pollution leads to severe _______.", exVi: "Ô nhiễm dẫn đến sự suy thoái môi trường nghiêm trọng." },
+            { topic: "Environment", word: "deforestation", phonetic: "/diːˌfɒrɪˈsteɪʃən/", type: "n", mean: "nạn phá rừng", ex: "_______ destroys animal habitats.", exVi: "Nạn phá rừng phá hủy môi trường sống của động vật." },
+            { topic: "Environment", word: "renewable resources", phonetic: "/rɪˈnjuːəbl rɪˈzɔːsɪz/", type: "n.p", mean: "nguồn tài nguyên tái tạo", ex: "Wind and sunlight are _______.", exVi: "Gió và ánh sáng mặt trời là nguồn tài nguyên tái tạo." },
+            { topic: "Environment", word: "sustainable development", phonetic: "/səˈsteɪnəbl dɪˈvɛləpmənt/", type: "n.p", mean: "phát triển bền vững", ex: "Cities aim for _______.", exVi: "Các thành phố hướng tới phát triển bền vững." },
+            { topic: "Environment", word: "pollution control", phonetic: "/pəˈluːʃən kənˈtrəʊl/", type: "n.p", mean: "kiểm soát ô nhiễm", ex: "Strict _______ laws are needed.", exVi: "Cần có các luật kiểm soát ô nhiễm nghiêm ngặt." },
+            { topic: "Environment", word: "carbon footprint", phonetic: "/ˈkɑːbən ˈfʊtprɪnt/", type: "n.p", mean: "dấu vết carbon", ex: "Riding a bike reduces your _______.", exVi: "Đi xe đạp giúp giảm dấu vết carbon của bạn." },
+            { topic: "Environment", word: "waste management", phonetic: "/weɪst ˈmænɪdʒmənt/", type: "n.p", mean: "quản lý chất thải", ex: "Recycling is a part of proper _______.", exVi: "Tái chế là một phần của việc quản lý chất thải đúng cách." },
+            { topic: "Environment", word: "biodiversity conservation", phonetic: "/ˌbaɪəʊdaɪˈvɜːsɪti ˌkɒnsəˈveɪʃən/", type: "n.p", mean: "bảo tồn đa dạng sinh học", ex: "National parks help in _______.", exVi: "Các vườn quốc gia giúp ích trong việc bảo tồn đa dạng sinh học." },
+            { topic: "Environment", word: "environmental impact", phonetic: "/ɪnˌvaɪrənˈmɛntəl ˈɪmpækt/", type: "n.p", mean: "tác động môi trường", ex: "The factory has a negative _______.", exVi: "Nhà máy có một tác động môi trường tiêu cực." },
+            { topic: "Environment", word: "ecological balance", phonetic: "/iːkəˈlɒdʒɪkəl ˈbæləns/", type: "n.p", mean: "cân bằng sinh thái", ex: "Protecting wolves maintains the _______.", exVi: "Bảo vệ loài sói giúp duy trì sự cân bằng sinh thái." },
+            { topic: "Environment", word: "environmental awareness", phonetic: "/ɪnˌvaɪrənˈmɛntəl əˈweə.rəs/", type: "n.p", mean: "nhận thức về môi trường", ex: "Schools should raise _______.", exVi: "Các trường học nên nâng cao nhận thức về môi trường." },
+
+            // 10. CULTURE
+            { topic: "Culture", word: "cultural diversity", phonetic: "/ˈkʌltʃərəl daɪˈvɜːsɪti/", type: "n.p", mean: "sự đa dạng văn hóa", ex: "New York is famous for its _______.", exVi: "New York nổi tiếng vì sự đa dạng văn hóa của nó." },
+            { topic: "Culture", word: "cultural heritage", phonetic: "/ˈkʌltʃərəl ˈhɛrɪtɪdʒ/", type: "n.p", mean: "di sản văn hóa", ex: "Hoi An is recognized as a world _______.", exVi: "Hội An được công nhận là một di sản văn hóa thế giới." },
+            { topic: "Culture", word: "traditional customs", phonetic: "/trəˈdɪʃənl ˈkʌstəmz/", type: "n.p", mean: "phong tục truyền thống", ex: "Giving lucky money is one of our _______.", exVi: "Tặng lì xì là một trong những phong tục truyền thống của chúng tôi." },
+            { topic: "Culture", word: "cultural identity", phonetic: "/ˈkʌltʃərəl aɪˈdɛntɪti/", type: "n.p", mean: "bản sắc văn hóa", ex: "Language is a key part of _______.", exVi: "Ngôn ngữ là một phần quan trọng của bản sắc văn hóa." },
+            { topic: "Culture", word: "cultural exchange", phonetic: "/ˈkʌltʃərəl ɪksˈtʃeɪndʒ/", type: "n.p", mean: "giao lưu văn hóa", ex: "Student programs promote _______.", exVi: "Các chương trình sinh viên thúc đẩy giao lưu văn hóa." },
+            { topic: "Culture", word: "national costume", phonetic: "/ˈnæʃənl ˈkɒstjuːm/", type: "n.p", mean: "trang phục truyền thống", ex: "Ao Dai is the elegant _______ of Vietnam.", exVi: "Áo dài là trang phục truyền thống thanh lịch của Việt Nam." },
+            { topic: "Culture", word: "cultural values", phonetic: "/ˈkʌltʃərəl ˈvæljuːz/", type: "n.p", mean: "giá trị văn hóa", ex: "Respect for elders is one of our core _______.", exVi: "Tôn trọng người lớn tuổi là một trong những giá trị văn hóa cốt lõi của chúng ta." },
+            { topic: "Culture", word: "traditional festival", phonetic: "/trəˈdɪʃənl ˈfɛstəvəl/", type: "n.p", mean: "lễ hội truyền thống", ex: "Tet is the most important _______.", exVi: "Tết là lễ hội truyền thống quan trọng nhất." },
+            { topic: "Culture", word: "cultural preservation", phonetic: "/ˈkʌltʃərəl ˌprɛzəˈveɪʃən/", type: "n.p", mean: "bảo tồn văn hóa", ex: "The government invests in _______.", exVi: "Chính phủ đầu tư vào việc bảo tồn văn hóa." },
+            { topic: "Culture", word: "folk art", phonetic: "/fəʊk ɑːt/", type: "n.p", mean: "nghệ thuật dân gian", ex: "Dong Ho painting is a famous type of _______.", exVi: "Tranh Đông Hồ là một loại nghệ thuật dân gian nổi tiếng." }
+        ];
+
+        let currentIndex = 0;
+        const totalCards = flashcards.length;
+
+        const flashcardEl = document.getElementById('flashcard');
+        const inputsContainer = document.getElementById('letter-inputs-container');
+        const finalScreen = document.getElementById('final-screen');
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSuccessSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(987.77, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.4);
+        }
+
+        function playErrorSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(250, audioCtx.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.05);
+            gainNode.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.1);
+            gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.15);
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.25);
+        }
+
+        function playTransitionSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15);
+            osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3);
+            osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.1);
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.8);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.8);
+        }
+
+        // --- Tính năng Text-to-Speech (Đã nâng cấp giọng Nữ thanh thoát) ---
+        let preferredVoice = null;
+
+        function loadVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) return;
+            
+            // Danh sách các giọng nữ chất lượng cao phổ biến trên các hệ điều hành (Chrome/Mac/Windows)
+            const goodFemaleVoices = [
+                "Google US English", 
+                "Google UK English Female",
+                "Samantha",         // Mặc định rất hay trên Mac/iOS
+                "Victoria",         // Mac
+                "Karen",            // Mac
+                "Microsoft Zira",   // Giọng nữ tiêu chuẩn trên Windows
+                "Microsoft Hazel"   // Windows UK
+            ];
+            
+            // Ưu tiên tìm giọng theo danh sách
+            for (let name of goodFemaleVoices) {
+                const voice = voices.find(v => v.name.includes(name));
+                if (voice) {
+                    preferredVoice = voice;
+                    break;
+                }
+            }
+            
+            // Nếu không tìm thấy giọng đích danh, cố gắng tìm một giọng có chữ "Female" hoặc tiếng Anh mặc định
+            if (!preferredVoice) {
+                preferredVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Female')) || 
+                                 voices.find(v => v.lang === 'en-US') || voices[0];
+            }
+        }
+
+        // Tải danh sách giọng nói khi trình duyệt đã sẵn sàng
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+
+        function speakCurrentWord() {
+            // Ngăn chặn nổi bọt sự kiện nếu bấm phím Enter bị trùng
+            if(window.event) window.event.stopPropagation();
+            
+            const card = flashcards[currentIndex];
+            const wordToSpeak = card.word.replace(/-/g, ' '); // Bỏ gạch nối nếu có để đọc chuẩn hơn
+            const utterance = new SpeechSynthesisUtterance(wordToSpeak);
+            
+            // Gắn giọng nữ đã lọc
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            } else {
+                utterance.lang = 'en-US'; 
+            }
+            
+            utterance.rate = 0.85;    // Tốc độ chậm vừa phải để học
+            utterance.pitch = 1.15;   // Tăng độ thanh lên một chút (giọng sáng và nhẹ nhàng hơn)
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function showTopicToast(topicName) {
+            const toast = document.getElementById('topic-toast');
+            document.getElementById('toast-message').textContent = `Chủ đề mới: ${topicName}`;
+            toast.classList.remove('translate-y-[-250%]');
+            toast.classList.add('translate-y-0');
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0');
+                toast.classList.add('translate-y-[-250%]');
+            }, 2500);
+        }
+
+        function renderCard() {
+            const card = flashcards[currentIndex];
+            
+            // Cập nhật thẻ mặt trước và tiêu đề
+            document.getElementById('main-topic-title').textContent = `CHỦ ĐỀ: ${card.topic.toUpperCase()}`;
+            document.getElementById('word-type').textContent = card.type;
+            
+            // Hiện IPA ngay mặt trước
+            document.getElementById('front-phonetic').textContent = card.phonetic;
+            
+            document.getElementById('word-mean').textContent = card.mean;
+            document.getElementById('word-exVi').textContent = card.exVi;
+            
+            const blankedEx = card.ex.replace('_______', `<span class="text-blue-600 border-b-2 border-blue-600 inline-block w-24"></span>`);
+            document.getElementById('word-ex').innerHTML = blankedEx;
+            
+            // Tạo các ô chữ cái
+            inputsContainer.innerHTML = '';
+            const words = card.word.split(' ');
+            
+            words.forEach((w, wordIndex) => {
+                const wordGroup = document.createElement('div');
+                wordGroup.className = 'flex gap-1';
+                
+                for (let i = 0; i < w.length; i++) {
+                    // Bỏ qua ký tự gạch nối (như trong full-time, part-time)
+                    if (w[i] === '-') {
+                        const dash = document.createElement('span');
+                        dash.textContent = '-';
+                        dash.className = 'text-xl font-bold text-gray-400 self-center px-1';
+                        wordGroup.appendChild(dash);
+                        continue;
+                    }
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.maxLength = 1;
+                    
+                    if (i === 0) {
+                        input.value = w[i].toLowerCase();
+                        input.readOnly = true;
+                        input.className = 'char-input hint-input w-9 h-11 md:w-10 md:h-12 text-center text-xl font-bold border-2 border-gray-200 bg-gray-100 text-gray-500 rounded-lg cursor-not-allowed select-none shadow-sm';
+                    } else {
+                        input.className = 'char-input editable-input w-9 h-11 md:w-10 md:h-12 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:bg-blue-50 transition-colors bg-white text-blue-700 shadow-inner';
+                        
+                        input.addEventListener('input', function() {
+                            this.value = this.value.toLowerCase();
+                            this.classList.remove('input-error');
+                            
+                            const editableInputs = Array.from(document.querySelectorAll('.editable-input'));
+                            const currentIdx = editableInputs.indexOf(this);
+                            if (this.value && currentIdx < editableInputs.length - 1) {
+                                editableInputs[currentIdx + 1].focus();
+                            }
+                        });
+                        
+                        input.addEventListener('keydown', function(e) {
+                            const editableInputs = Array.from(document.querySelectorAll('.editable-input'));
+                            const currentIdx = editableInputs.indexOf(this);
+                            
+                            if (e.key === 'Backspace' && !this.value && currentIdx > 0) {
+                                editableInputs[currentIdx - 1].focus();
+                            } else if (e.key === 'Enter') {
+                                checkAnswer();
+                            } else if (e.key === 'ArrowLeft' && currentIdx > 0) {
+                                editableInputs[currentIdx - 1].focus();
+                                e.preventDefault();
+                            } else if (e.key === 'ArrowRight' && currentIdx < editableInputs.length - 1) {
+                                editableInputs[currentIdx + 1].focus();
+                                e.preventDefault();
+                            }
+                        });
+                    }
+                    wordGroup.appendChild(input);
+                }
+                inputsContainer.appendChild(wordGroup);
+                
+                if (wordIndex < words.length - 1) {
+                    const space = document.createElement('div');
+                    space.className = 'w-3 md:w-4';
+                    inputsContainer.appendChild(space);
+                }
+            });
+            
+            setTimeout(() => {
+                const firstEditableInput = document.querySelector('.editable-input');
+                if (firstEditableInput) firstEditableInput.focus();
+            }, 100);
+            
+            // Cập nhật tiến trình
+            document.getElementById('progress-text').textContent = `${currentIndex + 1} / ${totalCards}`;
+            const percent = ((currentIndex + 1) / totalCards) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+
+            // Xử lý hiển thị nút quay lại ở trên cùng
+            const topPrevBtn = document.getElementById('top-prev-btn');
+            if (currentIndex > 0) {
+                topPrevBtn.classList.remove('hidden');
+            } else {
+                topPrevBtn.classList.add('hidden');
+            }
+
+            const nextBtn = document.getElementById('next-btn');
+            if (currentIndex === totalCards - 1) {
+                nextBtn.textContent = "Hoàn thành";
+                nextBtn.classList.replace('bg-green-500', 'bg-blue-600');
+                nextBtn.classList.replace('hover:bg-green-600', 'hover:bg-blue-700');
+            } else {
+                nextBtn.textContent = "Tiếp theo";
+                nextBtn.classList.replace('bg-blue-600', 'bg-green-500');
+                nextBtn.classList.replace('hover:bg-blue-700', 'hover:bg-green-600');
+            }
+        }
+
+        function giveHint() {
+            const card = flashcards[currentIndex];
+            const targetWord = card.word.replace(/[\s-]/g, ''); // Bỏ khoảng trắng và dấu gạch nối
+            const allInputs = document.querySelectorAll('.char-input');
+            const editableInputs = document.querySelectorAll('.editable-input');
+            
+            for (let i = 0; i < allInputs.length; i++) {
+                if (!allInputs[i].readOnly && allInputs[i].value.toLowerCase() !== targetWord[i].toLowerCase()) {
+                    allInputs[i].value = targetWord[i].toLowerCase();
+                    allInputs[i].classList.remove('input-error');
+                    allInputs[i].classList.add('bg-yellow-50', 'border-yellow-400', 'text-yellow-700');
+                    
+                    let currentEditableIdx = Array.from(editableInputs).indexOf(allInputs[i]);
+                    let next = currentEditableIdx + 1;
+                    while (next < editableInputs.length && editableInputs[next].value !== '') {
+                        next++;
+                    }
+                    if (next < editableInputs.length) editableInputs[next].focus();
+                    else editableInputs[editableInputs.length - 1].focus();
+                    
+                    break;
+                }
+            }
+        }
+
+        function checkAnswer() {
+            const card = flashcards[currentIndex];
+            const allInputs = document.querySelectorAll('.char-input');
+            
+            const userAnswer = Array.from(allInputs).map(inp => inp.value).join('').toLowerCase();
+            const correctAnswer = card.word.replace(/[\s-]/g, '').toLowerCase();
+            
+            if (userAnswer === correctAnswer) {
+                playSuccessSound();
+                
+                const resultHeader = document.getElementById('result-header');
+                resultHeader.textContent = "🎉 Chính xác!";
+                resultHeader.className = "text-center py-2 rounded-lg font-bold text-lg mb-4 bg-green-100 text-green-700";
+
+                document.getElementById('back-word').textContent = card.word;
+                document.getElementById('back-phonetic').textContent = card.phonetic;
+                document.getElementById('back-mean').textContent = `${card.mean} (${card.type})`;
+
+                flashcardEl.classList.add('flipped');
+                
+                // Tự động đọc từ vựng khi lật bài đúng (bạn có thể bỏ đi nếu không muốn tự động đọc)
+                // setTimeout(speakCurrentWord, 400); 
+            } else {
+                playErrorSound();
+                inputsContainer.classList.add('shake');
+                setTimeout(() => inputsContainer.classList.remove('shake'), 400);
+                
+                let firstEmptyOrWrongInput = null;
+
+                for (let i = 0; i < allInputs.length; i++) {
+                    if (!allInputs[i].readOnly) {
+                        if (allInputs[i].value !== '' && allInputs[i].value.toLowerCase() !== correctAnswer[i]) {
+                            allInputs[i].value = ''; 
+                            allInputs[i].classList.add('input-error');
+                            if (!firstEmptyOrWrongInput) firstEmptyOrWrongInput = allInputs[i];
+                        } else if (allInputs[i].value === '') {
+                             allInputs[i].classList.add('input-error');
+                             if (!firstEmptyOrWrongInput) firstEmptyOrWrongInput = allInputs[i];
+                        }
+                    }
+                }
+                
+                if (firstEmptyOrWrongInput) {
+                    firstEmptyOrWrongInput.focus();
+                }
+            }
+        }
+
+        function nextCard() {
+            flashcardEl.classList.remove('flipped');
+            
+            setTimeout(() => {
+                if (currentIndex < totalCards - 1) {
+                    const currentTopic = flashcards[currentIndex].topic;
+                    const nextTopicCard = flashcards[currentIndex + 1].topic;
+                    
+                    currentIndex++;
+                    
+                    if (currentTopic !== nextTopicCard) {
+                        showTopicToast(nextTopicCard);
+                        playTransitionSound();
+                    }
+                    
+                    renderCard();
+                } else {
+                    flashcardEl.classList.add('hidden');
+                    finalScreen.classList.remove('hidden');
+                }
+            }, 300);
+        }
+
+        function prevCard() {
+            if (currentIndex > 0) {
+                flashcardEl.classList.remove('flipped');
+                setTimeout(() => {
+                    currentIndex--;
+                    renderCard();
+                }, 300);
+            } else {
+                flashcardEl.classList.remove('flipped');
+            }
+        }
+
+        function resetQuiz() {
+            currentIndex = 0;
+            finalScreen.classList.add('hidden');
+            flashcardEl.classList.remove('hidden');
+            renderCard();
+        }
+
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && flashcardEl.classList.contains('flipped')) {
+                nextCard();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', renderCard);
+
+    </script>
+</body>
+</html>
