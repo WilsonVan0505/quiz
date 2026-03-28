@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards Tổng Hợp Từ Vựng C1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0fdf4;
+        }
+
+        .flip-card {
+            perspective: 1000px;
+            width: 100%;
+            height: 480px;
+            /* Tăng chút chiều cao để chứa nút phát âm */
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        input:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            outline: none;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-5px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        .input-error {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+            color: #b91c1c !important;
+        }
+
+        #topic-toast {
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+    </style>
+</head>
+
+<body class="text-gray-800 p-4 md:p-8 min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+
+    <!-- Toast Notification -->
+    <div id="topic-toast"
+        class="absolute top-8 left-1/2 transform -translate-x-1/2 translate-y-[-250%] bg-white border-2 border-green-500 text-green-700 px-6 py-3 rounded-full shadow-2xl font-bold text-lg z-50 flex items-center gap-3">
+        <span class="text-2xl">✨</span>
+        <span id="toast-message">Chủ đề mới: Education</span>
+        <span class="text-2xl">✨</span>
+    </div>
+
+    <div class="max-w-xl w-full mx-auto relative">
+        <!-- Nút quay lại từ trước đó (ẩn ở thẻ đầu tiên) -->
+        <button id="top-prev-btn" onclick="prevCard()"
+            class="absolute left-0 top-0 mt-1 flex items-center justify-center p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors hidden"
+            title="Quay lại từ trước">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </button>
+
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 id="main-topic-title" class="text-3xl font-bold text-green-700 tracking-tight uppercase">CHỦ ĐỀ: TOURISM
+            </h1>
+            <p class="text-green-600 mt-2 font-medium">Level: C1 | <span id="progress-text">1 / X</span></p>
+
+            <div class="w-full bg-green-200 rounded-full h-2.5 mt-4">
+                <div id="progress-bar" class="bg-green-600 h-2.5 rounded-full transition-all duration-300"
+                    style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Vùng chứa Flashcard -->
+        <div class="flip-card" id="flashcard">
+            <div class="flip-card-inner">
+
+                <!-- Mặt trước: Câu hỏi -->
+                <div class="flip-card-front p-6 md:p-8">
+                    <div class="flex-grow flex flex-col justify-center items-center text-center">
+
+                        <!-- Loại từ, Phiên âm & Nút loa -->
+                        <div
+                            class="flex items-center gap-3 mb-2 bg-gray-50 px-4 py-2 rounded-full border border-gray-100">
+                            <span
+                                class="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded font-semibold text-xs uppercase"
+                                id="word-type"></span>
+                            <span class="text-blue-600 font-medium tracking-wide font-mono text-sm"
+                                id="front-phonetic"></span>
+                            <button onclick="speakCurrentWord()"
+                                class="flex items-center justify-center w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                title="Nghe phát âm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2" id="word-mean"></h2>
+                        <div class="w-16 h-1 bg-gray-200 my-4 mx-auto rounded"></div>
+                        <p class="text-gray-500 italic text-base md:text-lg mb-4" id="word-exVi"></p>
+                        <p class="text-xl md:text-2xl text-gray-700 font-medium mb-6 leading-relaxed" id="word-ex"></p>
+
+                        <div class="w-full flex flex-col items-center gap-3">
+                            <div id="letter-inputs-container" class="flex flex-wrap justify-center gap-x-1 gap-y-3">
+                            </div>
+                            <button onclick="giveHint()"
+                                class="text-sm px-4 py-1.5 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 font-medium rounded-full transition-colors flex items-center gap-1 shadow-sm border border-yellow-200">
+                                Hint
+                            </button>
+                        </div>
+                    </div>
+
+                    <button onclick="checkAnswer()"
+                        class="mt-4 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors duration-200 flex items-center justify-center gap-2">
+                        Check Answer
+                    </button>
+                </div>
+
+                <!-- Mặt sau: Kết quả -->
+                <div class="flip-card-back p-6 md:p-8 flex flex-col">
+                    <div id="result-header" class="text-center py-2 rounded-lg font-bold text-lg mb-4"></div>
+
+                    <div class="flex-grow flex flex-col justify-center items-center text-center">
+                        <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2" id="back-word"></h2>
+
+                        <div class="flex items-center gap-2 mb-4 bg-blue-50 px-3 py-1.5 rounded-full">
+                            <p class="text-xl text-blue-600 font-mono font-medium" id="back-phonetic"></p>
+                            <button onclick="speakCurrentWord()"
+                                class="flex items-center justify-center w-8 h-8 bg-blue-200 hover:bg-blue-300 text-blue-800 rounded-full transition-colors focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <p class="text-lg text-gray-600 font-medium" id="back-mean"></p>
+                    </div>
+
+                    <div class="flex gap-3 mt-4">
+                        <button onclick="prevCard()"
+                            class="flex-1 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-colors">Quay
+                            lại</button>
+                        <button onclick="nextCard()" id="next-btn"
+                            class="flex-1 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition-colors">Tiếp
+                            theo</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Điểm số (hiện khi kết thúc) -->
+        <div id="final-screen" class="hidden bg-white rounded-2xl shadow-xl p-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Hoàn thành bài tập!</h2>
+            <p class="text-lg text-gray-600 mb-6">Bạn đã ôn tập xong toàn bộ danh sách từ vựng.</p>
+            <div class="text-6xl mb-6">🏆</div>
+            <button onclick="resetQuiz()"
+                class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors">Học
+                lại từ đầu</button>
+        </div>
+
+    </div>
+
+    <script>
+        // BỘ DỮ LIỆU TỪ VỰNG FULL (Từ tất cả 10 ảnh)
+        const flashcards = [
+            // BẢNG TỪ VỰNG CẦN NHỚ 1
+            { topic: "Vocabulary 1", word: "Buffer", phonetic: "/ˈbʌf.ər/", type: "n", mean: "vùng đệm", ex: "The trees act as a _______ against the strong wind.", exVi: "Những cái cây đóng vai trò như một vùng đệm chống lại gió mạnh." },
+            { topic: "Vocabulary 1", word: "Compassion", phonetic: "/kəmˈpæʃ.ən/", type: "n", mean: "thương xót; lòng trắc ẩn", ex: "Show _______ to those who need help.", exVi: "Hãy thể hiện lòng trắc ẩn đối với những người cần giúp đỡ." },
+            { topic: "Vocabulary 1", word: "Deem", phonetic: "/diːm/", type: "v", mean: "coi là", ex: "We _______ this proposal to be very important.", exVi: "Chúng tôi coi đề xuất này là rất quan trọng." },
+            { topic: "Vocabulary 1", word: "Dual", phonetic: "/ˈduː.əl/", type: "adj", mean: "kép", ex: "The car has a _______ purpose: work and family.", exVi: "Chiếc xe này có mục đích kép: công việc và gia đình." },
+            { topic: "Vocabulary 1", word: "Demon", phonetic: "/ˈdiː.mən/", type: "n", mean: "ác quỷ", ex: "He fought his inner _______ to overcome addiction.", exVi: "Anh ấy đã chiến đấu với ác quỷ bên trong mình để vượt qua chứng nghiện." },
+            { topic: "Vocabulary 1", word: "Mainstream", phonetic: "/ˈmeɪn.striːm/", type: "n", mean: "dòng chảy chính", ex: "His art is now part of the _______.", exVi: "Nghệ thuật của anh ấy giờ đây đã trở thành một phần của dòng chảy chính." },
+            { topic: "Vocabulary 1", word: "Dominance", phonetic: "/ˈdɑː.mə.nəns/", type: "n", mean: "sự thống trị", ex: "The team showed clear _______ in the game.", exVi: "Đội bóng đã thể hiện sự thống trị rõ ràng trong trận đấu." },
+            { topic: "Vocabulary 1", word: "Gross", phonetic: "/ɡroʊs/", type: "adj", mean: "tổng; gộp", ex: "The company’s _______ profit was high this year.", exVi: "Lợi nhuận gộp của công ty rất cao trong năm nay." },
+            { topic: "Vocabulary 1", word: "Surplus", phonetic: "/ˈsɜːr.pləs/", type: "n", mean: "số dư", ex: "We have a _______ of food after the party.", exVi: "Chúng tôi có số dư thức ăn thừa sau bữa tiệc." },
+            { topic: "Vocabulary 1", word: "Archive", phonetic: "/ˈɑːr.kaɪv/", type: "n", mean: "kho lưu trữ", ex: "The old letters are stored in the _______.", exVi: "Những bức thư cũ được cất giữ trong kho lưu trữ." },
+            { topic: "Vocabulary 1", word: "Integrity", phonetic: "/ɪnˈteɡ.rə.ti/", type: "n", mean: "sự chính trực", ex: "We value his _______ and honesty very much.", exVi: "Chúng tôi rất coi trọng sự chính trực và tính trung thực của anh ấy." },
+            { topic: "Vocabulary 1", word: "Utterly", phonetic: "/ˈʌt.ər.li/", type: "adv", mean: "hoàn toàn", ex: "I was _______ exhausted after the long trip.", exVi: "Tôi đã hoàn toàn kiệt sức sau chuyến đi dài." },
+            { topic: "Vocabulary 1", word: "Distort", phonetic: "/dɪˈstɔːrt/", type: "v", mean: "bóp méo; xuyên tạc", ex: "Don’t _______ the facts to fit your story.", exVi: "Đừng bóp méo sự thật để phù hợp với câu chuyện của bạn." },
+            { topic: "Vocabulary 1", word: "Regime", phonetic: "/reɪˈʒiːm/", type: "n", mean: "chế độ", ex: "The new health _______ improved her fitness quickly.", exVi: "Chế độ sức khỏe mới đã cải thiện thể lực của cô ấy một cách nhanh chóng." },
+            { topic: "Vocabulary 1", word: "Indictment", phonetic: "/ɪnˈdaɪt̬.mənt/", type: "n", mean: "bản cáo trạng", ex: "The grand jury issued an _______.", exVi: "Bồi thẩm đoàn lớn đã đưa ra một bản cáo trạng." },
+            { topic: "Vocabulary 1", word: "Processor", phonetic: "/ˈprɑː.ses.ər/", type: "n", mean: "bộ xử lý", ex: "My computer has a fast _______.", exVi: "Máy tính của tôi có một bộ xử lý nhanh." },
+            { topic: "Vocabulary 1", word: "Whereby", phonetic: "/werˈbaɪ/", type: "adv", mean: "nhờ đó", ex: "They created a system _______ everyone can vote.", exVi: "Họ đã tạo ra một hệ thống nhờ đó mọi người đều có thể bỏ phiếu." },
+            { topic: "Vocabulary 1", word: "Clash", phonetic: "/klæʃ/", type: "n", mean: "tiếng va chạm; cuộc đụng độ", ex: "There was a small _______ between the two teams.", exVi: "Đã có một cuộc đụng độ nhỏ giữa hai đội." },
+            { topic: "Vocabulary 1", word: "Long-time", phonetic: "/ˈlɔːŋ.taɪm/", type: "adj", mean: "lâu năm", ex: "She is a _______ friend of mine.", exVi: "Cô ấy là một người bạn lâu năm của tôi." },
+            { topic: "Vocabulary 1", word: "Fad", phonetic: "/fæd/", type: "n", mean: "mốt nhất thời", ex: "That hairstyle was just a temporary _______.", exVi: "Kiểu tóc đó chỉ là một mốt nhất thời." },
+            { topic: "Vocabulary 1", word: "Insurance coverage", phonetic: "/ɪnˈʃʊr.əns ˈkʌv.ər.ɪdʒ/", type: "n", mean: "phạm vi bảo hiểm", ex: "Do you have health _______?", exVi: "Bạn có phạm vi bảo hiểm y tế không?" },
+            { topic: "Vocabulary 1", word: "Stay on top of", phonetic: "/steɪ ɑːn tɑːp əv/", type: "phrase", mean: "nắm bắt tình hình", ex: "I try to _______ my emails daily.", exVi: "Tôi cố gắng nắm bắt tình hình email của mình mỗi ngày." },
+            { topic: "Vocabulary 1", word: "Bring in", phonetic: "/brɪŋ ɪn/", type: "phrase", mean: "mang lại", ex: "We need to _______ new ideas for the team.", exVi: "Chúng ta cần mang lại những ý tưởng mới cho nhóm." },
+            { topic: "Vocabulary 1", word: "Beforehand", phonetic: "/bɪˈfɔːr.hænd/", type: "adv", mean: "trước đó", ex: "Please prepare the report _______.", exVi: "Vui lòng chuẩn bị báo cáo trước đó." },
+            { topic: "Vocabulary 1", word: "Courier", phonetic: "/ˈkʊr.i.ər/", type: "n", mean: "người chuyển phát nhanh", ex: "The _______ delivered the package this morning.", exVi: "Người chuyển phát nhanh đã giao gói hàng sáng nay." },
+            { topic: "Vocabulary 1", word: "Petition", phonetic: "/pəˈtɪʃ.ən/", type: "n", mean: "đơn kiến nghị", ex: "They signed a _______ for a new park.", exVi: "Họ đã ký một đơn kiến nghị để xây dựng công viên mới." },
+            { topic: "Vocabulary 1", word: "Abundant", phonetic: "/əˈbʌn.dənt/", type: "adj", mean: "phong phú", ex: "The forest has _______ wildlife.", exVi: "Khu rừng có động vật hoang dã phong phú." },
+            { topic: "Vocabulary 1", word: "Commensurate", phonetic: "/kəˈmen.sər.ət/", type: "adj", mean: "tương xứng với", ex: "Your salary will be _______ with your experience.", exVi: "Mức lương của bạn sẽ tương xứng với kinh nghiệm của bạn." },
+            { topic: "Vocabulary 1", word: "On track", phonetic: "/ɑːn træk/", type: "phrase", mean: "đúng tiến độ", ex: "The project is _______ to finish by Friday.", exVi: "Dự án đang đúng tiến độ để hoàn thành vào thứ Sáu." },
+            { topic: "Vocabulary 1", word: "Delicate", phonetic: "/ˈdel.ə.kət/", type: "adj", mean: "tinh tế; mỏng manh", ex: "Handle the fragile vase with care; it’s very _______.", exVi: "Hãy cẩn thận với chiếc bình dễ vỡ; nó rất mỏng manh." },
+            { topic: "Vocabulary 1", word: "Vested", phonetic: "/ˈves.tɪd/", type: "adj", mean: "được hưởng quyền", ex: "The employees have a _______ interest in the company’s success.", exVi: "Nhân viên có quyền lợi được hưởng trong sự thành công của công ty." },
+            { topic: "Vocabulary 1", word: "A vested interest", phonetic: "/ə ˈves.tɪd ˈɪn.trəst/", type: "phrase", mean: "lợi ích cá nhân (đã có quyền lợi trong đó)", ex: "She has _______ in this project.", exVi: "Cô ấy có lợi ích cá nhân trong dự án này." },
+            { topic: "Vocabulary 1", word: "Vested rights", phonetic: "/ˈves.tɪd raɪts/", type: "phrase", mean: "quyền lợi đã được bảo đảm", ex: "", exVi: "" },
+            { topic: "Vocabulary 1", word: "Look to", phonetic: "/lʊk tuː/", type: "phrase", mean: "trông cậy vào", ex: "We _______ your manager for guidance.", exVi: "Chúng tôi trông cậy vào người quản lý của bạn để được hướng dẫn." },
+            { topic: "Vocabulary 1", word: "On merit", phonetic: "/ɑːn ˈmer.ɪt/", type: "phrase", mean: "dựa trên khả năng/ thành tích", ex: "Scholarships are awarded _______ in this university.", exVi: "Học bổng được trao dựa trên thành tích tại trường đại học này." },
+            { topic: "Vocabulary 1", word: "Prerequisite", phonetic: "/ˌpriːˈrek.wə.zɪt/", type: "n", mean: "điều kiện tiên quyết; yêu cầu bắt buộc", ex: "A high school diploma is a _______ for college.", exVi: "Bằng tốt nghiệp trung học là điều kiện tiên quyết để vào đại học." },
+            { topic: "Vocabulary 1", word: "Meet/ satisfy a prerequisite", phonetic: "/miːt/ /ˈsæt.ɪs.faɪ/ /ə/ /ˌpriːˈrek.wə.zɪt/", type: "phrase", mean: "đáp ứng điều kiện tiên quyết", ex: "You must _______ before applying.", exVi: "Bạn phải đáp ứng tất cả các điều kiện tiên quyết trước khi nộp đơn." },
+            { topic: "Vocabulary 1", word: "Carrier", phonetic: "/ˈkær.i.ər/", type: "n", mean: "nhà/ hãng vận chuyển", ex: "Which _______ will deliver your package?", exVi: "Hãng vận chuyển nào sẽ giao gói hàng của bạn?" },
+            { topic: "Vocabulary 1", word: "Impose", phonetic: "/ɪmˈpoʊz/", type: "v", mean: "áp đặt", ex: "The government might _______ new taxes.", exVi: "Chính phủ có thể áp đặt các loại thuế mới." },
+            { topic: "Vocabulary 1", word: "Rectify", phonetic: "/ˈrek.tə.faɪ/", type: "v", mean: "khắc phục", ex: "They promised to _______ the problem immediately.", exVi: "Họ hứa sẽ khắc phục vấn đề ngay lập tức." },
+            { topic: "Vocabulary 1", word: "Discrepancy", phonetic: "/dɪˈskrep.ən.si/", type: "n", mean: "sự khác biệt", ex: "There was a _______ between the two reports.", exVi: "Đã có sự khác biệt giữa hai bản báo cáo." },
+            { topic: "Vocabulary 1", word: "Liability", phonetic: "/ˌlaɪ.əˈbɪl.ə.t̬i/", type: "n", mean: "trách nhiệm pháp lý / gánh nặng", ex: "The old car became a _______ for the company.", exVi: "Chiếc xe cũ đã trở thành một gánh nặng cho công ty." },
+            { topic: "Vocabulary 1", word: "Liability", phonetic: "/ˌlaɪ.əˈbɪl.ə.t̬i/", type: "n", mean: "trách nhiệm pháp lý", ex: "He denied all the _______ for the damage caused.", exVi: "Anh ta phủ nhận mọi trách nhiệm pháp lý đối với thiệt hại đã gây ra." },
+            { topic: "Vocabulary 1", word: "Balance", phonetic: "/ˈbæl.əns/", type: "n", mean: "số dư (tài khoản)", ex: "Check your account/ bank _______ before spending.", exVi: "Hãy kiểm tra số dư tài khoản ngân hàng của bạn trước khi chi tiêu." },
+            { topic: "Vocabulary 1", word: "Cautiously", phonetic: "/ˈkɑː.ʃəs.li/", type: "adv", mean: "một cách thận trọng", ex: "She walked _______ across the icy road.", exVi: "Cô ấy bước đi một cách thận trọng qua con đường đóng băng." },
+            { topic: "Vocabulary 1", word: "Deduct", phonetic: "/dɪˈdʌkt/", type: "v", mean: "khấu trừ", ex: "The company will _______ taxes from your salary.", exVi: "Công ty sẽ khấu trừ thuế từ tiền lương của bạn." },
+            { topic: "Vocabulary 1", word: "Dividend", phonetic: "/ˈdɪv.ə.dend/", type: "n", mean: "cổ tức", ex: "Shareholders received a _______ at the end of the quarter.", exVi: "Các cổ đông đã nhận được cổ tức vào cuối quý." },
+            { topic: "Vocabulary 1", word: "Interim", phonetic: "/ˈɪn.t̬ɚ.ɪm/", type: "adj", mean: "tạm thời", ex: "The vice-president took power in the _______ period before the election.", exVi: "Phó tổng thống đã nắm quyền trong giai đoạn tạm thời trước cuộc bầu cử." },
+            { topic: "Vocabulary 1", word: "A dividend payment", phonetic: "/ə ˈdɪv.ə.dend ˈpeɪ.mənt/", type: "phrase", mean: "khoản thanh toán cổ tức", ex: "Shareholders will receive an interim _______ of 50 cents a share.", exVi: "Các cổ đông sẽ nhận được một khoản thanh toán cổ tức tạm thời là 50 xu cho mỗi cổ phiếu." },
+            { topic: "Vocabulary 1", word: "Down payment", phonetic: "/ˈdaʊn ˈpeɪ.mənt/", type: "n", mean: "tiền đặt cọc", ex: "We made a _______ on the new car.", exVi: "Chúng tôi đã trả tiền đặt cọc cho chiếc xe mới." },
+            { topic: "Vocabulary 1", word: "Take out", phonetic: "/teɪk aʊt/", type: "phrase", mean: "rút ra", ex: "I need to _______ some cash from the ATM.", exVi: "Tôi cần rút ra một ít tiền mặt từ máy ATM." },
+            { topic: "Vocabulary 1", word: "Transaction", phonetic: "/trænˈzæk.ʃən/", type: "n", mean: "sự giao dịch", ex: "All financial _______ are recorded daily.", exVi: "Tất cả các giao dịch tài chính đều được ghi chép lại hàng ngày." },
+            { topic: "Vocabulary 1", word: "Accounting", phonetic: "/əˈkaʊn.t̬ɪŋ/", type: "n", mean: "ngành kế toán", ex: "She studies _______ to become a bookkeeper.", exVi: "Cô ấy học ngành kế toán để trở thành một nhân viên giữ sổ sách." },
+            { topic: "Vocabulary 1", word: "Bookkeeper", phonetic: "/ˈbʊkˌkiː.pɚ/", type: "n", mean: "nhân viên kế toán ghi chép sổ sách hàng ngày", ex: "A good _______ must be very careful with numbers.", exVi: "Một nhân viên ghi chép sổ sách tốt phải rất cẩn thận với các con số." },
+            { topic: "Vocabulary 1", word: "Audit", phonetic: "/ˈɑː.dɪt/", type: "v, n", mean: "kiểm toán", ex: "The company will _______ our financial records next month.", exVi: "Công ty sẽ kiểm toán hồ sơ tài chính của chúng tôi vào tháng tới." },
+            { topic: "Vocabulary 1", word: "Build-up", phonetic: "/ˈbɪld.ʌp/", type: "n", mean: "sự tích luỹ/ tụ", ex: "A _______ of paperwork can be overwhelming.", exVi: "Sự tích tụ của giấy tờ có thể gây choáng ngợp." },
+            { topic: "Vocabulary 1", word: "Outstanding", phonetic: "/ˌaʊtˈstæn.dɪŋ/", type: "adj", mean: "chưa thanh toán; tồn đọng", ex: "We have three _______ invoices to chase.", exVi: "Chúng tôi có ba hóa đơn chưa thanh toán cần phải đốc thúc." },
+            { topic: "Vocabulary 1", word: "An outstanding debt", phonetic: "/ən ˌaʊtˈstæn.dɪŋ det/", type: "phrase", mean: "khoản nợ chưa trả", ex: "", exVi: "" },
+            { topic: "Vocabulary 1", word: "An outstanding issue", phonetic: "/ən ˌaʊtˈstæn.dɪŋ ˈɪʃ.uː/", type: "phrase", mean: "vấn đề chưa giải quyết", ex: "", exVi: "" },
+            { topic: "Vocabulary 1", word: "An outstanding bill", phonetic: "/ən ˌaʊtˈstæn.dɪŋ bɪl/", type: "phrase", mean: "hoá đơn chưa trả", ex: "", exVi: "" },
+            { topic: "Vocabulary 1", word: "Profitably", phonetic: "/ˈprɑː.fɪ.t̬ə.bli/", type: "adv", mean: "có lợi nhuận", ex: "The company operated _______ for ten years.", exVi: "Công ty đã hoạt động có lợi nhuận trong mười năm." },
+            { topic: "Vocabulary 1", word: "Reconcile", phonetic: "/ˈrek.ən.saɪl/", type: "v", mean: "đối chiếu; làm hoà/ hoà giải", ex: "I need to _______ my bank statement with my records.", exVi: "Tôi cần đối chiếu bản sao kê ngân hàng với hồ sơ của mình." },
+            { topic: "Vocabulary 1", word: "Reconcile", phonetic: "/ˈrek.ən.saɪl/", type: "v", mean: "làm hoà/ hoà giải", ex: "They finally _______ after a long argument.", exVi: "Cuối cùng họ đã làm hòa sau một cuộc cãi vã dài." },
+            { topic: "Vocabulary 1", word: "Bank statement", phonetic: "/ˈbæŋk ˌsteɪt.mənt/", type: "phrase", mean: "bản sao kê ngân hàng", ex: "I need a _______ to apply for a visa.", exVi: "Tôi cần một bản sao kê ngân hàng để xin thị thực." },
+            { topic: "Vocabulary 1", word: "Reconcile ST with ST", phonetic: "/ˈrek.ən.saɪl ... wɪð .../", type: "phrase", mean: "làm cho hai thứ phù hợp/ dung hoà", ex: "It is difficult to _______ work with family life.", exVi: "Thật khó để dung hòa giữa công việc và cuộc sống gia đình." },
+            { topic: "Vocabulary 1", word: "Turnover", phonetic: "/ˈtɝːnˌoʊ.vɚ/", type: "n", mean: "doanh thu", ex: "Our annual _______ increased by 15% this year.", exVi: "Doanh thu hàng năm của chúng tôi đã tăng 15% trong năm nay." },
+            { topic: "Vocabulary 1", word: "Conservative", phonetic: "/kənˈsɝː.və.t̬ɪv/", type: "adj", mean: "bảo thủ / thận trọng", ex: "He took a _______ approach to his investments.", exVi: "Anh ấy đã áp dụng một cách tiếp cận thận trọng đối với các khoản đầu tư của mình." },
+            { topic: "Vocabulary 1", word: "Investment portfolio", phonetic: "/ɪnˈvest.mənt pɔːrtˈfoʊ.li.oʊ/", type: "n", mean: "danh mục đầu tư", ex: "Diversifying your _______ is smart.", exVi: "Đa dạng hóa danh mục đầu tư của bạn là một điều khôn ngoan." },
+            { topic: "Vocabulary 1", word: "Portfolio", phonetic: "/pɔːrtˈfoʊ.li.oʊ/", type: "n", mean: "hồ sơ năng lực", ex: "She showed her _______ during the job interview.", exVi: "Cô ấy đã cho xem hồ sơ năng lực của mình trong buổi phỏng vấn xin việc." },
+            { topic: "Vocabulary 1", word: "Pull out", phonetic: "/pʊl aʊt/", type: "phrase", mean: "rút lui; rút khỏi", ex: "The company decided to _______ of the deal.", exVi: "Công ty đã quyết định rút khỏi thỏa thuận." },
+            { topic: "Vocabulary 1", word: "Return", phonetic: "/rɪˈtɝːn/", type: "n", mean: "lợi nhuận", ex: "The stock market offered a good _______.", exVi: "Thị trường chứng khoán đã mang lại một khoản lợi nhuận tốt." },
+            { topic: "Vocabulary 1", word: "Return", phonetic: "/rɪˈtɝːn/", type: "n", mean: "lợi nhuận", ex: "This investment offers a high _______.", exVi: "Khoản đầu tư này mang lại lợi nhuận cao." },
+            { topic: "Vocabulary 1", word: "File", phonetic: "/faɪl/", type: "v", mean: "nộp", ex: "You need to _______ your tax return by April 15th.", exVi: "Bạn cần nộp tờ khai thuế của mình trước ngày 15 tháng 4." },
+            { topic: "Vocabulary 1", word: "Tax return", phonetic: "/ˈtæks rɪˌtɝːn/", type: "n", mean: "tờ khai thuế", ex: "He made a mistake on his _______.", exVi: "Anh ấy đã mắc lỗi trong tờ khai thuế của mình." },
+            { topic: "Vocabulary 1", word: "Joint", phonetic: "/dʒɔɪnt/", type: "adj", mean: "chung", ex: "They opened a _______ bank account together.", exVi: "Họ đã cùng nhau mở một tài khoản ngân hàng chung." },
+            { topic: "Vocabulary 1", word: "Withhold", phonetic: "/wɪðˈhoʊld/", type: "v", mean: "giữ lại; từ chối cung cấp", ex: "The firm decided to _______ payment until the work was done.", exVi: "Công ty đã quyết định giữ lại khoản thanh toán cho đến khi công việc hoàn tất." },
+            { topic: "Vocabulary 1", word: "Withhold", phonetic: "/wɪðˈhoʊld/", type: "v", mean: "khấu trừ", ex: "The company _______ taxes from employees’ salaries.", exVi: "Công ty khấu trừ thuế từ tiền lương của nhân viên." },
+            { topic: "Vocabulary 1", word: "Withhold", phonetic: "/wɪðˈhoʊld/", type: "v", mean: "giấu; không tiết lộ", ex: "They _______ important information.", exVi: "Họ đã giấu nhẹm thông tin quan trọng." },
+            { topic: "Vocabulary 1", word: "Detail", phonetic: "/ˈdiː.teɪl/", type: "v", mean: "nêu chi tiết", ex: "Please _______ your expenses on the form.", exVi: "Vui lòng nêu chi tiết các chi phí của bạn vào biểu mẫu." },
+            { topic: "Vocabulary 1", word: "Project", phonetic: "/prəˈdʒekt/", type: "v", mean: "dự kiến/ báo/ đoán (tương lai, số liệu, ...)", ex: "The company will _______ growth for the next quarter.", exVi: "Công ty sẽ dự báo sự tăng trưởng cho quý tới." },
+            { topic: "Vocabulary 1", word: "Project", phonetic: "/prəˈdʒekt/", type: "v", mean: "dự kiến/ báo/ đoán (tương lai, số liệu, ...)", ex: "Experts _______ that prices will increase.", exVi: "Các chuyên gia dự đoán rằng giá cả sẽ tăng lên." },
+            { topic: "Vocabulary 1", word: "Project", phonetic: "/prəˈdʒekt/", type: "v", mean: "chiếu; trình chiếu (video, hình ảnh, ...)", ex: "The teacher _______ a video on the screen.", exVi: "Giáo viên đã trình chiếu một video trên màn hình." },
+            { topic: "Vocabulary 1", word: "Conducive", phonetic: "/kənˈduː.sɪv/", type: "adj", mean: "có lợi; thuận lợi", ex: "Quiet spaces are _______ to deep work.", exVi: "Không gian yên tĩnh thuận lợi cho công việc chuyên sâu." },
+            { topic: "Vocabulary 1", word: "Conducive", phonetic: "/kənˈduː.sɪv/", type: "adj", mean: "có lợi; thuận lợi", ex: "The soft lights and music were _______ to a relaxed atmosphere.", exVi: "Ánh sáng dịu và âm nhạc rất có lợi cho việc tạo ra một bầu không khí thư giãn." },
+            { topic: "Vocabulary 1", word: "Hamper", phonetic: "/ˈhæm.pɚ/", type: "v", mean: "cản trở", ex: "Bad weather can _______ outdoor activities.", exVi: "Thời tiết xấu có thể cản trở các hoạt động ngoài trời." },
+            { topic: "Vocabulary 1", word: "Inconsiderately", phonetic: "/ˌɪn.kənˈsɪd.ɚ.ət.li/", type: "adv", mean: "thiếu cân nhắc", ex: "He parked his car _______, blocking the driveway.", exVi: "Anh ta đã đỗ xe một cách thiếu cân nhắc, chắn ngang lối đi." },
+            { topic: "Vocabulary 1", word: "Driveway", phonetic: "/ˈdraɪv.weɪ/", type: "n", mean: "lối vào nhà", ex: "There was a car parked on the _______.", exVi: "Có một chiếc xe hơi đỗ ở lối vào nhà." },
+            { topic: "Vocabulary 1", word: "Move up", phonetic: "/muːv ʌp/", type: "phrase", mean: "thăng tiến", ex: "She hopes to _______ in the company quickly.", exVi: "Cô ấy hy vọng sẽ thăng tiến nhanh chóng trong công ty." },
+            { topic: "Vocabulary 1", word: "Scrutiny", phonetic: "/ˈskruː.t̬ən.i/", type: "n", mean: "sự xem xét kỹ lưỡng", ex: "The new policy will face public _______.", exVi: "Chính sách mới sẽ phải đối mặt với sự xem xét kỹ lưỡng của công chúng." },
+            { topic: "Vocabulary 1", word: "Bring up", phonetic: "/brɪŋ ʌp/", type: "phrase", mean: "đề cập", ex: "I need to _______ an important point.", exVi: "Tôi cần đề cập đến một điểm quan trọng." },
+            { topic: "Vocabulary 1", word: "Periodically", phonetic: "/ˌpɪr.iˈɑː.dɪ.kəl.i/", type: "adv", mean: "định kỳ; theo chu kỳ", ex: "You should check your car’s oil _______.", exVi: "Bạn nên kiểm tra dầu xe hơi của mình một cách định kỳ." },
+            { topic: "Vocabulary 1", word: "Conform to", phonetic: "/kənˈfɔːrm tuː/", type: "v", mean: "tuân theo (quy tắc; tiêu chuẩn, kỳ vọng, ...)", ex: "All products must _______ safety standards.", exVi: "Tất cả các sản phẩm đều phải tuân theo các tiêu chuẩn an toàn." },
+            { topic: "Vocabulary 1", word: "Conform to", phonetic: "/kənˈfɔːrm tuː/", type: "v", mean: "tuân theo (quy tắc; tiêu chuẩn, kỳ vọng, ...)", ex: "Children must _______ social expectations/ rules.", exVi: "Trẻ em phải tuân theo những kỳ vọng/quy tắc xã hội." },
+            { topic: "Vocabulary 1", word: "Defect", phonetic: "/ˈdiː.fekt/", type: "n", mean: "lỗi; khuyết điểm; khiếm khuyết", ex: "The product has a serious _______.", exVi: "Sản phẩm có một khuyết điểm nghiêm trọng." },
+            { topic: "Vocabulary 1", word: "Defect", phonetic: "/ˈdiː.fekt/", type: "n", mean: "lỗi; khuyết điểm; khiếm khuyết", ex: "There is a _______ in the design.", exVi: "Có một lỗi trong thiết kế." },
+            { topic: "Vocabulary 1", word: "Defect", phonetic: "/dɪˈfekt/", type: "v", mean: "đào ngũ", ex: "Some soldiers _______ to the enemy.", exVi: "Một vài người lính đã đào ngũ sang phe địch." },
+            { topic: "Vocabulary 1", word: "Manufacturing defect", phonetic: "/ˌmæn.jəˈfæk.tʃɚ.ɪŋ ˈdiː.fekt/", type: "phrase", mean: "lỗi sản xuất", ex: "", exVi: "" },
+            { topic: "Vocabulary 1", word: "Design defect", phonetic: "/dɪˈzaɪn ˈdiː.fekt/", type: "phrase", mean: "lỗi thiết kế", ex: "", exVi: "" },
+            { topic: "Vocabulary 1", word: "Perceptive", phonetic: "/pɚˈsep.tɪv/", type: "adj", mean: "nhạy bén; tinh ý", ex: "She is very _______ and understands people well/ notices small details.", exVi: "Cô ấy rất tinh ý và hiểu mọi người rất rõ/ nhận thấy những chi tiết nhỏ." },
+            { topic: "Vocabulary 1", word: "Repel", phonetic: "/rɪˈpel/", type: "v", mean: "đẩy lùi; xua đuổi; làm tránh xa", ex: "This spray will _______ mosquitoes effectively.", exVi: "Chai xịt này sẽ xua đuổi muỗi một cách hiệu quả." },
+            { topic: "Vocabulary 1", word: "Repel", phonetic: "/rɪˈpel/", type: "v", mean: "đẩy lùi; xua đuổi; làm tránh xa", ex: "Magnets with the same poles _______ each other.", exVi: "Nam châm cùng cực thì đẩy lùi lẫn nhau." },
+            { topic: "Vocabulary 1", word: "Repel", phonetic: "/rɪˈpel/", type: "v", mean: "làm ai khó chịu/ tránh xa", ex: "His rude behavior _______ people.", exVi: "Hành vi thô lỗ của anh ta làm mọi người tránh xa." },
+            { topic: "Vocabulary 1", word: "Repel an attack", phonetic: "/rɪˈpel ən əˈtæk/", type: "phrase", mean: "đẩy lùi một cuộc tấn công", ex: "", exVi: "" },
+            { topic: "Vocabulary 1", word: "Repel insects", phonetic: "/rɪˈpel ˈɪn.sekts/", type: "phrase", mean: "đẩy lùi côn trùng", ex: "", exVi: "" },
+            { topic: "Vocabulary 1", word: "Uniformly", phonetic: "/ˈjuː.nə.fɔːrm.li/", type: "adv", mean: "đồng đều", ex: "The students were _______ dressed in blue shirts.", exVi: "Các học sinh được mặc đồng phục áo sơ mi xanh đồng đều." },
+            { topic: "Vocabulary 1", word: "Wrinkle", phonetic: "/ˈrɪŋ.kəl/", type: "n", mean: "nếp nhăn", ex: "This shirt has a tiny _______ near the collar.", exVi: "Chiếc áo sơ mi này có một nếp nhăn nhỏ xíu gần cổ áo." },
+            { topic: "Vocabulary 1", word: "Ascertain", phonetic: "/ˌæs.ɚˈteɪn/", type: "v", mean: "xác định", ex: "We need to _______ the cause of the problem.", exVi: "Chúng ta cần xác định nguyên nhân của vấn đề." },
+            { topic: "Vocabulary 1", word: "Ascertain", phonetic: "/ˌæs.ɚˈteɪn/", type: "v", mean: "xác định", ex: "I _______ that the driver was not badly hurt.", exVi: "Tôi đã xác định được rằng người lái xe không bị thương nặng." },
+            { topic: "Vocabulary 1", word: "Assume", phonetic: "/əˈsuːm/", type: "v", mean: "giả định; cho rằng", ex: "Don’t _______ anything; ask questions instead.", exVi: "Đừng giả định bất cứ điều gì; thay vào đó hãy đặt câu hỏi." },
+            { topic: "Vocabulary 1", word: "Assume", phonetic: "/əˈsuːm/", type: "v", mean: "đảm nhận trách nhiệm/ vai trò", ex: "He _______ responsibility for the project.", exVi: "Anh ấy đã đảm nhận trách nhiệm cho dự án." },
+            { topic: "Vocabulary 1", word: "Make an assumption", phonetic: "/meɪk ən əˈsʌmp.ʃən/", type: "phrase", mean: "đưa ra giả định", ex: "She _______ that he was guilty.", exVi: "Cô ấy đưa ra giả định rằng anh ta có tội." }
+        ];
+
+        let currentIndex = 0;
+        const totalCards = flashcards.length;
+
+        const flashcardEl = document.getElementById('flashcard');
+        const inputsContainer = document.getElementById('letter-inputs-container');
+        const finalScreen = document.getElementById('final-screen');
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSuccessSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(987.77, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.4);
+        }
+
+        function playErrorSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(250, audioCtx.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.05);
+            gainNode.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.1);
+            gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.15);
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.25);
+        }
+
+        function playTransitionSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15);
+            osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3);
+            osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.1);
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.8);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.8);
+        }
+
+        // --- Tính năng Text-to-Speech (Đã nâng cấp giọng Nữ thanh thoát) ---
+        let preferredVoice = null;
+
+        function loadVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) return;
+
+            // Danh sách các giọng nữ chất lượng cao phổ biến trên các hệ điều hành (Chrome/Mac/Windows)
+            const goodFemaleVoices = [
+                "Google US English",
+                "Google UK English Female",
+                "Samantha",         // Mặc định rất hay trên Mac/iOS
+                "Victoria",         // Mac
+                "Karen",            // Mac
+                "Microsoft Zira",   // Giọng nữ tiêu chuẩn trên Windows
+                "Microsoft Hazel"   // Windows UK
+            ];
+
+            // Ưu tiên tìm giọng theo danh sách
+            for (let name of goodFemaleVoices) {
+                const voice = voices.find(v => v.name.includes(name));
+                if (voice) {
+                    preferredVoice = voice;
+                    break;
+                }
+            }
+
+            // Nếu không tìm thấy giọng đích danh, cố gắng tìm một giọng có chữ "Female" hoặc tiếng Anh mặc định
+            if (!preferredVoice) {
+                preferredVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Female')) ||
+                    voices.find(v => v.lang === 'en-US') || voices[0];
+            }
+        }
+
+        // Tải danh sách giọng nói khi trình duyệt đã sẵn sàng
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+
+        function speakCurrentWord() {
+            // Ngăn chặn nổi bọt sự kiện nếu bấm phím Enter bị trùng
+            if (window.event) window.event.stopPropagation();
+
+            const card = flashcards[currentIndex];
+            const wordToSpeak = card.word.replace(/-/g, ' '); // Bỏ gạch nối nếu có để đọc chuẩn hơn
+            const utterance = new SpeechSynthesisUtterance(wordToSpeak);
+
+            // Gắn giọng nữ đã lọc
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            } else {
+                utterance.lang = 'en-US';
+            }
+
+            utterance.rate = 0.85;    // Tốc độ chậm vừa phải để học
+            utterance.pitch = 1.15;   // Tăng độ thanh lên một chút (giọng sáng và nhẹ nhàng hơn)
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function showTopicToast(topicName) {
+            const toast = document.getElementById('topic-toast');
+            document.getElementById('toast-message').textContent = `Chủ đề mới: ${topicName}`;
+            toast.classList.remove('translate-y-[-250%]');
+            toast.classList.add('translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0');
+                toast.classList.add('translate-y-[-250%]');
+            }, 2500);
+        }
+
+        function renderCard() {
+            const card = flashcards[currentIndex];
+
+            // Cập nhật thẻ mặt trước và tiêu đề
+            document.getElementById('main-topic-title').textContent = `CHỦ ĐỀ: ${card.topic.toUpperCase()}`;
+            document.getElementById('word-type').textContent = card.type;
+
+            // Hiện IPA ngay mặt trước
+            document.getElementById('front-phonetic').textContent = card.phonetic;
+
+            document.getElementById('word-mean').textContent = card.mean;
+            document.getElementById('word-exVi').textContent = card.exVi;
+
+            const blankedEx = card.ex.replace('_______', `<span class="text-blue-600 border-b-2 border-blue-600 inline-block w-24"></span>`);
+            document.getElementById('word-ex').innerHTML = blankedEx;
+
+            // Tạo các ô chữ cái
+            inputsContainer.innerHTML = '';
+            const words = card.word.split(' ');
+
+            words.forEach((w, wordIndex) => {
+                const wordGroup = document.createElement('div');
+                wordGroup.className = 'flex gap-1';
+
+                for (let i = 0; i < w.length; i++) {
+                    // Bỏ qua ký tự gạch nối (như trong full-time, part-time)
+                    if (w[i] === '-') {
+                        const dash = document.createElement('span');
+                        dash.textContent = '-';
+                        dash.className = 'text-xl font-bold text-gray-400 self-center px-1';
+                        wordGroup.appendChild(dash);
+                        continue;
+                    }
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.maxLength = 1;
+
+                    if (i === 0) {
+                        input.value = w[i].toLowerCase();
+                        input.readOnly = true;
+                        input.className = 'char-input hint-input w-9 h-11 md:w-10 md:h-12 text-center text-xl font-bold border-2 border-gray-200 bg-gray-100 text-gray-500 rounded-lg cursor-not-allowed select-none shadow-sm';
+                    } else {
+                        input.className = 'char-input editable-input w-9 h-11 md:w-10 md:h-12 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:bg-blue-50 transition-colors bg-white text-blue-700 shadow-inner';
+
+                        input.addEventListener('input', function () {
+                            this.value = this.value.toLowerCase();
+                            this.classList.remove('input-error');
+
+                            const editableInputs = Array.from(document.querySelectorAll('.editable-input'));
+                            const currentIdx = editableInputs.indexOf(this);
+                            if (this.value && currentIdx < editableInputs.length - 1) {
+                                editableInputs[currentIdx + 1].focus();
+                            }
+                        });
+
+                        input.addEventListener('keydown', function (e) {
+                            const editableInputs = Array.from(document.querySelectorAll('.editable-input'));
+                            const currentIdx = editableInputs.indexOf(this);
+
+                            if (e.key === 'Backspace' && !this.value && currentIdx > 0) {
+                                editableInputs[currentIdx - 1].focus();
+                            } else if (e.key === 'Enter') {
+                                checkAnswer();
+                            } else if (e.key === 'ArrowLeft' && currentIdx > 0) {
+                                editableInputs[currentIdx - 1].focus();
+                                e.preventDefault();
+                            } else if (e.key === 'ArrowRight' && currentIdx < editableInputs.length - 1) {
+                                editableInputs[currentIdx + 1].focus();
+                                e.preventDefault();
+                            }
+                        });
+                    }
+                    wordGroup.appendChild(input);
+                }
+                inputsContainer.appendChild(wordGroup);
+
+                if (wordIndex < words.length - 1) {
+                    const space = document.createElement('div');
+                    space.className = 'w-3 md:w-4';
+                    inputsContainer.appendChild(space);
+                }
+            });
+
+            setTimeout(() => {
+                const firstEditableInput = document.querySelector('.editable-input');
+                if (firstEditableInput) firstEditableInput.focus();
+            }, 100);
+
+            // Cập nhật tiến trình
+            document.getElementById('progress-text').textContent = `${currentIndex + 1} / ${totalCards}`;
+            const percent = ((currentIndex + 1) / totalCards) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+
+            // Xử lý hiển thị nút quay lại ở trên cùng
+            const topPrevBtn = document.getElementById('top-prev-btn');
+            if (currentIndex > 0) {
+                topPrevBtn.classList.remove('hidden');
+            } else {
+                topPrevBtn.classList.add('hidden');
+            }
+
+            const nextBtn = document.getElementById('next-btn');
+            if (currentIndex === totalCards - 1) {
+                nextBtn.textContent = "Hoàn thành";
+                nextBtn.classList.replace('bg-green-500', 'bg-blue-600');
+                nextBtn.classList.replace('hover:bg-green-600', 'hover:bg-blue-700');
+            } else {
+                nextBtn.textContent = "Tiếp theo";
+                nextBtn.classList.replace('bg-blue-600', 'bg-green-500');
+                nextBtn.classList.replace('hover:bg-blue-700', 'hover:bg-green-600');
+            }
+        }
+
+        function giveHint() {
+            const card = flashcards[currentIndex];
+            const targetWord = card.word.replace(/[\s-]/g, ''); // Bỏ khoảng trắng và dấu gạch nối
+            const allInputs = document.querySelectorAll('.char-input');
+            const editableInputs = document.querySelectorAll('.editable-input');
+
+            for (let i = 0; i < allInputs.length; i++) {
+                if (!allInputs[i].readOnly && allInputs[i].value.toLowerCase() !== targetWord[i].toLowerCase()) {
+                    allInputs[i].value = targetWord[i].toLowerCase();
+                    allInputs[i].classList.remove('input-error');
+                    allInputs[i].classList.add('bg-yellow-50', 'border-yellow-400', 'text-yellow-700');
+
+                    let currentEditableIdx = Array.from(editableInputs).indexOf(allInputs[i]);
+                    let next = currentEditableIdx + 1;
+                    while (next < editableInputs.length && editableInputs[next].value !== '') {
+                        next++;
+                    }
+                    if (next < editableInputs.length) editableInputs[next].focus();
+                    else editableInputs[editableInputs.length - 1].focus();
+
+                    break;
+                }
+            }
+        }
+
+        function checkAnswer() {
+            const card = flashcards[currentIndex];
+            const allInputs = document.querySelectorAll('.char-input');
+
+            const userAnswer = Array.from(allInputs).map(inp => inp.value).join('').toLowerCase();
+            const correctAnswer = card.word.replace(/[\s-]/g, '').toLowerCase();
+
+            if (userAnswer === correctAnswer) {
+                playSuccessSound();
+
+                const resultHeader = document.getElementById('result-header');
+                resultHeader.textContent = "🎉 Chính xác!";
+                resultHeader.className = "text-center py-2 rounded-lg font-bold text-lg mb-4 bg-green-100 text-green-700";
+
+                document.getElementById('back-word').textContent = card.word;
+                document.getElementById('back-phonetic').textContent = card.phonetic;
+                document.getElementById('back-mean').textContent = `${card.mean} (${card.type})`;
+
+                flashcardEl.classList.add('flipped');
+
+                // Tự động đọc từ vựng khi lật bài đúng (bạn có thể bỏ đi nếu không muốn tự động đọc)
+                // setTimeout(speakCurrentWord, 400); 
+            } else {
+                playErrorSound();
+                inputsContainer.classList.add('shake');
+                setTimeout(() => inputsContainer.classList.remove('shake'), 400);
+
+                let firstEmptyOrWrongInput = null;
+
+                for (let i = 0; i < allInputs.length; i++) {
+                    if (!allInputs[i].readOnly) {
+                        if (allInputs[i].value !== '' && allInputs[i].value.toLowerCase() !== correctAnswer[i]) {
+                            allInputs[i].value = '';
+                            allInputs[i].classList.add('input-error');
+                            if (!firstEmptyOrWrongInput) firstEmptyOrWrongInput = allInputs[i];
+                        } else if (allInputs[i].value === '') {
+                            allInputs[i].classList.add('input-error');
+                            if (!firstEmptyOrWrongInput) firstEmptyOrWrongInput = allInputs[i];
+                        }
+                    }
+                }
+
+                if (firstEmptyOrWrongInput) {
+                    firstEmptyOrWrongInput.focus();
+                }
+            }
+        }
+
+        function nextCard() {
+            flashcardEl.classList.remove('flipped');
+
+            setTimeout(() => {
+                if (currentIndex < totalCards - 1) {
+                    const currentTopic = flashcards[currentIndex].topic;
+                    const nextTopicCard = flashcards[currentIndex + 1].topic;
+
+                    currentIndex++;
+
+                    if (currentTopic !== nextTopicCard) {
+                        showTopicToast(nextTopicCard);
+                        playTransitionSound();
+                    }
+
+                    renderCard();
+                } else {
+                    flashcardEl.classList.add('hidden');
+                    finalScreen.classList.remove('hidden');
+                }
+            }, 300);
+        }
+
+        function prevCard() {
+            if (currentIndex > 0) {
+                flashcardEl.classList.remove('flipped');
+                setTimeout(() => {
+                    currentIndex--;
+                    renderCard();
+                }, 300);
+            } else {
+                flashcardEl.classList.remove('flipped');
+            }
+        }
+
+        function resetQuiz() {
+            currentIndex = 0;
+            finalScreen.classList.add('hidden');
+            flashcardEl.classList.remove('hidden');
+            renderCard();
+        }
+
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && flashcardEl.classList.contains('flipped')) {
+                nextCard();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', renderCard);
+
+    </script>
+</body>
+
+</html>
