@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards Tổng Hợp Từ Vựng C1-C2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0fdf4;
+        }
+        
+        .flip-card {
+            perspective: 1000px;
+            width: 100%;
+            height: 520px; /* Tăng thêm chiều cao để chứa câu ví dụ trọn vẹn ở mặt sau */
+        }
+        
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        input:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            outline: none;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+        
+        .input-error {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+            color: #b91c1c !important;
+        }
+
+        #topic-toast {
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+    </style>
+</head>
+<body class="text-gray-800 p-4 md:p-8 min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+
+    <!-- Toast Notification -->
+    <div id="topic-toast" class="absolute top-8 left-1/2 transform -translate-x-1/2 translate-y-[-250%] bg-white border-2 border-green-500 text-green-700 px-6 py-3 rounded-full shadow-2xl font-bold text-lg z-50 flex items-center gap-3">
+        <span class="text-2xl">✨</span> 
+        <span id="toast-message">Chủ đề mới: Education</span> 
+        <span class="text-2xl">✨</span>
+    </div>
+
+    <div class="max-w-xl w-full mx-auto relative">
+        <!-- Nút quay lại từ trước đó (ẩn ở thẻ đầu tiên) -->
+        <button id="top-prev-btn" onclick="prevCard()" class="absolute left-0 top-0 mt-1 flex items-center justify-center p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors hidden" title="Quay lại từ trước">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </button>
+
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 id="main-topic-title" class="text-3xl font-bold text-green-700 tracking-tight uppercase">CHỦ ĐỀ: TOURISM</h1>
+            <p class="text-green-600 mt-2 font-medium">Level: C1-C2 | <span id="progress-text">1 / X</span></p>
+            
+            <div class="w-full bg-green-200 rounded-full h-2.5 mt-4">
+                <div id="progress-bar" class="bg-green-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Vùng chứa Flashcard -->
+        <div class="flip-card" id="flashcard">
+            <div class="flip-card-inner">
+                
+                <!-- Mặt trước: Câu hỏi -->
+                <div class="flip-card-front p-6 md:p-8">
+                    <div class="flex-grow flex flex-col justify-center items-center text-center">
+                        
+                        <!-- Nghĩa tiếng Việt và Loại từ -->
+                        <div class="flex items-center justify-center gap-3 mb-2">
+                            <h2 class="text-2xl md:text-3xl font-bold text-gray-800" id="word-mean"></h2>
+                            <span class="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded font-semibold text-sm uppercase" id="word-type"></span>
+                        </div>
+
+                        <div class="w-16 h-1 bg-gray-200 my-4 mx-auto rounded"></div>
+                        
+                        <!-- Đã đổi vị trí: Câu tiếng Anh lên trước, câu tiếng Việt xuống dưới -->
+                        <p class="text-xl md:text-2xl text-gray-700 font-medium mb-3 leading-relaxed" id="word-ex"></p>
+                        <p class="text-gray-500 italic text-base md:text-lg mb-6" id="word-exVi"></p>
+
+                        <div class="w-full flex flex-col items-center gap-4">
+                            <div id="letter-inputs-container" class="flex flex-wrap justify-center gap-x-1 gap-y-3"></div>
+                            
+                            <!-- Nút Loa & Nút Hint -->
+                            <div class="flex items-center justify-center gap-3">
+                                <button onclick="speakCurrentWord()" class="flex items-center justify-center w-9 h-9 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm" title="Nghe phát âm (Phím tắt: Shift + Enter)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd" /></svg>
+                                </button>
+                                <button onclick="giveHint()" title="Gợi ý (Phím tắt: Alt + H)" class="text-sm px-4 py-1.5 h-9 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 font-medium rounded-full transition-colors flex items-center gap-1 shadow-sm border border-yellow-200">
+                                    Hint
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="checkAnswer()" class="mt-4 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors duration-200 flex items-center justify-center gap-2">
+                        Check Answer
+                    </button>
+                </div>
+                
+                <!-- Mặt sau: Kết quả -->
+                <div class="flip-card-back p-6 md:p-8 flex flex-col">
+                    <div id="result-header" class="text-center py-2 rounded-lg font-bold text-lg mb-4"></div>
+                    
+                    <div class="flex-grow flex flex-col justify-center items-center text-center">
+                        <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-2" id="back-word"></h2>
+                        
+                        <div class="flex items-center gap-2 mb-4 bg-blue-50 px-3 py-1.5 rounded-full">
+                            <p class="text-xl text-blue-600 font-mono font-medium" id="back-phonetic"></p>
+                            <button onclick="speakCurrentWord()" class="flex items-center justify-center w-8 h-8 bg-blue-200 hover:bg-blue-300 text-blue-800 rounded-full transition-colors focus:outline-none" title="Nghe phát âm (Phím tắt: Shift + Enter)">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
+                        
+                        <p class="text-lg text-gray-600 font-medium mb-3" id="back-mean"></p>
+
+                        <!-- Thêm khối hiển thị câu ví dụ trọn vẹn -->
+                        <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-4 w-full max-w-md mt-2">
+                            <p class="text-gray-800 text-xl md:text-2xl font-medium leading-relaxed" id="back-ex"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3 mt-4">
+                        <button onclick="prevCard()" class="flex-1 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-colors">Quay lại</button>
+                        <button onclick="nextCard()" id="next-btn" class="flex-1 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition-colors">Tiếp theo</button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <!-- Điểm số (hiện khi kết thúc) -->
+        <div id="final-screen" class="hidden bg-white rounded-2xl shadow-xl p-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Hoàn thành bài tập!</h2>
+            <p class="text-lg text-gray-600 mb-6">Bạn đã ôn tập xong toàn bộ danh sách từ vựng.</p>
+            <div class="text-6xl mb-6">🏆</div>
+            <button onclick="resetQuiz()" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition-colors">Học lại từ đầu</button>
+        </div>
+
+    </div>
+
+    <script>
+        const flashcards = [
+            // VOCABULARY - POLYWORKING
+            { topic: "Polyworking", word: "versatile", phonetic: "/ˈvɜːrsətaɪl/", type: "adj", mean: "đa năng", ex: "She is a _______ worker who can handle marketing, writing, and customer service at the same time.", exVi: "Cô ấy là một nhân viên đa năng, có thể xử lý cùng lúc cả việc tiếp thị, viết lách và dịch vụ khách hàng." },
+            { topic: "Polyworking", word: "simultaneous", phonetic: "/ˌsaɪməlˈteɪniəs/", type: "adj", mean: "đồng thời", ex: "He often works on two projects in a _______ way to save time and increase income.", exVi: "Anh ấy thường làm việc trên hai dự án một cách đồng thời để tiết kiệm thời gian và tăng thu nhập." },
+            { topic: "Polyworking", word: "juggle", phonetic: "/ˈdʒʌɡl/", type: "v", mean: "xoay xở nhiều việc", ex: "She has to _______ her full-time job and freelance work every evening.", exVi: "Cô ấy phải xoay xở giữa công việc toàn thời gian và công việc tự do vào mỗi buổi tối." },
+            { topic: "Polyworking", word: "autonomy", phonetic: "/ɔːˈtɑːnəmi/", type: "n", mean: "sự tự chủ", ex: "Many people choose freelancing because it gives them more _______ in their schedule.", exVi: "Nhiều người chọn làm nghề tự do vì nó mang lại cho họ sự tự chủ hơn trong lịch trình của mình." },
+            { topic: "Polyworking", word: "lucrative", phonetic: "/ˈluːkrətɪv/", type: "adj", mean: "sinh lợi cao", ex: "Online business can be very _______ if you find the right market.", exVi: "Kinh doanh trực tuyến có thể sinh lợi rất cao nếu bạn tìm đúng thị trường." },
+            { topic: "Polyworking", word: "endeavor", phonetic: "/ɪnˈdevər/", type: "n", mean: "nỗ lực", ex: "Starting multiple jobs at once is a challenging _______ for beginners.", exVi: "Bắt đầu nhiều công việc cùng lúc là một nỗ lực đầy thách thức đối với người mới bắt đầu." },
+            { topic: "Polyworking", word: "stamina", phonetic: "/ˈstæmɪnə/", type: "n", mean: "sức bền", ex: "You need a lot of _______ to work long hours without feeling exhausted.", exVi: "Bạn cần rất nhiều sức bền để làm việc nhiều giờ mà không cảm thấy kiệt sức." },
+            { topic: "Polyworking", word: "allocate", phonetic: "/ˈæləkeɪt/", type: "v", mean: "phân bổ", ex: "He tries to _______ his time carefully between work, study, and rest.", exVi: "Anh ấy cố gắng phân bổ thời gian của mình một cách cẩn thận giữa công việc, học tập và nghỉ ngơi." },
+            { topic: "Polyworking", word: "expertise", phonetic: "/ˌekspɜːrˈtiːz/", type: "n", mean: "chuyên môn", ex: "She developed her _______ in design after working on many freelance projects.", exVi: "Cô ấy đã phát triển chuyên môn thiết kế của mình sau khi làm việc trên nhiều dự án tự do." },
+            { topic: "Polyworking", word: "supplementary", phonetic: "/ˌsʌplɪˈmentəri/", type: "adj", mean: "bổ sung", ex: "He takes a _______ job to earn extra money for his family.", exVi: "Anh ấy nhận một công việc bổ sung để kiếm thêm tiền cho gia đình." },
+            { topic: "Polyworking", word: "indispensable", phonetic: "/ˌɪndɪˈspensəbl/", type: "adj", mean: "không thể thiếu", ex: "Good time management skills are _______ when you have multiple jobs.", exVi: "Kỹ năng quản lý thời gian tốt là không thể thiếu khi bạn có nhiều công việc." },
+            { topic: "Polyworking", word: "prominent", phonetic: "/ˈprɑːmɪnənt/", type: "adj", mean: "nổi bật", ex: "She became a _______ content creator after years of hard work online.", exVi: "Cô ấy đã trở thành một nhà sáng tạo nội dung nổi bật sau nhiều năm làm việc chăm chỉ trực tuyến." },
+            { topic: "Polyworking", word: "offset", phonetic: "/ˈɔːfset/", type: "v", mean: "bù đắp", ex: "Extra income from freelancing can help _______ living expenses.", exVi: "Thu nhập thêm từ công việc tự do có thể giúp bù đắp chi phí sinh hoạt." },
+            { topic: "Polyworking", word: "entrepreneurial", phonetic: "/ˌɑːntrəprəˈnɜːriəl/", type: "adj", mean: "thuộc kinh doanh", ex: "He has an _______ mindset and always looks for new opportunities.", exVi: "Anh ấy có tư duy kinh doanh và luôn tìm kiếm những cơ hội mới." },
+            { topic: "Polyworking", word: "viable", phonetic: "/ˈvaɪəbl/", type: "adj", mean: "khả thi", ex: "This business idea is _______ if you have enough time and resources.", exVi: "Ý tưởng kinh doanh này là khả thi nếu bạn có đủ thời gian và nguồn lực." },
+            { topic: "Polyworking", word: "competence", phonetic: "/ˈkɑːmpɪtəns/", type: "n", mean: "năng lực", ex: "Her _______ in communication helps her work with many clients.", exVi: "Năng lực giao tiếp của cô ấy giúp cô làm việc với nhiều khách hàng." },
+            { topic: "Polyworking", word: "paradox", phonetic: "/ˈpærədɑːks/", type: "n", mean: "nghịch lý", ex: "It is a _______ that working more jobs can sometimes give you more freedom.", exVi: "Đó là một nghịch lý khi làm nhiều việc hơn đôi khi có thể mang lại cho bạn nhiều tự do hơn." },
+            { topic: "Polyworking", word: "relentless", phonetic: "/rɪˈlentləs/", type: "adj", mean: "không ngừng", ex: "He has a _______ work schedule and rarely takes a day off.", exVi: "Anh ấy có một lịch trình làm việc không ngừng nghỉ và hiếm khi có ngày nghỉ." },
+            { topic: "Polyworking", word: "overlap", phonetic: "/ˈoʊvərlæp/", type: "n", mean: "sự chồng chéo", ex: "There is often an _______ between his meetings and deadlines.", exVi: "Thường có sự chồng chéo giữa các cuộc họp và hạn chót của anh ấy." },
+            { topic: "Polyworking", word: "delegates", phonetic: "/ˈdelɪɡeɪt/", type: "v", mean: "ủy quyền", ex: "She _______ simple tasks so she can focus on more important work.", exVi: "Cô ấy ủy quyền các nhiệm vụ đơn giản để có thể tập trung vào công việc quan trọng hơn." },
+            { topic: "Polyworking", word: "erratic", phonetic: "/ɪˈrætɪk/", type: "adj", mean: "thất thường", ex: "His working hours are _______, so it is hard to make a daily routine.", exVi: "Giờ làm việc của anh ấy thất thường, vì vậy rất khó để tạo ra một thói quen hàng ngày." },
+            { topic: "Polyworking", word: "intermittent", phonetic: "/ˌɪntərˈmɪtənt/", type: "adj", mean: "gián đoạn", ex: "He works in _______ periods because he has many different tasks.", exVi: "Anh ấy làm việc trong các khoảng thời gian gián đoạn vì anh ấy có nhiều nhiệm vụ khác nhau." },
+            { topic: "Polyworking", word: "precarious", phonetic: "/prɪˈkeriəs/", type: "adj", mean: "bấp bênh", ex: "Freelance income can be _______, especially at the beginning.", exVi: "Thu nhập từ nghề tự do có thể bấp bênh, đặc biệt là lúc mới bắt đầu." },
+            { topic: "Polyworking", word: "contingency", phonetic: "/kənˈtɪndʒənsi/", type: "n", mean: "tình huống dự phòng", ex: "It is important to have a _______ plan in case one job fails.", exVi: "Điều quan trọng là phải có một kế hoạch dự phòng trong trường hợp một công việc thất bại." },
+            { topic: "Polyworking", word: "constraint", phonetic: "/kənˈstreɪnt/", type: "n", mean: "hạn chế", ex: "Time and energy are the biggest _______ for people with many jobs.", exVi: "Thời gian và năng lượng là những hạn chế lớn nhất đối với những người có nhiều công việc." },
+            { topic: "Polyworking", word: "encompass", phonetic: "/ɪnˈkʌmpəs/", type: "v", mean: "bao gồm", ex: "His responsibilities _______ writing, editing, and managing clients.", exVi: "Trách nhiệm của anh ấy bao gồm viết lách, chỉnh sửa và quản lý khách hàng." },
+            { topic: "Polyworking", word: "niche", phonetic: "/niːʃ/", type: "n", mean: "thị trường ngách", ex: "She found a _______ in teaching English online to young learners.", exVi: "Cô ấy đã tìm thấy một thị trường ngách trong việc dạy tiếng Anh trực tuyến cho học viên nhỏ tuổi." },
+            { topic: "Polyworking", word: "volatile", phonetic: "/ˈvɑːlətl/", type: "adj", mean: "biến động", ex: "The freelance market can be _______, with income changing every month.", exVi: "Thị trường làm việc tự do có thể biến động, với thu nhập thay đổi mỗi tháng." },
+            { topic: "Polyworking", word: "perpetual", phonetic: "/pərˈpetʃuəl/", type: "adj", mean: "liên tục", ex: "He feels like he is in a _______ cycle of working and resting.", exVi: "Anh ấy cảm thấy như mình đang ở trong một chu kỳ làm việc và nghỉ ngơi liên tục." },
+            { topic: "Polyworking", word: "paradigm", phonetic: "/ˈpærədaɪm/", type: "n", mean: "mô hình", ex: "Polyworking represents a new _______ in modern careers.", exVi: "Làm nhiều việc đại diện cho một mô hình mới trong sự nghiệp hiện đại." },
+            { topic: "Polyworking", word: "coordinate", phonetic: "/koʊˈɔːrdɪneɪt/", type: "v", mean: "phối hợp", ex: "She needs to _______ different tasks carefully to meet all her deadlines on time.", exVi: "Cô ấy cần phối hợp các nhiệm vụ khác nhau một cách cẩn thận để đáp ứng tất cả các thời hạn đúng lúc." },
+            { topic: "Polyworking", word: "prerequisite", phonetic: "/ˌpriːˈrekwəzɪt/", type: "n", mean: "điều kiện tiên quyết", ex: "Good communication skills are a _______ for working with many clients.", exVi: "Kỹ năng giao tiếp tốt là điều kiện tiên quyết để làm việc với nhiều khách hàng." },
+            { topic: "Polyworking", word: "proactive", phonetic: "/ˌproʊˈæktɪv/", type: "adj", mean: "chủ động", ex: "He is _______ and always looks for new job opportunities online.", exVi: "Anh ấy rất chủ động và luôn tìm kiếm các cơ hội việc làm mới trực tuyến." },
+            { topic: "Polyworking", word: "outsource", phonetic: "/ˈaʊtsɔːrs/", type: "v", mean: "thuê ngoài", ex: "She decides to _______ some simple tasks to save time and energy.", exVi: "Cô ấy quyết định thuê ngoài một số nhiệm vụ đơn giản để tiết kiệm thời gian và sức lực." },
+            { topic: "Polyworking", word: "optimize", phonetic: "/ˈɑːptɪmaɪz/", type: "v", mean: "tối ưu", ex: "He uses apps to _______ his daily schedule and work more efficiently.", exVi: "Anh ấy sử dụng các ứng dụng để tối ưu hóa lịch trình hàng ngày và làm việc hiệu quả hơn." },
+            { topic: "Polyworking", word: "synergy", phonetic: "/ˈsɪnərdʒi/", type: "n", mean: "sự phối hợp hiệu quả", ex: "There is good _______ between his jobs, so he can use the same skills in both.", exVi: "Có sự phối hợp hiệu quả tốt giữa các công việc của anh ấy, vì vậy anh ấy có thể sử dụng cùng các kỹ năng cho cả hai." },
+            { topic: "Polyworking", word: "autonomous", phonetic: "/ɔːˈtɑːnəməs/", type: "adj", mean: "tự chủ", ex: "He prefers an _______ working style where he can make his own decisions.", exVi: "Anh ấy thích phong cách làm việc tự chủ, nơi anh ấy có thể tự đưa ra quyết định." },
+            { topic: "Polyworking", word: "compartmentalize", phonetic: "/kəmˌpɑːrtˈmentəlaɪz/", type: "v", mean: "phân chia", ex: "She tries to _______ her work so she can focus on one task at a time.", exVi: "Cô ấy cố gắng phân chia rạch ròi công việc của mình để có thể tập trung vào từng việc một." },
+            { topic: "Polyworking", word: "complementary", phonetic: "/ˌkɑːmplɪˈmentəri/", type: "adj", mean: "bổ trợ", ex: "His two jobs are _______ and help him develop useful skills.", exVi: "Hai công việc của anh ấy mang tính bổ trợ và giúp anh ấy phát triển những kỹ năng hữu ích." },
+            { topic: "Polyworking", word: "monetize", phonetic: "/ˈmɑːnɪtaɪz/", type: "v", mean: "kiếm tiền", ex: "She _______ her hobbies by selling products online.", exVi: "Cô ấy kiếm tiền từ sở thích của mình bằng cách bán sản phẩm trực tuyến." },
+            { topic: "Polyworking", word: "proliferation", phonetic: "/prəˌlɪfəˈreɪʃn/", type: "n", mean: "sự gia tăng nhanh", ex: "There is a _______ of online jobs in the digital economy.", exVi: "Có sự gia tăng nhanh chóng của các công việc trực tuyến trong nền kinh tế kỹ thuật số." },
+            { topic: "Polyworking", word: "pivot", phonetic: "/ˈpɪvət/", type: "v", mean: "xoay hướng", ex: "He decided to _______ to a new career after losing his previous job.", exVi: "Anh ấy đã quyết định xoay hướng sang một sự nghiệp mới sau khi mất công việc trước đó." },
+            { topic: "Polyworking", word: "tangible", phonetic: "/ˈtændʒəbl/", type: "adj", mean: "hữu hình", ex: "After months of work, she finally sees _______ results from her efforts.", exVi: "Sau nhiều tháng làm việc, cô ấy cuối cùng cũng thấy được kết quả hữu hình từ những nỗ lực của mình." },
+            { topic: "Polyworking", word: "compromise", phonetic: "/ˈkɑːmprəmaɪz/", type: "v", mean: "thỏa hiệp", ex: "Sometimes he has to _______ between work and personal life.", exVi: "Đôi khi anh ấy phải thỏa hiệp giữa công việc và cuộc sống cá nhân." },
+            { topic: "Polyworking", word: "conceptualize", phonetic: "/kənˈsepʃuəlaɪz/", type: "v", mean: "khái niệm hóa", ex: "She can easily _______ new ideas for her business projects.", exVi: "Cô ấy có thể dễ dàng khái niệm hóa những ý tưởng mới cho các dự án kinh doanh của mình." },
+            { topic: "Polyworking", word: "deficit", phonetic: "/ˈdefɪsɪt/", type: "n", mean: "thiếu hụt", ex: "He often has a sleep _______ because he works too much.", exVi: "Anh ấy thường xuyên bị thiếu hụt giấc ngủ vì làm việc quá nhiều." },
+            { topic: "Polyworking", word: "execute", phonetic: "/ˈeksɪkjuːt/", type: "v", mean: "thực hiện", ex: "She plans carefully and then _______ her ideas step by step.", exVi: "Cô ấy lên kế hoạch cẩn thận và sau đó thực hiện các ý tưởng của mình từng bước một." },
+            { topic: "Polyworking", word: "exhaustive", phonetic: "/ɪɡˈzɔːstɪv/", type: "adj", mean: "toàn diện", ex: "He made an _______ list of tasks he needs to complete this week.", exVi: "Anh ấy đã lập một danh sách toàn diện các nhiệm vụ cần hoàn thành trong tuần này." },
+            { topic: "Polyworking", word: "surpass", phonetic: "/sərˈpæs/", type: "v", mean: "vượt qua", ex: "With hard work, she managed to _______ her financial goals.", exVi: "Với sự chăm chỉ, cô ấy đã cố gắng vượt qua được các mục tiêu tài chính của mình." },
+            { topic: "Polyworking", word: "leverage", phonetic: "/ˈlevərɪdʒ/", type: "v", mean: "tận dụng", ex: "He _______ his skills in writing to earn money from different platforms.", exVi: "Anh ấy tận dụng kỹ năng viết lách của mình để kiếm tiền từ nhiều nền tảng khác nhau." },
+            { topic: "Polyworking", word: "alignment", phonetic: "/əˈlaɪnmənt/", type: "n", mean: "sự phù hợp", ex: "There is good _______ between his goals and his current jobs.", exVi: "Có sự phù hợp tốt giữa các mục tiêu và công việc hiện tại của anh ấy." },
+            { topic: "Polyworking", word: "sporadic", phonetic: "/spəˈrædɪk/", type: "adj", mean: "rải rác", ex: "His freelance work is _______, so his income is not stable.", exVi: "Công việc tự do của anh ấy rải rác, vì vậy thu nhập của anh ấy không ổn định." },
+            { topic: "Polyworking", word: "multitask", phonetic: "/ˈmʌltitæsk/", type: "v", mean: "làm nhiều việc", ex: "She often _______, but sometimes it reduces her productivity.", exVi: "Cô ấy thường làm nhiều việc cùng lúc, nhưng đôi khi điều đó làm giảm năng suất của cô ấy." },
+            { topic: "Polyworking", word: "benchmark", phonetic: "/ˈbentʃmɑːrk/", type: "n", mean: "tiêu chuẩn", ex: "He uses his past performance as a _______ to improve his work.", exVi: "Anh ấy sử dụng hiệu suất trong quá khứ của mình như một tiêu chuẩn để cải thiện công việc." },
+            { topic: "Polyworking", word: "internalize", phonetic: "/ɪnˈtɜːrnəlaɪz/", type: "v", mean: "tiếp thu", ex: "She tries to _______ feedback from clients to improve her skills.", exVi: "Cô ấy cố gắng tiếp thu phản hồi từ khách hàng để cải thiện kỹ năng của mình." },
+            { topic: "Polyworking", word: "prospective", phonetic: "/prəˈspektɪv/", type: "adj", mean: "tiềm năng", ex: "He spends time talking to _______ clients to find new projects.", exVi: "Anh ấy dành thời gian nói chuyện với các khách hàng tiềm năng để tìm kiếm các dự án mới." },
+            { topic: "Polyworking", word: "streamline", phonetic: "/ˈstriːmlaɪn/", type: "v", mean: "tinh giản", ex: "She _______ her workflow to save time and reduce stress.", exVi: "Cô ấy tinh giản quy trình làm việc của mình để tiết kiệm thời gian và giảm căng thẳng." },
+            { topic: "Polyworking", word: "intrinsic", phonetic: "/ɪnˈtrɪnzɪk/", type: "adj", mean: "nội tại", ex: "He is motivated by _______ factors like passion and personal growth.", exVi: "Anh ấy được thúc đẩy bởi các yếu tố nội tại như đam mê và sự phát triển cá nhân." },
+            { topic: "Polyworking", word: "articulate", phonetic: "/ɑːrˈtɪkjəleɪt/", type: "v", mean: "diễn đạt", ex: "She can clearly _______ her ideas during meetings with clients.", exVi: "Cô ấy có thể diễn đạt rõ ràng các ý tưởng của mình trong các cuộc họp với khách hàng." },
+            { topic: "Polyworking", word: "outpace", phonetic: "/ˌaʊtˈpeɪs/", type: "v", mean: "vượt nhanh hơn", ex: "He works hard to _______ his competitors in the same field.", exVi: "Anh ấy làm việc chăm chỉ để vượt nhanh hơn các đối thủ cạnh tranh trong cùng lĩnh vực." },
+            { topic: "Polyworking", word: "cumulative", phonetic: "/ˈkjuːmjələtɪv/", type: "adj", mean: "tích lũy", ex: "The benefits of his work are _______ over time.", exVi: "Lợi ích từ công việc của anh ấy được tích lũy theo thời gian." },
+            { topic: "Polyworking", word: "downsize", phonetic: "/ˈdaʊnsaɪz/", type: "v", mean: "cắt giảm", ex: "The company had to _______ its staff because of financial problems.", exVi: "Công ty đã phải cắt giảm nhân sự vì các vấn đề tài chính." },
+            { topic: "Polyworking", word: "cohesive", phonetic: "/koʊˈhiːsɪv/", type: "adj", mean: "gắn kết", ex: "He tries to create a _______ plan so all his jobs fit together well.", exVi: "Anh ấy cố gắng tạo ra một kế hoạch gắn kết để tất cả các công việc của anh ấy phối hợp tốt với nhau." },
+            { topic: "Polyworking", word: "foresee", phonetic: "/fɔːrˈsiː/", type: "v", mean: "dự đoán", ex: "She can _______ potential problems and prepares solutions in advance.", exVi: "Cô ấy có thể dự đoán các vấn đề tiềm ẩn và chuẩn bị các giải pháp trước." },
+            { topic: "Polyworking", word: "harness", phonetic: "/ˈhɑːrnəs/", type: "v", mean: "tận dụng", ex: "He learns how to _______ technology to work faster and more effectively.", exVi: "Anh ấy học cách tận dụng công nghệ để làm việc nhanh hơn và hiệu quả hơn." },
+            { topic: "Polyworking", word: "incentive", phonetic: "/ɪnˈsentɪv/", type: "n", mean: "động lực", ex: "Extra income is a strong _______ for people to take on multiple jobs.", exVi: "Thu nhập thêm là một động lực mạnh mẽ để mọi người nhận nhiều công việc." },
+            { topic: "Polyworking", word: "marginal", phonetic: "/ˈmɑːrdʒɪnəl/", type: "adj", mean: "nhỏ", ex: "The profit from this job is _______, but it still helps cover expenses.", exVi: "Lợi nhuận từ công việc này khá nhỏ, nhưng nó vẫn giúp trang trải các khoản chi phí." },
+            { topic: "Polyworking", word: "obsolete", phonetic: "/ˈɑːbsəliːt/", type: "adj", mean: "lỗi thời", ex: "Some traditional jobs are becoming _______ in the digital age.", exVi: "Một số công việc truyền thống đang trở nên lỗi thời trong thời đại kỹ thuật số." },
+            { topic: "Polyworking", word: "appraise", phonetic: "/əˈpreɪz/", type: "v", mean: "đánh giá", ex: "She regularly _______ her performance to see what she can improve.", exVi: "Cô ấy thường xuyên đánh giá hiệu suất của mình để xem có thể cải thiện điều gì." },
+            { topic: "Polyworking", word: "overstretch", phonetic: "/ˌoʊvərˈstretʃ/", type: "v", mean: "làm quá sức", ex: "He tends to _______ himself by taking on too many projects at once.", exVi: "Anh ấy có xu hướng làm việc quá sức khi nhận quá nhiều dự án cùng lúc." },
+            { topic: "Polyworking", word: "synthesis", phonetic: "/ˈsɪnθəsɪs/", type: "n", mean: "tổng hợp", ex: "Her work is a _______ of skills from different fields.", exVi: "Công việc của cô ấy là sự tổng hợp các kỹ năng từ nhiều lĩnh vực khác nhau." },
+            { topic: "Polyworking", word: "predominant", phonetic: "/prɪˈdɑːmɪnənt/", type: "adj", mean: "chủ yếu", ex: "One job is _______, while the others are smaller side jobs.", exVi: "Một công việc mang tính chủ yếu, trong khi những công việc còn lại là công việc phụ nhỏ hơn." },
+            { topic: "Polyworking", word: "strategize", phonetic: "/ˈstrætədʒaɪz/", type: "v", mean: "lập chiến lược", ex: "He spends time to _______ how to manage his workload efficiently.", exVi: "Anh ấy dành thời gian để lập chiến lược cách quản lý khối lượng công việc hiệu quả." },
+            { topic: "Polyworking", word: "agile", phonetic: "/ˈædʒaɪl/", type: "adj", mean: "linh hoạt", ex: "She is _______ and can quickly adapt to changes in her work.", exVi: "Cô ấy rất linh hoạt và có thể thích ứng nhanh chóng với những thay đổi trong công việc." },
+            { topic: "Polyworking", word: "subsidiary", phonetic: "/səbˈsɪdiəri/", type: "adj", mean: "phụ", ex: "This is a _______ source of income, not his main job.", exVi: "Đây là một nguồn thu nhập phụ, không phải công việc chính của anh ấy." },
+            { topic: "Polyworking", word: "fragmentation", phonetic: "/ˌfræɡmenˈteɪʃn/", type: "n", mean: "phân mảnh", ex: "Too many jobs can lead to _______ of time and attention.", exVi: "Quá nhiều công việc có thể dẫn đến sự phân mảnh về thời gian và sự chú ý." },
+            { topic: "Polyworking", word: "analogous", phonetic: "/əˈnæl.ə.ɡəs/", type: "adj", mean: "tương tự", ex: "His two roles are _______, so the skills can be transferred easily.", exVi: "Hai vai trò của anh ấy là tương tự nhau, do đó các kỹ năng có thể được chuyển giao dễ dàng." },
+            { topic: "Polyworking", word: "instrumental", phonetic: "/ˌɪnstrəˈmentl/", type: "adj", mean: "quan trọng", ex: "Time management is _______ in achieving success in polyworking.", exVi: "Quản lý thời gian đóng vai trò quan trọng trong việc đạt được thành công khi làm nhiều việc." },
+            { topic: "Polyworking", word: "supersede", phonetic: "/ˌsuːpərˈsiːd/", type: "v", mean: "thay thế", ex: "New technologies may _______ older working methods.", exVi: "Các công nghệ mới có thể thay thế các phương pháp làm việc cũ." },
+            { topic: "Polyworking", word: "equilibrium", phonetic: "/ˌiːkwɪˈlɪbriəm/", type: "n", mean: "cân bằng", ex: "He tries to maintain _______ between work and personal life.", exVi: "Anh ấy cố gắng duy trì sự cân bằng giữa công việc và cuộc sống cá nhân." },
+            { topic: "Polyworking", word: "reconcile", phonetic: "/ˈrekənsaɪl/", type: "v", mean: "dung hòa", ex: "She finds it difficult to _______ her different responsibilities.", exVi: "Cô ấy cảm thấy khó khăn trong việc dung hòa các trách nhiệm khác nhau của mình." },
+            { topic: "Polyworking", word: "extraneous", phonetic: "/ɪkˈstreɪniəs/", type: "adj", mean: "không cần thiết", ex: "He removes _______ tasks to focus on more important work.", exVi: "Anh ấy loại bỏ các nhiệm vụ không cần thiết để tập trung vào công việc quan trọng hơn." },
+            { topic: "Polyworking", word: "validate", phonetic: "/ˈvælɪdeɪt/", type: "v", mean: "xác nhận", ex: "She asks clients to _______ her ideas before starting the project.", exVi: "Cô ấy yêu cầu khách hàng xác nhận các ý tưởng của mình trước khi bắt đầu dự án." },
+            { topic: "Polyworking", word: "pervasive", phonetic: "/pərˈveɪsɪv/", type: "adj", mean: "lan rộng", ex: "Remote work has become _______ in many industries today.", exVi: "Làm việc từ xa đã trở nên phổ biến/lan rộng trong nhiều ngành công nghiệp hiện nay." },
+            { topic: "Polyworking", word: "formalize", phonetic: "/ˈfɔːrməlaɪz/", type: "v", mean: "chính thức hóa", ex: "They _______ their agreement by signing a contract.", exVi: "Họ chính thức hóa thỏa thuận của mình bằng cách ký kết một bản hợp đồng." },
+            { topic: "Polyworking", word: "remuneration", phonetic: "/rɪˌmjuːnəˈreɪʃn/", type: "n", mean: "thù lao", ex: "He receives fair _______ for the amount of work he does.", exVi: "Anh ấy nhận được thù lao công bằng cho khối lượng công việc mình làm." },
+            { topic: "Polyworking", word: "innate", phonetic: "/ɪˈneɪt/", type: "adj", mean: "bẩm sinh", ex: "She has an _______ ability to manage multiple tasks effectively.", exVi: "Cô ấy có khả năng bẩm sinh trong việc quản lý nhiều nhiệm vụ một cách hiệu quả." },
+            { topic: "Polyworking", word: "gauge", phonetic: "/ɡeɪdʒ/", type: "v", mean: "đánh giá", ex: "He tries to _______ how much time each task will take.", exVi: "Anh ấy cố gắng đánh giá xem mỗi nhiệm vụ sẽ mất bao nhiêu thời gian." },
+            { topic: "Polyworking", word: "turnover", phonetic: "/ˈtɜːrnoʊvər/", type: "n", mean: "doanh thu", ex: "The company has a high _______ due to its many clients.", exVi: "Công ty có doanh thu cao nhờ vào lượng khách hàng đông đảo." },
+            { topic: "Polyworking", word: "assimilate", phonetic: "/əˈsɪməleɪt/", type: "v", mean: "tiếp thu", ex: "She quickly _______ new information and applies it to her work.", exVi: "Cô ấy nhanh chóng tiếp thu thông tin mới và áp dụng nó vào công việc." },
+            { topic: "Polyworking", word: "exponential", phonetic: "/ˌekspəˈnenʃl/", type: "adj", mean: "tăng nhanh", ex: "His income shows _______ growth after a year of hard work.", exVi: "Thu nhập của anh ấy cho thấy sự tăng trưởng theo cấp số nhân (tăng nhanh) sau một năm làm việc chăm chỉ." },
+            { topic: "Polyworking", word: "envision", phonetic: "/ɪnˈvɪʒn/", type: "v", mean: "hình dung", ex: "He can clearly _______ his future as a successful freelancer.", exVi: "Anh ấy có thể hình dung rõ ràng tương lai của mình như một người làm nghề tự do thành công." },
+            { topic: "Polyworking", word: "credential", phonetic: "/krəˈdenʃl/", type: "n", mean: "bằng cấp", ex: "She improves her _______ by taking online courses.", exVi: "Cô ấy nâng cao bằng cấp/chứng chỉ của mình bằng cách tham gia các khóa học trực tuyến." },
+            { topic: "Polyworking", word: "falter", phonetic: "/ˈfɔːltər/", type: "v", mean: "chùn bước", ex: "Even when he is tired, he does not _______ in his efforts.", exVi: "Ngay cả khi mệt mỏi, anh ấy cũng không chùn bước trong những nỗ lực của mình." },
+            { topic: "Polyworking", word: "convergence", phonetic: "/kənˈvɜːrdʒəns/", type: "n", mean: "hội tụ", ex: "There is a _______ of skills from different jobs in his work.", exVi: "Có sự hội tụ các kỹ năng từ nhiều công việc khác nhau trong công việc của anh ấy." },
+            { topic: "Polyworking", word: "orient", phonetic: "/ˈɔːri.ent/", type: "v", mean: "định hướng", ex: "She tries to _______ her career toward more stable opportunities.", exVi: "Cô ấy cố gắng định hướng sự nghiệp của mình hướng tới những cơ hội ổn định hơn." },
+            { topic: "Polyworking", word: "sequential", phonetic: "/sɪˈkwenʃl/", type: "adj", mean: "theo trình tự", ex: "He completes tasks in a _______ order to avoid confusion.", exVi: "Anh ấy hoàn thành các nhiệm vụ theo trình tự để tránh nhầm lẫn." }
+        ];
+
+        let currentIndex = 0;
+        const totalCards = flashcards.length;
+        let canGoNext = false; // Thêm biến khóa phím Enter
+
+        const flashcardEl = document.getElementById('flashcard');
+        const inputsContainer = document.getElementById('letter-inputs-container');
+        const finalScreen = document.getElementById('final-screen');
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSuccessSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(987.77, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.4);
+        }
+
+        function playErrorSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(250, audioCtx.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.05);
+            gainNode.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.1);
+            gainNode.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.15);
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.25);
+        }
+
+        function playTransitionSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15);
+            osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3);
+            osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.45);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.1);
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.8);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.8);
+        }
+
+        // --- Tính năng Text-to-Speech (Đã nâng cấp giọng Nữ thanh thoát) ---
+        let preferredVoice = null;
+
+        function loadVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) return;
+            
+            // Danh sách các giọng nữ chất lượng cao phổ biến trên các hệ điều hành (Chrome/Mac/Windows)
+            const goodFemaleVoices = [
+                "Google US English", 
+                "Google UK English Female",
+                "Samantha",         // Mặc định rất hay trên Mac/iOS
+                "Victoria",         // Mac
+                "Karen",            // Mac
+                "Microsoft Zira",   // Giọng nữ tiêu chuẩn trên Windows
+                "Microsoft Hazel"   // Windows UK
+            ];
+            
+            // Ưu tiên tìm giọng theo danh sách
+            for (let name of goodFemaleVoices) {
+                const voice = voices.find(v => v.name.includes(name));
+                if (voice) {
+                    preferredVoice = voice;
+                    break;
+                }
+            }
+            
+            // Nếu không tìm thấy giọng đích danh, cố gắng tìm một giọng có chữ "Female" hoặc tiếng Anh mặc định
+            if (!preferredVoice) {
+                preferredVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Female')) || 
+                                 voices.find(v => v.lang === 'en-US') || voices[0];
+            }
+        }
+
+        // Tải danh sách giọng nói khi trình duyệt đã sẵn sàng
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+
+        function speakCurrentWord() {
+            // Ngăn chặn nổi bọt sự kiện nếu bấm phím Enter bị trùng
+            if(window.event) window.event.stopPropagation();
+            
+            const card = flashcards[currentIndex];
+            const wordToSpeak = card.word.replace(/-/g, ' '); // Bỏ gạch nối nếu có để đọc chuẩn hơn
+            const utterance = new SpeechSynthesisUtterance(wordToSpeak);
+            
+            // Gắn giọng nữ đã lọc
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            } else {
+                utterance.lang = 'en-US'; 
+            }
+            
+            utterance.rate = 0.85;    // Tốc độ chậm vừa phải để học
+            utterance.pitch = 1.15;   // Tăng độ thanh lên một chút (giọng sáng và nhẹ nhàng hơn)
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function showTopicToast(topicName) {
+            const toast = document.getElementById('topic-toast');
+            document.getElementById('toast-message').textContent = `Chủ đề mới: ${topicName}`;
+            toast.classList.remove('translate-y-[-250%]');
+            toast.classList.add('translate-y-0');
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0');
+                toast.classList.add('translate-y-[-250%]');
+            }, 2500);
+        }
+
+        function renderCard() {
+            const card = flashcards[currentIndex];
+            
+            // Cập nhật thẻ mặt trước và tiêu đề
+            document.getElementById('main-topic-title').textContent = `CHỦ ĐỀ: ${card.topic.toUpperCase()}`;
+            document.getElementById('word-type').textContent = card.type;
+            
+            document.getElementById('word-mean').textContent = card.mean;
+            document.getElementById('word-exVi').textContent = card.exVi;
+            
+            const blankedEx = card.ex.replace('_______', `<span class="text-blue-600 border-b-2 border-blue-600 inline-block w-24"></span>`);
+            document.getElementById('word-ex').innerHTML = blankedEx;
+            
+            // Tạo các ô chữ cái
+            inputsContainer.innerHTML = '';
+            const words = card.word.split(' ');
+            
+            words.forEach((w, wordIndex) => {
+                const wordGroup = document.createElement('div');
+                wordGroup.className = 'flex gap-1';
+                
+                for (let i = 0; i < w.length; i++) {
+                    // Bỏ qua ký tự gạch nối (như trong full-time, part-time)
+                    if (w[i] === '-') {
+                        const dash = document.createElement('span');
+                        dash.textContent = '-';
+                        dash.className = 'text-xl font-bold text-gray-400 self-center px-1';
+                        wordGroup.appendChild(dash);
+                        continue;
+                    }
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.maxLength = 1;
+                    
+                    if (i === 0) {
+                        input.value = w[i].toLowerCase();
+                        input.readOnly = true;
+                        input.className = 'char-input hint-input w-9 h-11 md:w-10 md:h-12 text-center text-xl font-bold border-2 border-gray-200 bg-gray-100 text-gray-500 rounded-lg cursor-not-allowed select-none shadow-sm';
+                    } else {
+                        input.className = 'char-input editable-input w-9 h-11 md:w-10 md:h-12 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:bg-blue-50 transition-colors bg-white text-blue-700 shadow-inner';
+                        
+                        input.addEventListener('input', function() {
+                            this.value = this.value.toLowerCase();
+                            this.classList.remove('input-error');
+                            
+                            const editableInputs = Array.from(document.querySelectorAll('.editable-input'));
+                            const currentIdx = editableInputs.indexOf(this);
+                            if (this.value && currentIdx < editableInputs.length - 1) {
+                                editableInputs[currentIdx + 1].focus();
+                            }
+                        });
+                        
+                        input.addEventListener('keydown', function(e) {
+                            const editableInputs = Array.from(document.querySelectorAll('.editable-input'));
+                            const currentIdx = editableInputs.indexOf(this);
+                            
+                            if (e.key === 'Backspace' && !this.value && currentIdx > 0) {
+                                editableInputs[currentIdx - 1].focus();
+                            } else if (e.key === 'Enter') {
+                                // Chỉ kiểm tra đáp án nếu KHÔNG bấm kèm phím Shift
+                                if (!e.shiftKey) {
+                                    e.preventDefault();
+                                    e.stopPropagation(); // Ngăn chặn Enter bị dính đúp sang lệnh qua bài
+                                    checkAnswer();
+                                }
+                            } else if (e.key === 'ArrowLeft' && currentIdx > 0) {
+                                editableInputs[currentIdx - 1].focus();
+                                e.preventDefault();
+                            } else if (e.key === 'ArrowRight' && currentIdx < editableInputs.length - 1) {
+                                editableInputs[currentIdx + 1].focus();
+                                e.preventDefault();
+                            }
+                        });
+                    }
+                    wordGroup.appendChild(input);
+                }
+                inputsContainer.appendChild(wordGroup);
+                
+                if (wordIndex < words.length - 1) {
+                    const space = document.createElement('div');
+                    space.className = 'w-3 md:w-4';
+                    inputsContainer.appendChild(space);
+                }
+            });
+            
+            setTimeout(() => {
+                const firstEditableInput = document.querySelector('.editable-input');
+                if (firstEditableInput) firstEditableInput.focus();
+            }, 100);
+            
+            // Cập nhật tiến trình
+            document.getElementById('progress-text').textContent = `${currentIndex + 1} / ${totalCards}`;
+            const percent = ((currentIndex + 1) / totalCards) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+
+            // Xử lý hiển thị nút quay lại ở trên cùng
+            const topPrevBtn = document.getElementById('top-prev-btn');
+            if (currentIndex > 0) {
+                topPrevBtn.classList.remove('hidden');
+            } else {
+                topPrevBtn.classList.add('hidden');
+            }
+
+            const nextBtn = document.getElementById('next-btn');
+            if (currentIndex === totalCards - 1) {
+                nextBtn.textContent = "Hoàn thành";
+                nextBtn.classList.replace('bg-green-500', 'bg-blue-600');
+                nextBtn.classList.replace('hover:bg-green-600', 'hover:bg-blue-700');
+            } else {
+                nextBtn.textContent = "Tiếp theo";
+                nextBtn.classList.replace('bg-blue-600', 'bg-green-500');
+                nextBtn.classList.replace('hover:bg-blue-700', 'hover:bg-green-600');
+            }
+        }
+
+        function giveHint() {
+            const card = flashcards[currentIndex];
+            const targetWord = card.word.replace(/[\s-]/g, ''); // Bỏ khoảng trắng và dấu gạch nối
+            const allInputs = document.querySelectorAll('.char-input');
+            const editableInputs = document.querySelectorAll('.editable-input');
+            
+            for (let i = 0; i < allInputs.length; i++) {
+                if (!allInputs[i].readOnly && allInputs[i].value.toLowerCase() !== targetWord[i].toLowerCase()) {
+                    allInputs[i].value = targetWord[i].toLowerCase();
+                    allInputs[i].classList.remove('input-error');
+                    allInputs[i].classList.add('bg-yellow-50', 'border-yellow-400', 'text-yellow-700');
+                    
+                    let currentEditableIdx = Array.from(editableInputs).indexOf(allInputs[i]);
+                    let next = currentEditableIdx + 1;
+                    while (next < editableInputs.length && editableInputs[next].value !== '') {
+                        next++;
+                    }
+                    if (next < editableInputs.length) editableInputs[next].focus();
+                    else editableInputs[editableInputs.length - 1].focus();
+                    
+                    break;
+                }
+            }
+        }
+
+        function checkAnswer() {
+            const card = flashcards[currentIndex];
+            const allInputs = document.querySelectorAll('.char-input');
+            
+            const userAnswer = Array.from(allInputs).map(inp => inp.value).join('').toLowerCase();
+            const correctAnswer = card.word.replace(/[\s-]/g, '').toLowerCase();
+            
+            if (userAnswer === correctAnswer) {
+                playSuccessSound();
+                
+                const resultHeader = document.getElementById('result-header');
+                resultHeader.textContent = "🎉 Chính xác!";
+                resultHeader.className = "text-center py-2 rounded-lg font-bold text-lg mb-4 bg-green-100 text-green-700";
+
+                document.getElementById('back-word').textContent = card.word;
+                document.getElementById('back-phonetic').textContent = card.phonetic;
+                document.getElementById('back-mean').textContent = `${card.mean} (${card.type})`;
+
+                // Hiển thị câu ví dụ hoàn chỉnh, tô đậm từ vừa điền
+                const fullSentence = card.ex.replace('_______', `<span class="font-bold text-blue-700">${card.word}</span>`);
+                document.getElementById('back-ex').innerHTML = fullSentence;
+
+                flashcardEl.classList.add('flipped');
+                
+                // Khóa tạm thời phím Enter trong 500ms (thời gian lật thẻ) để tránh bị dính phím lướt qua bài mới
+                canGoNext = false;
+                setTimeout(() => { canGoNext = true; }, 500);
+                
+                // Bỏ focus khỏi ô nhập liệu để phím Enter tiếp theo xử lý chuyển câu một cách độc lập
+                if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+                    document.activeElement.blur();
+                }
+            } else {
+                playErrorSound();
+                inputsContainer.classList.add('shake');
+                setTimeout(() => inputsContainer.classList.remove('shake'), 400);
+                
+                let firstEmptyOrWrongInput = null;
+
+                for (let i = 0; i < allInputs.length; i++) {
+                    if (!allInputs[i].readOnly) {
+                        if (allInputs[i].value !== '' && allInputs[i].value.toLowerCase() !== correctAnswer[i]) {
+                            allInputs[i].value = ''; 
+                            allInputs[i].classList.add('input-error');
+                            if (!firstEmptyOrWrongInput) firstEmptyOrWrongInput = allInputs[i];
+                        } else if (allInputs[i].value === '') {
+                             allInputs[i].classList.add('input-error');
+                             if (!firstEmptyOrWrongInput) firstEmptyOrWrongInput = allInputs[i];
+                        }
+                    }
+                }
+                
+                if (firstEmptyOrWrongInput) {
+                    firstEmptyOrWrongInput.focus();
+                }
+            }
+        }
+
+        function nextCard() {
+            flashcardEl.classList.remove('flipped');
+            
+            setTimeout(() => {
+                if (currentIndex < totalCards - 1) {
+                    const currentTopic = flashcards[currentIndex].topic;
+                    const nextTopicCard = flashcards[currentIndex + 1].topic;
+                    
+                    currentIndex++;
+                    
+                    if (currentTopic !== nextTopicCard) {
+                        showTopicToast(nextTopicCard);
+                        playTransitionSound();
+                    }
+                    
+                    renderCard();
+                } else {
+                    flashcardEl.classList.add('hidden');
+                    finalScreen.classList.remove('hidden');
+                }
+            }, 300);
+        }
+
+        function prevCard() {
+            if (currentIndex > 0) {
+                flashcardEl.classList.remove('flipped');
+                setTimeout(() => {
+                    currentIndex--;
+                    renderCard();
+                }, 300);
+            } else {
+                flashcardEl.classList.remove('flipped');
+            }
+        }
+
+        function resetQuiz() {
+            currentIndex = 0;
+            finalScreen.classList.add('hidden');
+            flashcardEl.classList.remove('hidden');
+            renderCard();
+        }
+
+        // Bắt sự kiện bàn phím toàn cục (Global keydown)
+        document.addEventListener('keydown', function (e) {
+            
+            // Phím tắt Hint: Alt + H
+            if (e.altKey && e.key.toLowerCase() === 'h') {
+                e.preventDefault();
+                giveHint();
+                return; // Thoát ra
+            }
+
+            // Phím tắt phát âm: Shift + Enter HOẶC Ctrl + Space
+            if ((e.shiftKey && e.key === 'Enter') || (e.ctrlKey && e.code === 'Space')) {
+                e.preventDefault();
+                speakCurrentWord();
+                return; // Thoát ra, không chạy xuống các logic bên dưới
+            }
+
+            // Chỉ cho phép bấm Enter (độc lập, không kèm Shift) để qua bài nếu thẻ đã lật và đã hết thời gian khóa phím (500ms)
+            if (e.key === 'Enter' && !e.shiftKey && flashcardEl.classList.contains('flipped') && canGoNext) {
+                e.preventDefault();
+                nextCard();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', renderCard);
+
+    </script>
+</body>
+</html>
